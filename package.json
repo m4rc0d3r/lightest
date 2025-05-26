@@ -2,5 +2,9 @@
   "name": "test-and-be-tested",
   "version": "1.0.0",
   "packageManager": "pnpm@9.15.1",
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "prettier": "^3.5.3",
+    "@test-and-be-tested/prettier-config": "workspace:*"
+  }
 }
