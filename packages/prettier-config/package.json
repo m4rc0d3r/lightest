@@ -1,0 +1,13 @@
+{
+  "name": "@test-and-be-tested/prettier-config",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./base": "./src/base.js"
+  },
+  "devDependencies": {
+    "@prettier/plugin-xml": "^3.4.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-jsdoc": "^1.3.2"
+  }
+}
