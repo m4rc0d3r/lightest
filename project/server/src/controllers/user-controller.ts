@@ -1,13 +1,7 @@
-import {
-  ParamsDictionary,
-  Query as ParsedQs,
-  Request,
-  Response,
-  NextFunction,
-} from "express-serve-static-core";
-
-import { userService } from "../services/user-service.js";
+import { NextFunction, Request, Response } from "express";
 import { User } from "../dtos/app/user.js";
+import { userService } from "../services/user-service.js";
+import { ParamsDictionary, ParsedQs } from "../types/express.js";
 
 class UserController {
   async getUsers(

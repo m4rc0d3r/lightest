@@ -1,13 +1,7 @@
-import {
-  ParamsDictionary,
-  Query as ParsedQs,
-  Request,
-  Response,
-  NextFunction,
-} from "express-serve-static-core";
+import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
+import { ParamsDictionary, ParsedQs } from "../types/express.js";
 
 export function validationMiddleware(
   req: Request<ParamsDictionary, unknown, unknown, ParsedQs, Record<string, unknown>>,

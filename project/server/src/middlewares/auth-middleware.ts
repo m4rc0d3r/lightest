@@ -1,13 +1,7 @@
-import {
-  ParamsDictionary,
-  Query as ParsedQs,
-  Request,
-  Response,
-  NextFunction,
-} from "express-serve-static-core";
-
+import { NextFunction, Request, Response } from "express";
 import { APIError } from "../exceptions/api-error.js";
 import { tokenService } from "../services/token-service.js";
+import { ParamsDictionary, ParsedQs } from "../types/express.js";
 
 export function authMiddleware(
   req: Request<ParamsDictionary, unknown, unknown, ParsedQs, Record<string, unknown>>,

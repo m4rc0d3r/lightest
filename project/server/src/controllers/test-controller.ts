@@ -1,17 +1,11 @@
-import {
-  ParamsDictionary,
-  Query as ParsedQs,
-  Request,
-  Response,
-  NextFunction,
-} from "express-serve-static-core";
-
-import { testService } from "../services/test-service.js";
+import { NextFunction, Request, Response } from "express";
 import { Test } from "../dtos/app/test/base";
-import { Report } from "../types/report.js";
-import { BriefTest, BriefPassedTest } from "../dtos/app/test/brief/index.js";
-import { userService } from "../services/user-service.js";
+import { BriefPassedTest, BriefTest } from "../dtos/app/test/brief/index.js";
 import { APIError } from "../exceptions/api-error.js";
+import { testService } from "../services/test-service.js";
+import { userService } from "../services/user-service.js";
+import { ParamsDictionary, ParsedQs } from "../types/express.js";
+import { Report } from "../types/report.js";
 
 class TestController {
   async create(

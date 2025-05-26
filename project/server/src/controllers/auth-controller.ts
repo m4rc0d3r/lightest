@@ -1,14 +1,8 @@
-import {
-  ParamsDictionary,
-  Query as ParsedQs,
-  Request,
-  Response,
-  NextFunction,
-} from "express-serve-static-core";
-
-import { Tokens } from "../services/token-service.js";
+import { NextFunction, Request, Response } from "express";
 import { authService } from "../services/auth-service.js";
+import { Tokens } from "../services/token-service.js";
 import { AuthData } from "../types/auth-data.js";
+import { ParamsDictionary, ParsedQs } from "../types/express.js";
 import { Report } from "../types/report.js";
 
 const API_URL = process.env.API_URL || "undefined";

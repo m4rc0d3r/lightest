@@ -1,6 +1,6 @@
-import { ParamsDictionary, Query as ParsedQs, Request, Response } from "express-serve-static-core";
-
+import { Request, Response } from "express";
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
+import { ParamsDictionary, ParsedQs } from "../types/express.js";
 
 export function errorMiddleware(
   err: APIError | Error,

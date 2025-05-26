@@ -1,0 +1,4 @@
+onlyBuiltDependencies:
+  - bcrypt
+  - nodemon
+  - sqlite3
