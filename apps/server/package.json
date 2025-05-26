@@ -1,5 +1,5 @@
 {
-  "name": "server",
+  "name": "@test-and-be-tested/server",
   "version": "1.0.0",
   "description": "",
   "main": "./build/index.js",
