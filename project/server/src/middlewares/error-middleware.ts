@@ -1,13 +1,11 @@
-import { ParamsDictionary, Query as ParsedQs, Request, Response, NextFunction } from "express-serve-static-core";
+import { ParamsDictionary, Query as ParsedQs, Request, Response } from "express-serve-static-core";
 
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
-import { Report } from "../types/report.js";
 
 export function errorMiddleware(
     err: APIError | Error,
     req: Request<ParamsDictionary, APIError, unknown, ParsedQs, Record<string, unknown>>,
     res: Response<APIError, Record<string, unknown>>,
-    next: NextFunction
 ): void {
     console.log("error-middleware got an error:");
     console.log(err);

@@ -30,7 +30,7 @@ export function authMiddleware(
         (req as unknown as {userId: number}).userId = (payload as {userId: number}).userId;
 
         next();
-    } catch (e) {
+    } catch {
         return next(APIError.Unauthorized());
     }
 }

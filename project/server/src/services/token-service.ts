@@ -28,7 +28,7 @@ class TokenService {
     validateAccessToken(token: string): jwt.JwtPayload | string | null {
         try {
             return jwt.verify(token, JWT_ACCESS_SECRET);
-        } catch (e) {
+        } catch {
             return null;
         }
     }
@@ -36,7 +36,7 @@ class TokenService {
     validateRefreshToken(token: string): jwt.JwtPayload | string | null {
         try {
             return jwt.verify(token, JWT_REFRESH_SECRET);
-        } catch (e) {
+        } catch {
             return null;
         }
     }

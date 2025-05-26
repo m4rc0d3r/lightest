@@ -1,5 +1,4 @@
 import { ParamsDictionary, Query as ParsedQs, Request, Response, NextFunction } from "express-serve-static-core";
-import { validationResult } from "express-validator";
 
 import { Tokens } from "../services/token-service.js";
 import { authService } from "../services/auth-service.js";
