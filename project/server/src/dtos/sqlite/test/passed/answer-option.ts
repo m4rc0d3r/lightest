@@ -1,5 +1,5 @@
-import { SQLiteAnswerOption } from"../answer-option";
-import { SQLitePassedQuestion } from"./question.js";
+import { SQLiteAnswerOption } from "../answer-option";
+import { SQLitePassedQuestion } from "./question.js";
 
 export interface SQLitePassedAnswerOption {
   id: number;

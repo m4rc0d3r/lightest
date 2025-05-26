@@ -1,11 +1,6 @@
-import type {
-    QuestionWithExtendedAnswer,
-    QuestionWithAnswerOptions,
-    AnswerOption,
-} from "../base";
+import type { QuestionWithExtendedAnswer, QuestionWithAnswerOptions, AnswerOption } from "../base";
 
-export interface QuestionWithExtendedAnswerToEdit
-  extends QuestionWithExtendedAnswer {
+export interface QuestionWithExtendedAnswerToEdit extends QuestionWithExtendedAnswer {
   correctAnswer: string;
 }
 

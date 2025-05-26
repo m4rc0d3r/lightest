@@ -17,7 +17,7 @@ export enum QuestionType {
   WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS = "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS",
 }
 
-export type QuestionWithExtendedAnswer = Question
+export type QuestionWithExtendedAnswer = Question;
 
 export interface QuestionWithAnswerOptions extends Question {
   answerOptions: AnswerOption[];

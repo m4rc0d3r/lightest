@@ -8,12 +8,11 @@
 // export type BadResponse = Pick<APIError, "message" | "code">;
 
 export class Report<T = undefined> {
-    message: string;
-    payload?: T;
-  
-    constructor(message: string, payload?: T) {
-        this.message = message;
-        this.payload = payload;
-    }
+  message: string;
+  payload?: T;
+
+  constructor(message: string, payload?: T) {
+    this.message = message;
+    this.payload = payload;
+  }
 }
-  

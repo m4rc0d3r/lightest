@@ -1,16 +1,10 @@
-import type {
-    QuestionWithExtendedAnswer,
-    QuestionWithAnswerOptions,
-    AnswerOption,
-} from "../base";
+import type { QuestionWithExtendedAnswer, QuestionWithAnswerOptions, AnswerOption } from "../base";
 
-export interface QuestionWithExtendedAnswerToPass
-  extends QuestionWithExtendedAnswer {
+export interface QuestionWithExtendedAnswerToPass extends QuestionWithExtendedAnswer {
   enteredAnswer: string;
 }
 
-export interface QuestionWithAnswerOptionsToPass
-  extends QuestionWithAnswerOptions {
+export interface QuestionWithAnswerOptionsToPass extends QuestionWithAnswerOptions {
   answerOptions: AnswerOptionToPass[];
 }
 

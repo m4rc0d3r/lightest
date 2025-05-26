@@ -1,4 +1,4 @@
-import { SQLiteQuestion } from"./question.js";
+import { SQLiteQuestion } from "./question.js";
 
 export interface SQLiteExtendedAnswer {
   id: number;

@@ -16,18 +16,22 @@ const HOSTNAME = process.env.HOSTNAME || "undefined";
 const PORT = Number(process.env.PORT || NaN);
 const CLIENT_URL = process.env.CLIENT_URL || "undefined";
 
-if (HOSTNAME === "undefined" || isNaN(PORT) || CLIENT_URL === "undefined" ) {
-    throw new Error("'HOSTNAME', 'CLIENT_URL' and/or 'PORT' not specified in the config file '.env'.");
+if (HOSTNAME === "undefined" || isNaN(PORT) || CLIENT_URL === "undefined") {
+  throw new Error(
+    "'HOSTNAME', 'CLIENT_URL' and/or 'PORT' not specified in the config file '.env'.",
+  );
 }
 
 const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
+app.use(
+  cors({
     credentials: true,
-    origin: CLIENT_URL
-}));
+    origin: CLIENT_URL,
+  }),
+);
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
@@ -38,13 +42,13 @@ app.use(errorMiddleware);
 start();
 
 async function start(): Promise<void> {
-    try {
-        await dao.init();
-        await mailService.init();
-        app.listen(PORT, () => {
-            console.log(`Server started on http://${HOSTNAME}:${PORT}.`);
-        });
-    } catch (e) {
-        console.log(e);
-    }
+  try {
+    await dao.init();
+    await mailService.init();
+    app.listen(PORT, () => {
+      console.log(`Server started on http://${HOSTNAME}:${PORT}.`);
+    });
+  } catch (e) {
+    console.log(e);
+  }
 }
