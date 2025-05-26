@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
 import { ParamsDictionary, ParsedQs } from "../types/express.js";
 
@@ -6,6 +6,7 @@ export function errorMiddleware(
   err: APIError | Error,
   req: Request<ParamsDictionary, APIError, unknown, ParsedQs, Record<string, unknown>>,
   res: Response<APIError, Record<string, unknown>>,
+  next: NextFunction,
 ): void {
   console.log("error-middleware got an error:");
   console.log(err);
