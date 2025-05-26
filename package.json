@@ -1,0 +1,6 @@
+{
+  "name": "test-constructor",
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.15.1",
+  "type": "module"
+}
