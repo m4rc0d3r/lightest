@@ -13,6 +13,13 @@
     "syncpack": "^13.0.4"
   },
   "scripts": {
-    "prepare": "husky"
+    "build": "pnpm --filter './**' build",
+    "dev": "pnpm build && pnpm --parallel --filter './**' dev",
+    "format:check": "prettier --check . '!apps'; pnpm --filter './apps/**' format:check",
+    "format:fix": "prettier --write . '!apps'; pnpm --filter './apps/**' format:fix",
+    "lint:check": "eslint --flag unstable_config_lookup_from_file --ignore-pattern 'apps' '.'; pnpm --filter './apps/**' lint:check",
+    "lint:fix": "eslint --fix --flag unstable_config_lookup_from_file --ignore-pattern 'apps' '.'; pnpm --filter './apps/**' lint:fix",
+    "prepare": "husky",
+    "type-check": "pnpm --parallel --filter './**' type-check"
   }
 }
