@@ -55,4 +55,4 @@ async function runSyncpackFormat(listOfFiles) {
   return executeCommand(SYNCPACK_FORMAT_COMMAND, glob);
 }
 
-export { runEslint, runPrettier, runStylelint, runSyncpackFormat, runTsc };
+export { runEslint, runPrettier, runStylelint, runSyncpackFormat, runTsc, STYLELINT_COMMAND };

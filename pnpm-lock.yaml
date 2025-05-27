@@ -60,6 +60,9 @@ importers:
       '@test-and-be-tested/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@test-and-be-tested/lint-staged-config':
+        specifier: workspace:*
+        version: link:../../packages/lint-staged-config
       '@test-and-be-tested/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config

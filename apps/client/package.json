@@ -13,6 +13,7 @@
   "devDependencies": {
     "@eslint/js": "^9.27.0",
     "@test-and-be-tested/eslint-config": "workspace:*",
+    "@test-and-be-tested/lint-staged-config": "workspace:*",
     "@test-and-be-tested/typescript-config": "workspace:*",
     "@types/sass-loader": "^8.0.3",
     "@types/uuid": "^8.3.4",
