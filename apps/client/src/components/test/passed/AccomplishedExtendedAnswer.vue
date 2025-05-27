@@ -2,11 +2,7 @@
   <div class="answer">
     <span
       class="entered"
-      :class="
-        correctAnswer === enteredAnswer
-          ? 'entered-correctly'
-          : 'entered-incorrectly'
-      "
+      :class="correctAnswer === enteredAnswer ? 'entered-correctly' : 'entered-incorrectly'"
     >
       {{ enteredAnswer }}</span
     >

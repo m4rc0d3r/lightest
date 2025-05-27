@@ -1,14 +1,11 @@
 <template>
   <li class="test">
     <span class="title">{{ test.title }}</span>
-    <span class="number-of-questions"
-      >Number of questions: {{ test.numberOfQuestions }}</span
-    >
+    <span class="number-of-questions">Number of questions: {{ test.numberOfQuestions }}</span>
     <span
       class="grade"
       v-if="testMode === passedTestMode && typeof (test as BriefPassedTest).score === 'number'"
-      >Grade: {{ (test as BriefPassedTest).score.toFixed(1) }} out of
-      {{ test.grade }}</span
+      >Grade: {{ (test as BriefPassedTest).score.toFixed(1) }} out of {{ test.grade }}</span
     >
     <span class="grade" v-else>Grade: {{ test.grade }}</span>
     <router-link
@@ -36,14 +33,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
-import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
-export enum TestMode {
-  EDITABLE = "EDITABLE",
-  PASSABLE = "PASSABLE",
-  PASSED = "PASSED",
-}
+import type { TestMode } from "./shared";
+import { TEST_MODE } from "./shared";
+
+import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
 
 export default defineComponent({
   props: {
@@ -59,15 +55,15 @@ export default defineComponent({
 
   computed: {
     editableTestMode() {
-      return TestMode.EDITABLE;
+      return TEST_MODE.EDITABLE;
     },
 
     passableTestMode() {
-      return TestMode.PASSABLE;
+      return TEST_MODE.PASSABLE;
     },
 
     passedTestMode() {
-      return TestMode.PASSED;
+      return TEST_MODE.PASSED;
     },
   },
 });
@@ -75,11 +71,12 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .test {
-  border: 4px solid #1e434c;
-  border-radius: 5px;
   display: flex;
   flex-direction: column;
+
   padding: 10px;
+  border: 4px solid #1e434c;
+  border-radius: 5px;
 
   > * {
     margin-bottom: 5px;
@@ -90,28 +87,30 @@ export default defineComponent({
 }
 
 .title {
-  color: #070f11;
   font-size: 1.5rem;
   font-weight: bold;
+  color: #070f11;
 }
 
 .number-of-questions {
-  color: #070f11;
   font-size: 1.2rem;
+  color: #070f11;
 }
 
 .grade {
-  color: #070f11;
   font-size: 1.2rem;
+  color: #070f11;
 }
 
 .open-test-page-button {
-  background-color: #1e434c;
   border: 1px solid black;
   border-radius: 5px;
-  color: white;
+
   font-size: 1.4rem;
-  text-decoration: none;
+  color: white;
   text-align: center;
+  text-decoration: none;
+
+  background-color: #1e434c;
 }
 </style>

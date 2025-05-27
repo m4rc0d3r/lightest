@@ -1,9 +1,7 @@
 <template>
   <div class="questions-wrapper">
     <div class="control-panel">
-      <button class="add-question-button" @click="$emit('add-question')">
-        Add a question
-      </button>
+      <button class="add-question-button" @click="$emit('add-question')">Add a question</button>
     </div>
     <ol v-if="questions.length > 0" class="questions">
       <EditableQuestion
@@ -12,9 +10,7 @@
         :question="question"
         v-model:content="question.content"
         v-model:worth.number="question.worth"
-        @change-type="
-          (type) => $emit('change-question-type', questionIndex, type)
-        "
+        @change-type="(type) => $emit('change-question-type', questionIndex, type)"
         @delete="$emit('delete-question', questionIndex)"
       ></EditableQuestion>
     </ol>
@@ -22,7 +18,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
 import EditableQuestion from "./EditableQuestion.vue";
 
@@ -63,10 +60,8 @@ export default defineComponent({
   > * {
     margin-bottom: 15px;
   }
-  > *:last-child {
-    margin-bottom: 0;
-  }
 }
+
 .questions {
   display: flex;
   flex-direction: column;
@@ -77,5 +72,9 @@ export default defineComponent({
   > *:last-child {
     margin-bottom: 0;
   }
+}
+
+.questions-wrapper > *:last-child {
+  margin-bottom: 0;
 }
 </style>

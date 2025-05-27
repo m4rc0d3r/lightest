@@ -4,12 +4,15 @@ import pluginVue from "eslint-plugin-vue";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
 import tseslint from "typescript-eslint";
+import vueParser from "vue-eslint-parser";
 
 export default defineConfig([
   {
     extends: base,
     languageOptions: {
+      parser: vueParser,
       parserOptions: {
+        parser: tseslint.parser,
         projectService: {
           allowDefaultProject: ["*.config.js"],
         },

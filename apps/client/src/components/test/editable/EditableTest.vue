@@ -9,12 +9,9 @@
       :questions="test.questions"
       @add-question="test.addQuestion.call(test)"
       @change-question-type="
-        (questionIndex, type) =>
-          test.changeQuestionType.call(test, questionIndex, type)
+        (questionIndex, type) => test.changeQuestionType.call(test, questionIndex, type)
       "
-      @delete-question="
-        (questionIndex) => test.deleteQuestion.call(test, questionIndex)
-      "
+      @delete-question="(questionIndex) => test.deleteQuestion.call(test, questionIndex)"
     />
     <button v-if="mode === creationMode" @click="create">Create</button>
     <button v-else @click="update">Save</button>
@@ -26,24 +23,25 @@ import { defineComponent } from "vue";
 
 import EditableQuestionBlock from "./EditableQuestionBlock.vue";
 
-import { useNotificationStore } from "@/stores/notification";
-import { Notification, Status } from "@/models/notification";
-import { QuestionType } from "@/models/test/base";
+import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
+import { Report } from "@/http/dtos/report";
+import { Notification, STATUS } from "@/models/notification";
+import { QUESTION_TYPE } from "@/models/test/base";
 import {
   AnswerOptionToEdit,
   QuestionWithAnswerOptionsToEdit,
   QuestionWithExtendedAnswerToEdit,
   TestToEdit,
 } from "@/models/test/to-edit";
-import { APIError, APIErrorCode } from "@/http/dtos/api-error";
-import { Report } from "@/http/dtos/report";
-import { TestService } from "@/services/test-service";
 import { extractData } from "@/services/helpers";
+import { TestService } from "@/services/test-service";
+import { useNotificationStore } from "@/stores/notification";
 
-enum Mode {
-  CREATION = "CREATION",
-  EDITING = "EDITING",
-}
+const MODE = {
+  CREATION: "CREATION",
+  EDITING: "EDITING",
+} as const;
+type Mode = (typeof MODE)[keyof typeof MODE];
 
 export default defineComponent({
   components: {
@@ -54,29 +52,29 @@ export default defineComponent({
     return {
       test: new TestToEdit(),
       notificationStore: useNotificationStore(),
-      mode: Mode.CREATION,
+      mode: MODE.CREATION as Mode,
     };
   },
 
   created() {
     if (this.$route.path !== "/create-test") {
-      this.mode = Mode.EDITING;
+      this.mode = MODE.EDITING;
     }
   },
 
   async mounted() {
-    if (this.mode === Mode.EDITING) {
+    if (this.mode === MODE.EDITING) {
       await this.loadTest();
     }
   },
 
   computed: {
     creationMode() {
-      return Mode.CREATION;
+      return MODE.CREATION;
     },
 
     editingMode() {
-      return Mode.EDITING;
+      return MODE.EDITING;
     },
   },
 
@@ -88,74 +86,61 @@ export default defineComponent({
       console.log(`Test creation took ${end - start} ms.`);
 
       if (result instanceof Report) {
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
       } else if (result instanceof APIError) {
-        this.notificationStore.add(
-          new Notification(Status.FAILURE, result.message)
-        );
-        if (result.code !== APIErrorCode.ERR_NETWORK) {
-          this.$router.push("/");
+        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        if (result.code !== API_ERROR_CODE.ERR_NETWORK) {
+          void this.$router.push("/");
         }
       }
     },
 
     async loadTest() {
-      const result = extractData(
-        await TestService.getTestToEdit(Number(this.$route.params["id"]))
-      );
+      const result = extractData(await TestService.getTestToEdit(Number(this.$route.params["id"])));
 
       if (result instanceof Report) {
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
         if (result.payload) {
           const test = result.payload;
           this.test = new TestToEdit(
             test.title,
             test.questions.map((question) => {
               switch (question.type) {
-                case QuestionType.EXTENDED:
+                case QUESTION_TYPE.EXTENDED:
                   return new QuestionWithExtendedAnswerToEdit(
                     question.content,
                     question.worth,
-                    (
-                      question as QuestionWithExtendedAnswerToEdit
-                    ).correctAnswer,
-                    question.id
+                    (question as QuestionWithExtendedAnswerToEdit).correctAnswer,
+                    question.id,
                   );
-                case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION:
-                case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
+                case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION:
+                case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
                   return new QuestionWithAnswerOptionsToEdit(
                     question.type,
                     question.content,
                     question.worth,
-                    (
-                      question as QuestionWithAnswerOptionsToEdit
-                    ).answerOptions.map(
+                    (question as QuestionWithAnswerOptionsToEdit).answerOptions.map(
                       (answerOption) =>
                         new AnswerOptionToEdit(
                           answerOption.content,
                           answerOption.isCorrect,
-                          answerOption.id
-                        )
+                          answerOption.id,
+                        ),
                     ),
-                    question.id
+                    question.id,
                   );
                 default:
                   throw new Error(
-                    `Wrong question type '${question.type}' detected while uploading a test to edit.`
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    `Wrong question type '${question.type}' detected while uploading a test to edit.`,
                   );
               }
             }),
-            test.id
+            test.id,
           );
         }
       } else {
-        this.notificationStore.add(
-          new Notification(Status.FAILURE, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
       }
     },
 
@@ -172,52 +157,45 @@ export default defineComponent({
             test.title,
             test.questions.map((question) => {
               switch (question.type) {
-                case QuestionType.EXTENDED:
+                case QUESTION_TYPE.EXTENDED:
                   return new QuestionWithExtendedAnswerToEdit(
                     question.content,
                     question.worth,
-                    (
-                      question as QuestionWithExtendedAnswerToEdit
-                    ).correctAnswer,
-                    question.id
+                    (question as QuestionWithExtendedAnswerToEdit).correctAnswer,
+                    question.id,
                   );
-                case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION:
-                case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
+                case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION:
+                case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
                   return new QuestionWithAnswerOptionsToEdit(
                     question.type,
                     question.content,
                     question.worth,
-                    (
-                      question as QuestionWithAnswerOptionsToEdit
-                    ).answerOptions.map(
+                    (question as QuestionWithAnswerOptionsToEdit).answerOptions.map(
                       (answerOption) =>
                         new AnswerOptionToEdit(
                           answerOption.content,
                           answerOption.isCorrect,
-                          answerOption.id
-                        )
+                          answerOption.id,
+                        ),
                     ),
-                    question.id
+                    question.id,
                   );
                 default:
                   throw new Error(
-                    `Wrong question type '${question.type}' detected while uploading a test to edit.`
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    `Wrong question type '${question.type}' detected while uploading a test to edit.`,
                   );
               }
             }),
-            test.id
+            test.id,
           );
         }
 
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
       } else if (result instanceof APIError) {
-        this.notificationStore.add(
-          new Notification(Status.FAILURE, result.message)
-        );
-        if (result.code !== APIErrorCode.ERR_NETWORK) {
-          this.$router.push("/");
+        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        if (result.code !== API_ERROR_CODE.ERR_NETWORK) {
+          void this.$router.push("/");
         }
       }
     },
@@ -227,12 +205,13 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .test {
-  border: 4px solid #1e434c;
-  border-radius: 5px;
-  margin: 10px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
+
+  margin: 10px;
+  padding: 20px;
+  border: 4px solid #1e434c;
+  border-radius: 5px;
 
   > * {
     margin-bottom: 20px;
@@ -247,8 +226,8 @@ export default defineComponent({
     flex-direction: column;
 
     > label {
-      color: #070f11;
       font-size: 1.5rem;
+      color: #070f11;
     }
 
     > input {

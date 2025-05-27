@@ -1,4 +1,4 @@
-export interface Test<T extends Question> {
+type Test<T extends Question> = {
   id: number;
   title: string;
   questions: T[];
@@ -7,56 +7,67 @@ export interface Test<T extends Question> {
   changeQuestionType(questionIndex: number, type: QuestionType): void;
   deleteQuestion(questionIndex: number): void;
   get maximumScore(): T["worth"];
-}
+};
 
-export interface Question {
+type Question = {
   id: number;
   type: QuestionType;
   content: string;
   worth: number;
-}
+};
 
-export interface QuestionWithExtendedAnswer extends Question {}
+type QuestionWithExtendedAnswer = {} & Question;
 
-export interface QuestionWithAnswerOptions<T> extends Question {
+type QuestionWithAnswerOptions<T> = {
   answerOptions: T[];
 
   addAnswerOption(): void;
   deleteAnswerOption(answerOptionIndex: number): void;
-}
+} & Question;
 
-export interface AnswerOption {
+type AnswerOption = {
   id: number;
   content: string;
-}
+};
 
-export enum QuestionType {
-  EXTENDED = "EXTENDED",
-  WITH_ONE_CORRECT_ANSWER_OPTION = "WITH_ONE_CORRECT_ANSWER_OPTION",
-  WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS = "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS",
-}
+const QUESTION_TYPE = {
+  EXTENDED: "EXTENDED",
+  WITH_ONE_CORRECT_ANSWER_OPTION: "WITH_ONE_CORRECT_ANSWER_OPTION",
+  WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS",
+} as const;
+type QuestionType = (typeof QUESTION_TYPE)[keyof typeof QUESTION_TYPE];
 
-export const QuestionTypeCount = 3;
+const QuestionTypeCount = 3;
 
-export function convertStringToQuestionType(value: string) {
+function convertStringToQuestionType(value: string) {
   switch (value) {
-    case QuestionType.EXTENDED:
-      return QuestionType.EXTENDED;
-    case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION:
-      return QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION;
-    case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
-      return QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS;
+    case QUESTION_TYPE.EXTENDED:
+      return QUESTION_TYPE.EXTENDED;
+    case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION:
+      return QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION;
+    case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
+      return QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS;
     default:
       throw new Error(
-        `Invalid string '${value}' passed to function ${convertStringToQuestionType.name} to convert string to question type.`
+        `Invalid string '${value}' passed to function ${convertStringToQuestionType.name} to convert string to question type.`,
       );
   }
 }
 
-export function getAllQuestionTypes() {
+function getAllQuestionTypes() {
   return [
-    QuestionType.EXTENDED,
-    QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION,
-    QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+    QUESTION_TYPE.EXTENDED,
+    QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION,
+    QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
   ];
 }
+
+export { convertStringToQuestionType, getAllQuestionTypes, QUESTION_TYPE, QuestionTypeCount };
+export type {
+  AnswerOption,
+  Question,
+  QuestionType,
+  QuestionWithAnswerOptions,
+  QuestionWithExtendedAnswer,
+  Test,
+};

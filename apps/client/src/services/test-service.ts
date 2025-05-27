@@ -1,16 +1,17 @@
 import type { AxiosError, AxiosResponse } from "axios";
 
-import { defaultAPI } from "@/http/axios/default-api";
-import type { Report } from "@/http/dtos/report";
-import type { APIError } from "@/http/dtos/api-error";
-import type { Test } from "@/dtos/test/base";
 import { handleError } from "./helpers";
-import type { BriefTest, BriefPassedTest } from "@/dtos/test/brief";
+
+import type { Test } from "@/dtos/test/base";
+import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
+import { defaultAPI } from "@/http/axios/default-api";
+import type { APIError } from "@/http/dtos/api-error";
+import type { Report } from "@/http/dtos/report";
 
 export class TestService {
   static async create(
-    test: Test
-  ): Promise<AxiosResponse<Report, any> | AxiosError<APIError, any>> {
+    test: Test,
+  ): Promise<AxiosResponse<Report, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await defaultAPI.post<Report>("tests/create", test);
 
@@ -21,12 +22,10 @@ export class TestService {
   }
 
   static async getTestToEdit(
-    id: Test["id"]
-  ): Promise<AxiosResponse<Report<Test>, any> | AxiosError<APIError, any>> {
+    id: Test["id"],
+  ): Promise<AxiosResponse<Report<Test>, unknown> | AxiosError<APIError, unknown>> {
     try {
-      const response = await defaultAPI.get<Report<Test>>(
-        `tests/test-to-edit/${id}`
-      );
+      const response = await defaultAPI.get<Report<Test>>(`tests/test-to-edit/${id}`);
 
       return response;
     } catch (e) {
@@ -35,8 +34,8 @@ export class TestService {
   }
 
   static async update(
-    test: Test
-  ): Promise<AxiosResponse<Report<Test>, any> | AxiosError<APIError, any>> {
+    test: Test,
+  ): Promise<AxiosResponse<Report<Test>, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await defaultAPI.post<Report<Test>>("tests/edit", test);
 
@@ -47,12 +46,10 @@ export class TestService {
   }
 
   static async getBriefTests(): Promise<
-    AxiosResponse<Report<BriefTest[]>, any> | AxiosError<APIError, any>
+    AxiosResponse<Report<BriefTest[]>, unknown> | AxiosError<APIError, unknown>
   > {
     try {
-      const response = await defaultAPI.get<Report<BriefTest[]>>(
-        "tests/brief-tests"
-      );
+      const response = await defaultAPI.get<Report<BriefTest[]>>("tests/brief-tests");
 
       return response;
     } catch (e) {
@@ -61,12 +58,10 @@ export class TestService {
   }
 
   static async getBriefTestsCreatedByUser(): Promise<
-    AxiosResponse<Report<BriefTest[]>, any> | AxiosError<APIError, any>
+    AxiosResponse<Report<BriefTest[]>, unknown> | AxiosError<APIError, unknown>
   > {
     try {
-      const response = await defaultAPI.get<Report<BriefTest[]>>(
-        "tests/created-by-user"
-      );
+      const response = await defaultAPI.get<Report<BriefTest[]>>("tests/created-by-user");
 
       console.log(response);
 
@@ -77,12 +72,10 @@ export class TestService {
   }
 
   static async getBriefTestsPassedByUser(): Promise<
-    AxiosResponse<Report<BriefPassedTest[]>, any> | AxiosError<APIError, any>
+    AxiosResponse<Report<BriefPassedTest[]>, unknown> | AxiosError<APIError, unknown>
   > {
     try {
-      const response = await defaultAPI.get<Report<BriefPassedTest[]>>(
-        "tests/passed-by-user"
-      );
+      const response = await defaultAPI.get<Report<BriefPassedTest[]>>("tests/passed-by-user");
 
       console.log(response);
 
@@ -93,12 +86,10 @@ export class TestService {
   }
 
   static async getTestToPass(
-    id: Test["id"]
-  ): Promise<AxiosResponse<Report<Test>, any> | AxiosError<APIError, any>> {
+    id: Test["id"],
+  ): Promise<AxiosResponse<Report<Test>, unknown> | AxiosError<APIError, unknown>> {
     try {
-      const response = await defaultAPI.get<Report<Test>>(
-        `tests/test-to-pass/${id}`
-      );
+      const response = await defaultAPI.get<Report<Test>>(`tests/test-to-pass/${id}`);
 
       return response;
     } catch (e) {
@@ -107,15 +98,10 @@ export class TestService {
   }
 
   static async submitTestForReview(
-    test: Test
-  ): Promise<
-    AxiosResponse<Report<Test["id"]>, any> | AxiosError<APIError, any>
-  > {
+    test: Test,
+  ): Promise<AxiosResponse<Report<Test["id"]>, unknown> | AxiosError<APIError, unknown>> {
     try {
-      const response = (await defaultAPI.post)<Report<Test["id"]>>(
-        "tests/create-passed",
-        test
-      );
+      const response = await defaultAPI.post<Report<Test["id"]>>("tests/create-passed", test);
 
       return response;
     } catch (e) {
@@ -124,8 +110,8 @@ export class TestService {
   }
 
   static async getPassedTest(
-    id: Test["id"]
-  ): Promise<AxiosResponse<Report<Test>, any> | AxiosError<APIError, any>> {
+    id: Test["id"],
+  ): Promise<AxiosResponse<Report<Test>, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await defaultAPI.get<Report<Test>>(`tests/passed/${id}`);
 

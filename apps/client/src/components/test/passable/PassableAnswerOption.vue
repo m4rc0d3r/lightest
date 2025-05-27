@@ -1,11 +1,7 @@
 <template>
   <li class="answer-option">
     <input
-      :type="
-        question.type === withOneCorrectAnswerOptionQuestionType
-          ? 'radio'
-          : 'checkbox'
-      "
+      :type="question.type === withOneCorrectAnswerOptionQuestionType ? 'radio' : 'checkbox'"
       :name="
         (question.type === withOneCorrectAnswerOptionQuestionType
           ? question.id
@@ -14,22 +10,25 @@
       "
       :id="answerOption.id.toString()"
       :checked="answerOption.isChosen"
-      @change="(event) => answerOption.changeChoice.call(answerOption, question, (event.target as HTMLInputElement).checked)"
+      @change="
+        (event) =>
+          answerOption.changeChoice.call(
+            answerOption,
+            question,
+            (event.target as HTMLInputElement).checked,
+          )
+      "
     />
-    <label class="content" :for="answerOption.id.toString()">{{
-      answerOption.content
-    }}</label>
+    <label class="content" :for="answerOption.id.toString()">{{ answerOption.content }}</label>
   </li>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
-import { QuestionType } from "@/models/test/base";
-import type {
-  QuestionWithAnswerOptionsToPass,
-  AnswerOptionToPass,
-} from "@/models/test/to-pass";
+import { QUESTION_TYPE } from "@/models/test/base";
+import type { AnswerOptionToPass, QuestionWithAnswerOptionsToPass } from "@/models/test/to-pass";
 
 export default defineComponent({
   props: {
@@ -45,16 +44,20 @@ export default defineComponent({
 
   computed: {
     withOneCorrectAnswerOptionQuestionType() {
-      return QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION;
+      return QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION;
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
+.content {
+  flex-grow: 1;
+}
+
 .answer-option {
-  list-style-type: none;
   display: flex;
+  list-style-type: none;
 
   > * {
     margin-right: 5px;
@@ -66,9 +69,5 @@ export default defineComponent({
   > .content {
     color: #070f11;
   }
-}
-
-.content {
-  flex-grow: 1;
 }
 </style>

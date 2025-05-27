@@ -1,19 +1,15 @@
 <template>
   <ol class="tests">
-    <TestItem
-      v-for="test in tests"
-      :key="test.id"
-      :test="test"
-      :test-mode="testMode"
-    />
+    <TestItem v-for="test in tests" :key="test.id" :test="test" :test-mode="testMode" />
   </ol>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import { defineComponent } from "vue";
+import type { PropType } from "vue";
 
-import TestItem, { type TestMode } from "@/components/tests-view/TestItem.vue";
-
+import TestItem from "@/components/tests-view/TestItem.vue";
+import type { TestMode } from "@/components/tests-view/TestItem.vue";
 import type { BriefTest, BriefPassedTest } from "@/dtos/test/brief";
 
 export default defineComponent({
@@ -36,10 +32,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .tests {
-  // border: 2px solid black;
-  padding: 10px 0;
   display: flex;
   flex-direction: column;
+  // border: 2px solid black;
+  padding: 10px 0;
 
   > * {
     margin-bottom: 10px;

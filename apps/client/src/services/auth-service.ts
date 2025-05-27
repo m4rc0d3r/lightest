@@ -1,18 +1,17 @@
 import type { AxiosError, AxiosResponse } from "axios";
 
-import { authAPI } from "@/http/axios/auth-api";
-import type { Report } from "@/http/dtos/report";
-import type { APIError } from "@/http/dtos/api-error";
-import type { TokenType } from "@/stores/auth/dtos/token";
 import { handleError } from "./helpers";
 
+import { authAPI } from "@/http/axios/auth-api";
+import type { APIError } from "@/http/dtos/api-error";
+import type { Report } from "@/http/dtos/report";
+import type { TokenType } from "@/stores/auth/dtos/token";
+
 export class AuthService {
-  public static async register(
+  static async register(
     email: string,
-    password: string
-  ): Promise<
-    AxiosResponse<Report<TokenType>, any> | AxiosError<APIError, any>
-  > {
+    password: string,
+  ): Promise<AxiosResponse<Report<TokenType>, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await authAPI.post<Report<TokenType>>("register", {
         email,
@@ -25,12 +24,10 @@ export class AuthService {
     }
   }
 
-  public static async login(
+  static async login(
     email: string,
-    password: string
-  ): Promise<
-    AxiosResponse<Report<TokenType>, any> | AxiosError<APIError, any>
-  > {
+    password: string,
+  ): Promise<AxiosResponse<Report<TokenType>, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await authAPI.post<Report<TokenType>>("login", {
         email,
@@ -43,9 +40,7 @@ export class AuthService {
     }
   }
 
-  public static async logout(): Promise<
-    AxiosResponse<Report, any> | AxiosError<APIError, any>
-  > {
+  static async logout(): Promise<AxiosResponse<Report, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await authAPI.post<Report>("logout");
 
@@ -55,8 +50,8 @@ export class AuthService {
     }
   }
 
-  public static async refresh(): Promise<
-    AxiosResponse<Report<TokenType>, any> | AxiosError<APIError, any>
+  static async refresh(): Promise<
+    AxiosResponse<Report<TokenType>, unknown> | AxiosError<APIError, unknown>
   > {
     try {
       const response = await authAPI.post<Report<TokenType>>("refresh");
@@ -67,9 +62,9 @@ export class AuthService {
     }
   }
 
-  public static async activate(
-    link: string
-  ): Promise<AxiosResponse<Report, any> | AxiosError<APIError, any>> {
+  static async activate(
+    link: string,
+  ): Promise<AxiosResponse<Report, unknown> | AxiosError<APIError, unknown>> {
     try {
       const response = await authAPI.get<Report>(`activate/${link}`);
 

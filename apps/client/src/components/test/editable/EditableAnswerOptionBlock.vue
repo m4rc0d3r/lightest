@@ -17,7 +17,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
 import EditableAnswerOption from "./EditableAnswerOption.vue";
 
@@ -54,17 +55,15 @@ export default defineComponent({
   > * {
     margin-bottom: 5px;
   }
-  > *:last-child {
-    margin-bottom: 0;
-  }
 }
 
 .answer-options {
-  border: 1px solid #1e434c;
-  border-radius: 5px;
-  padding: 5px;
   display: flex;
   flex-direction: column;
+
+  padding: 5px;
+  border: 1px solid #1e434c;
+  border-radius: 5px;
 
   > * {
     margin-bottom: 5px;
@@ -72,5 +71,9 @@ export default defineComponent({
   > *:last-child {
     margin-bottom: 0;
   }
+}
+
+.answer-options-wrapper > *:last-child {
+  margin-bottom: 0;
 }
 </style>

@@ -1,10 +1,7 @@
 <template>
   <form class="test" @submit.prevent>
     <span class="title">{{ test.title }}</span>
-    <span class="worth"
-      >Grade: {{ receivedScore.toFixed(1) }} out of
-      {{ test.maximumScore }}</span
-    >
+    <span class="worth">Grade: {{ receivedScore.toFixed(1) }} out of {{ test.maximumScore }}</span>
     <AccomplishedQuestionBlock :questions="test.questions" />
   </form>
 </template>
@@ -14,18 +11,18 @@ import { defineComponent } from "vue";
 
 import AccomplishedQuestionBlock from "./AccomplishedQuestionBlock.vue";
 
-import { useNotificationStore } from "@/stores/notification";
-import { Notification, Status } from "@/models/notification";
-import { QuestionType } from "@/models/test/base";
-import {
-  PassedTest,
-  PassedQuestionWithExtendedAnswer,
-  PassedQuestionWithAnswerOptions,
-  PassedAnswerOption,
-} from "@/models/test/passed";
 import { Report } from "@/http/dtos/report";
+import { Notification, STATUS } from "@/models/notification";
+import { QUESTION_TYPE } from "@/models/test/base";
+import {
+  PassedAnswerOption,
+  PassedQuestionWithAnswerOptions,
+  PassedQuestionWithExtendedAnswer,
+  PassedTest,
+} from "@/models/test/passed";
 import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
+import { useNotificationStore } from "@/stores/notification";
 
 export default defineComponent({
   components: {
@@ -51,64 +48,53 @@ export default defineComponent({
 
   methods: {
     async loadTest() {
-      const result = extractData(
-        await TestService.getPassedTest(Number(this.$route.params["id"]))
-      );
+      const result = extractData(await TestService.getPassedTest(Number(this.$route.params["id"])));
 
       if (result instanceof Report) {
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
         if (result.payload) {
           const test = result.payload;
           this.test = new PassedTest(
             test.title,
             test.questions.map((question) => {
               switch (question.type) {
-                case QuestionType.EXTENDED:
+                case QUESTION_TYPE.EXTENDED:
                   return new PassedQuestionWithExtendedAnswer(
                     question.content,
                     question.worth,
-                    (
-                      question as PassedQuestionWithExtendedAnswer
-                    ).correctAnswer,
-                    (
-                      question as PassedQuestionWithExtendedAnswer
-                    ).enteredAnswer,
-                    question.id
+                    (question as PassedQuestionWithExtendedAnswer).correctAnswer,
+                    (question as PassedQuestionWithExtendedAnswer).enteredAnswer,
+                    question.id,
                   );
-                case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION:
-                case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
+                case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION:
+                case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
                   return new PassedQuestionWithAnswerOptions(
                     question.type,
                     question.content,
                     question.worth,
-                    (
-                      question as PassedQuestionWithAnswerOptions
-                    ).answerOptions.map(
+                    (question as PassedQuestionWithAnswerOptions).answerOptions.map(
                       (answerOption) =>
                         new PassedAnswerOption(
                           answerOption.content,
                           answerOption.isCorrect,
                           answerOption.isChosen,
-                          answerOption.id
-                        )
+                          answerOption.id,
+                        ),
                     ),
-                    question.id
+                    question.id,
                   );
                 default:
                   throw new Error(
-                    `Wrong question type '${question.type}' detected while uploading the passed test.`
+                    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                    `Wrong question type '${question.type}' detected while uploading the passed test.`,
                   );
               }
             }),
-            test.id
+            test.id,
           );
         }
       } else {
-        this.notificationStore.add(
-          new Notification(Status.FAILURE, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
       }
     },
   },
@@ -117,16 +103,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .test {
-  border: 4px solid #1e434c;
-  border-radius: 5px;
-  margin: 10px;
-  padding: 20px;
   display: flex;
   flex-direction: column;
 
+  margin: 10px;
+  padding: 20px;
+  border: 4px solid #1e434c;
+  border-radius: 5px;
+
   > * {
-    color: #070f11;
     margin-bottom: 20px;
+    color: #070f11;
   }
 
   > *:last-child {
@@ -134,14 +121,14 @@ export default defineComponent({
   }
 
   > .title {
-    color: #070f11;
     font-size: 2rem;
     font-weight: bold;
+    color: #070f11;
   }
 
   > .worth {
-    color: #070f11;
     font-size: 1.5rem;
+    color: #070f11;
   }
 }
 </style>

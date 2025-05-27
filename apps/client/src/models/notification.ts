@@ -1,6 +1,6 @@
 import * as uuid from "uuid";
 
-export class Notification {
+class Notification {
   readonly id: string;
   readonly status: Status;
   readonly message: string;
@@ -12,7 +12,11 @@ export class Notification {
   }
 }
 
-export enum Status {
-  SUCCESS = "SUCCESS",
-  FAILURE = "FAILURE",
-}
+const STATUS = {
+  SUCCESS: "SUCCESS",
+  FAILURE: "FAILURE",
+} as const;
+type Status = (typeof STATUS)[keyof typeof STATUS];
+
+export { Notification, STATUS };
+export type { Status };

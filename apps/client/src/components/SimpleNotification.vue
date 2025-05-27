@@ -46,11 +46,13 @@ export default defineComponent({
 
 .success {
   @extend %notification;
+
   background-color: lightgreen;
 }
 
 .failure {
   @extend %notification;
+
   background-color: pink;
 }
 

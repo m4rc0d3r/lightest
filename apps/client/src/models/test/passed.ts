@@ -1,36 +1,34 @@
 import type {
-  Test,
-  Question,
-  QuestionWithExtendedAnswer,
-  QuestionWithAnswerOptions,
   AnswerOption,
+  Question,
+  QuestionWithAnswerOptions,
+  QuestionWithExtendedAnswer,
+  Test,
 } from "./base";
-import { QuestionType } from "./base";
+import { QUESTION_TYPE } from "./base";
 
-export class PassedTest implements Test<PassedQuestion> {
+import type { QuestionType } from "@/dtos/test/base";
+
+class PassedTest implements Test<PassedQuestion> {
   id: number;
   title: string;
   questions: PassedQuestion[];
 
-  constructor(
-    title = "",
-    questions = [] as PassedQuestion[],
-    id = -Date.now()
-  ) {
+  constructor(title = "", questions = [] as PassedQuestion[], id = -Date.now()) {
     this.id = id;
     this.title = title;
     this.questions = questions;
   }
 
-  addQuestion(question?: PassedQuestion) {
+  addQuestion(_question?: PassedQuestion) {
     return;
   }
 
-  changeQuestionType(questionIndex: number, type: QuestionType) {
+  changeQuestionType(_questionIndex: number, _type: QuestionType) {
     return;
   }
 
-  deleteQuestion(questionIndex: number) {
+  deleteQuestion(_questionIndex: number) {
     return;
   }
 
@@ -40,24 +38,23 @@ export class PassedTest implements Test<PassedQuestion> {
 
   get receivedScore() {
     return this.questions.reduce(
-      (prev, cur) =>
-        prev + (cur as PassedQuestionWithExtendedAnswer).receivedScore,
-      0
+      (prev, cur) => prev + (cur as PassedQuestionWithExtendedAnswer).receivedScore,
+      0,
     );
   }
 }
 
-export class PassedQuestion implements Question {
+class PassedQuestion implements Question {
   id: number;
   type: QuestionType;
   content: string;
   worth: number;
 
   constructor(
-    type = QuestionType.EXTENDED,
+    type = QUESTION_TYPE.EXTENDED as QuestionType,
     content = "",
     worth = 0,
-    id = -Date.now()
+    id = -Date.now(),
   ) {
     this.id = id;
     this.type = type;
@@ -65,31 +62,26 @@ export class PassedQuestion implements Question {
     this.worth = worth;
   }
 
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
   get receivedScore() {
     return 0;
   }
 }
 
-export class PassedQuestionWithExtendedAnswer
+class PassedQuestionWithExtendedAnswer
   extends PassedQuestion
   implements QuestionWithExtendedAnswer
 {
   correctAnswer: string;
   enteredAnswer: string;
 
-  constructor(
-    content = "",
-    worth = 0,
-    correctAnswer = "",
-    enteredAnswer = "",
-    id = -Date.now()
-  ) {
-    super(QuestionType.EXTENDED, content, worth, id);
+  constructor(content = "", worth = 0, correctAnswer = "", enteredAnswer = "", id = -Date.now()) {
+    super(QUESTION_TYPE.EXTENDED, content, worth, id);
     this.correctAnswer = correctAnswer;
     this.enteredAnswer = enteredAnswer;
   }
 
-  get receivedScore() {
+  override get receivedScore() {
     return (this as PassedQuestionWithExtendedAnswer).enteredAnswer ===
       (this as PassedQuestionWithExtendedAnswer).correctAnswer
       ? this.worth
@@ -97,20 +89,21 @@ export class PassedQuestionWithExtendedAnswer
   }
 }
 
-export class PassedQuestionWithAnswerOptions
+class PassedQuestionWithAnswerOptions
   extends PassedQuestion
   implements QuestionWithAnswerOptions<PassedAnswerOption>
 {
   answerOptions: PassedAnswerOption[];
 
   constructor(
-    type:
-      | QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION
-      | QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+    type: Extract<
+      QuestionType,
+      "WITH_ONE_CORRECT_ANSWER_OPTION" | "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS"
+    >,
     content = "",
     worth = 0,
     answerOptions = [] as PassedAnswerOption[],
-    id = -Date.now()
+    id = -Date.now(),
   ) {
     super(type, content, worth, id);
     this.answerOptions = answerOptions;
@@ -120,32 +113,29 @@ export class PassedQuestionWithAnswerOptions
     return;
   }
 
-  deleteAnswerOption(answerOptionIndex: number) {
+  deleteAnswerOption(_answerOptionIndex: number) {
     return;
   }
 
-  get receivedScore() {
+  override get receivedScore() {
     switch (this.type) {
-      case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION: {
-        const answerOption = (
-          this as PassedQuestionWithAnswerOptions
-        ).answerOptions.find((answerOption) => answerOption.isChosen);
+      case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION: {
+        const answerOption = (this as PassedQuestionWithAnswerOptions).answerOptions.find(
+          (answerOption) => answerOption.isChosen,
+        );
         if (answerOption !== undefined) {
-          return answerOption.isChosen === answerOption.isCorrect
-            ? this.worth
-            : 0;
+          return answerOption.isChosen === answerOption.isCorrect ? this.worth : 0;
         } else {
           return 0;
         }
       }
-      case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: {
+      case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: {
         return (this as PassedQuestionWithAnswerOptions).answerOptions
           .filter((answerOption) => answerOption.isCorrect)
           .reduce(
-            (prev, cur, index, array) =>
-              prev +
-              (cur.isCorrect === cur.isChosen ? this.worth / array.length : 0),
-            0
+            (prev, cur, _index, array) =>
+              prev + (cur.isCorrect === cur.isChosen ? this.worth / array.length : 0),
+            0,
           );
       }
       default:
@@ -154,21 +144,24 @@ export class PassedQuestionWithAnswerOptions
   }
 }
 
-export class PassedAnswerOption implements AnswerOption {
+class PassedAnswerOption implements AnswerOption {
   id: number;
   content: string;
   isCorrect: boolean;
   isChosen: boolean;
 
-  constructor(
-    content = "",
-    isCorrect = false,
-    isChosen = false,
-    id = -Date.now()
-  ) {
+  constructor(content = "", isCorrect = false, isChosen = false, id = -Date.now()) {
     this.id = id;
     this.content = content;
     this.isCorrect = isCorrect;
     this.isChosen = isChosen;
   }
 }
+
+export {
+  PassedAnswerOption,
+  PassedQuestion,
+  PassedQuestionWithAnswerOptions,
+  PassedQuestionWithExtendedAnswer,
+  PassedTest,
+};

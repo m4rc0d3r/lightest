@@ -4,16 +4,11 @@
     :class="{
       'chosen-correctly': answerOption.isChosen && answerOption.isCorrect,
       'chosen-incorrectly': answerOption.isChosen && !answerOption.isCorrect,
-      'correct-but-not-chosen':
-        answerOption.isCorrect && !answerOption.isChosen,
+      'correct-but-not-chosen': answerOption.isCorrect && !answerOption.isChosen,
     }"
   >
     <input
-      :type="
-        question.type === withOneCorrectAnswerOptionQuestionType
-          ? 'radio'
-          : 'checkbox'
-      "
+      :type="question.type === withOneCorrectAnswerOptionQuestionType ? 'radio' : 'checkbox'"
       :name="
         (question.type === withOneCorrectAnswerOptionQuestionType
           ? question.id
@@ -28,13 +23,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
-import { QuestionType } from "@/models/test/base";
-import type {
-  PassedQuestionWithAnswerOptions,
-  PassedAnswerOption,
-} from "@/models/test/passed";
+import { QUESTION_TYPE } from "@/models/test/base";
+import type { PassedAnswerOption, PassedQuestionWithAnswerOptions } from "@/models/test/passed";
 
 export default defineComponent({
   props: {
@@ -50,16 +43,20 @@ export default defineComponent({
 
   computed: {
     withOneCorrectAnswerOptionQuestionType() {
-      return QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION;
+      return QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION;
     },
   },
 });
 </script>
 
 <style lang="scss" scoped>
+.content {
+  flex-grow: 1;
+}
+
 .answer-option {
-  list-style-type: none;
   display: flex;
+  list-style-type: none;
 
   > * {
     margin-right: 5px;
@@ -91,9 +88,5 @@ export default defineComponent({
 
 .correct-but-not-chosen {
   background-color: greenyellow;
-}
-
-.content {
-  flex-grow: 1;
 }
 </style>

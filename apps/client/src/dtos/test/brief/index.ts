@@ -1,10 +1,12 @@
-export interface BriefTest {
+type BriefTest = {
   id: number;
   title: string;
   numberOfQuestions: number;
   grade: number;
-}
+};
 
-export interface BriefPassedTest extends BriefTest {
+type BriefPassedTest = {
   score: number;
-}
+} & BriefTest;
+
+export type { BriefPassedTest, BriefTest };

@@ -14,11 +14,7 @@ export default {
   ...base,
   [JS_GLOB]: (files) => {
     const listOfFiles = files.join(" ");
-    return [
-      STYLELINT_COMMAND,
-      runEslint(listOfFiles),
-      runPrettier(listOfFiles),
-    ];
+    return [STYLELINT_COMMAND, runEslint(listOfFiles), runPrettier(listOfFiles)];
   },
   ...setUpTasksForTypescriptFiles([
     {

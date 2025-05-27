@@ -1,7 +1,4 @@
-/** @type {import('stylelint').Config} */
+/** @type {import("stylelint").Config} */
 export default {
-  extends: [
-    "stylelint-config-clean-order/error",
-    "stylelint-config-recommended-vue/scss",
-  ],
+  extends: ["stylelint-config-clean-order/error", "stylelint-config-recommended-vue/scss"],
 };

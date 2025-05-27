@@ -1,11 +1,7 @@
 <template>
   <li class="answer-option">
     <input
-      :type="
-        question.type === withOneCorrectAnswerOptionQuestionType
-          ? 'radio'
-          : 'checkbox'
-      "
+      :type="question.type === withOneCorrectAnswerOptionQuestionType ? 'radio' : 'checkbox'"
       :name="
         (question.type === withOneCorrectAnswerOptionQuestionType
           ? question.id
@@ -13,16 +9,21 @@
         ).toString()
       "
       :checked="answerOption.isCorrect"
-      @change="(event) => answerOption.changeCorrectness.call(answerOption, question, (event.target as HTMLInputElement).checked)"
+      @change="
+        (event) =>
+          answerOption.changeCorrectness.call(
+            answerOption,
+            question,
+            (event.target as HTMLInputElement).checked,
+          )
+      "
     />
     <div class="content">
       <label for="">Answer option</label>
       <input
         type="text"
         :value="answerOption.content"
-        @input="
-          $emit('update:content', ($event.target as HTMLInputElement).value)
-        "
+        @input="$emit('update:content', ($event.target as HTMLInputElement).value)"
       />
     </div>
     <button @click="$emit('delete')">Delete</button>
@@ -30,13 +31,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
-import { QuestionType } from "@/models/test/base";
-import type {
-  QuestionWithAnswerOptionsToEdit,
-  AnswerOptionToEdit,
-} from "@/models/test/to-edit";
+import { QUESTION_TYPE } from "@/models/test/base";
+import type { AnswerOptionToEdit, QuestionWithAnswerOptionsToEdit } from "@/models/test/to-edit";
 
 export default defineComponent({
   props: {
@@ -63,7 +62,7 @@ export default defineComponent({
 
   computed: {
     withOneCorrectAnswerOptionQuestionType() {
-      return QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION;
+      return QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION;
     },
   },
 
@@ -81,8 +80,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .answer-option {
-  list-style-type: none;
   display: flex;
+  list-style-type: none;
 
   > * {
     margin-right: 5px;

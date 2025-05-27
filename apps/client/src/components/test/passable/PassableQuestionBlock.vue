@@ -11,7 +11,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
 import PassableQuestion from "./PassableQuestion.vue";
 
@@ -39,10 +40,8 @@ export default defineComponent({
   > * {
     margin-bottom: 15px;
   }
-  > *:last-child {
-    margin-bottom: 0;
-  }
 }
+
 .questions {
   display: flex;
   flex-direction: column;
@@ -53,5 +52,9 @@ export default defineComponent({
   > *:last-child {
     margin-bottom: 0;
   }
+}
+
+.questions-wrapper > *:last-child {
+  margin-bottom: 0;
 }
 </style>

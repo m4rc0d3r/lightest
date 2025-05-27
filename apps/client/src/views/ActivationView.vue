@@ -5,12 +5,12 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { pinia } from "@/stores/pinia";
+import { APIError } from "@/http/dtos/api-error";
+import { Report } from "@/http/dtos/report";
+import { Notification, STATUS } from "@/models/notification";
 import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
-import { Notification, Status } from "@/models/notification";
-import { Report } from "@/http/dtos/report";
-import { APIError } from "@/http/dtos/api-error";
+import { pinia } from "@/stores/pinia";
 
 export default defineComponent({
   async beforeCreate() {
@@ -18,22 +18,18 @@ export default defineComponent({
       const link = this.$route.params["link"];
       const result = await useAuthStore().activate(link);
       if (result instanceof Report) {
-        useNotificationStore(pinia).add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        useNotificationStore(pinia).add(new Notification(STATUS.SUCCESS, result.message));
       } else if (result instanceof APIError) {
         useNotificationStore(pinia).add(
-          new Notification(Status.FAILURE, "Invalid activation link.")
+          new Notification(STATUS.FAILURE, "Invalid activation link."),
         );
       }
     } else {
-      useNotificationStore(pinia).add(
-        new Notification(Status.FAILURE, "Invalid activation link.")
-      );
+      useNotificationStore(pinia).add(new Notification(STATUS.FAILURE, "Invalid activation link."));
     }
-    this.$router.push("/");
+    void this.$router.push("/");
   },
 });
 </script>
 
-<style scoped></style>
+style>

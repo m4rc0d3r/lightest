@@ -5,9 +5,7 @@
       <input
         type="text"
         :value="content"
-        @input="
-          $emit('update:content', ($event.target as HTMLInputElement).value)
-        "
+        @input="$emit('update:content', ($event.target as HTMLInputElement).value)"
       />
     </div>
     <div class="worth">
@@ -20,7 +18,7 @@
             'update:worth',
             ($event.target as HTMLInputElement).value.length > 0
               ? ($event.target as HTMLInputElement).value
-              : '0'
+              : '0',
           )
         "
       />
@@ -29,7 +27,9 @@
       <label for="">Type</label>
       <select
         :value="question.type"
-        @change="(event) => $emit('change-type', (event.target as HTMLSelectElement).value as QuestionType)"
+        @change="
+          (event) => $emit('change-type', (event.target as HTMLSelectElement).value as QuestionType)
+        "
       >
         <option
           v-for="questionType in allQuestionTypesForSelect"
@@ -47,13 +47,17 @@
       />
       <EditableAnswerOptionBlock
         v-else
-        :question="(question as QuestionWithAnswerOptionsToEdit)"
+        :question="question as QuestionWithAnswerOptionsToEdit"
         @add-answer-option="
-          (question as QuestionWithAnswerOptionsToEdit).addAnswerOption.call(
-            question
-          )
+          (question as QuestionWithAnswerOptionsToEdit).addAnswerOption.call(question)
         "
-        @delete-answer-option="(answerOptionIndex) => (question as QuestionWithAnswerOptionsToEdit).deleteAnswerOption.call(question, answerOptionIndex)"
+        @delete-answer-option="
+          (answerOptionIndex) =>
+            (question as QuestionWithAnswerOptionsToEdit).deleteAnswerOption.call(
+              question,
+              answerOptionIndex,
+            )
+        "
       />
     </div>
     <button class="delete-button" @click="$emit('delete')">Delete</button>
@@ -61,21 +65,23 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
-import EditableExtendedAnswer from "./EditableExtendedAnswer.vue";
 import EditableAnswerOptionBlock from "./EditableAnswerOptionBlock.vue";
+import EditableExtendedAnswer from "./EditableExtendedAnswer.vue";
 
+import type { QuestionType } from "@/models/test/base";
 import {
-  QuestionType,
   convertStringToQuestionType,
   getAllQuestionTypes,
+  QUESTION_TYPE,
   QuestionTypeCount,
 } from "@/models/test/base";
 import type {
   QuestionToEdit,
-  QuestionWithExtendedAnswerToEdit,
   QuestionWithAnswerOptionsToEdit,
+  QuestionWithExtendedAnswerToEdit,
 } from "@/models/test/to-edit";
 
 class QuestionTypeForSelect {
@@ -127,26 +133,23 @@ export default defineComponent({
   computed: {
     correctAnswer(): string | string[] {
       switch (this.question.type) {
-        case QuestionType.EXTENDED:
-          return (this.question as QuestionWithExtendedAnswerToEdit)
-            .correctAnswer;
-        case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION: {
+        case QUESTION_TYPE.EXTENDED:
+          return (this.question as QuestionWithExtendedAnswerToEdit).correctAnswer;
+        case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION: {
           const answerOption = (
             this.question as QuestionWithAnswerOptionsToEdit
           ).answerOptions.find((answerOption) => answerOption.isCorrect);
           if (answerOption !== undefined) {
-            const index = (
-              this.question as QuestionWithAnswerOptionsToEdit
-            ).answerOptions.indexOf(answerOption);
+            const index = (this.question as QuestionWithAnswerOptionsToEdit).answerOptions.indexOf(
+              answerOption,
+            );
             return `${index + 1}. ${answerOption.content}`;
           } else {
             return "";
           }
         }
-        case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: {
-          const correctAnswers = (
-            this.question as QuestionWithAnswerOptionsToEdit
-          ).answerOptions
+        case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: {
+          const correctAnswers = (this.question as QuestionWithAnswerOptionsToEdit).answerOptions
             .filter((answerOption) => answerOption.isCorrect)
             .map((answerOption) => {
               const index = (
@@ -162,7 +165,7 @@ export default defineComponent({
     },
 
     extendedQuestionType() {
-      return QuestionType.EXTENDED;
+      return QUESTION_TYPE.EXTENDED;
     },
 
     allQuestionTypes() {
@@ -171,20 +174,17 @@ export default defineComponent({
 
     allQuestionTypesForSelect() {
       const questionTypes = [
-        new QuestionTypeForSelect(QuestionType.EXTENDED, "Detailed answer"),
+        new QuestionTypeForSelect(QUESTION_TYPE.EXTENDED, "Detailed answer"),
+        new QuestionTypeForSelect(QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION, "One of the list"),
         new QuestionTypeForSelect(
-          QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION,
-          "One of the list"
-        ),
-        new QuestionTypeForSelect(
-          QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
-          "A few from the list"
+          QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+          "A few from the list",
         ),
       ];
 
       if (questionTypes.length !== QuestionTypeCount) {
         throw new Error(
-          `Number of question types ${QuestionTypeCount}, not ${questionTypes.length}.`
+          `Number of question types ${QuestionTypeCount}, not ${questionTypes.length}.`,
         );
       }
 
@@ -200,20 +200,27 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .question {
-  list-style-type: none;
-  border: 2px solid #1e434c;
-  border-radius: 5px;
-  padding: 10px;
-  padding-top: 30px;
   position: relative;
+
   display: flex;
   flex-direction: column;
+
+  padding: 10px;
+  padding-top: 30px;
+  border: 2px solid #1e434c;
+  border-radius: 5px;
+
+  list-style-type: none;
 
   > * {
     margin-bottom: 10px;
   }
   > *:last-child {
     margin-bottom: 0;
+  }
+
+  & label {
+    font-size: 1.1rem;
   }
 
   > .content,
@@ -229,17 +236,13 @@ export default defineComponent({
   }
 
   .type > select {
-    background-color: #1e434c;
-    color: white;
     padding: 5px;
+    color: white;
+    background-color: #1e434c;
 
     > option {
       background-color: #1e434c;
     }
-  }
-
-  & label {
-    font-size: 1.1rem;
   }
 
   & input {

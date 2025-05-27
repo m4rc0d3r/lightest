@@ -1,36 +1,33 @@
 import type {
-  Test,
-  Question,
-  QuestionWithExtendedAnswer,
-  QuestionWithAnswerOptions,
   AnswerOption,
+  Question,
+  QuestionType,
+  QuestionWithAnswerOptions,
+  QuestionWithExtendedAnswer,
+  Test,
 } from "./base";
-import { QuestionType } from "./base";
+import { QUESTION_TYPE } from "./base";
 
-export class TestToPass implements Test<QuestionToPass> {
+class TestToPass implements Test<QuestionToPass> {
   id: number;
   title: string;
   questions: QuestionToPass[];
 
-  constructor(
-    title = "",
-    questions = [] as QuestionToPass[],
-    id = -Date.now()
-  ) {
+  constructor(title = "", questions = [] as QuestionToPass[], id = -Date.now()) {
     this.id = id;
     this.title = title;
     this.questions = questions;
   }
 
-  addQuestion(question?: QuestionToPass) {
+  addQuestion(_question?: QuestionToPass) {
     return;
   }
 
-  changeQuestionType(questionIndex: number, type: QuestionType) {
+  changeQuestionType(_questionIndex: number, _type: QuestionType) {
     return;
   }
 
-  deleteQuestion(questionIndex: number) {
+  deleteQuestion(_questionIndex: number) {
     return;
   }
 
@@ -39,17 +36,17 @@ export class TestToPass implements Test<QuestionToPass> {
   }
 }
 
-export class QuestionToPass implements Question {
+class QuestionToPass implements Question {
   id: number;
   type: QuestionType;
   content: string;
   worth: number;
 
   constructor(
-    type = QuestionType.EXTENDED,
+    type = QUESTION_TYPE.EXTENDED as QuestionType,
     content = "",
     worth = 0,
-    id = -Date.now()
+    id = -Date.now(),
   ) {
     this.id = id;
     this.type = type;
@@ -58,32 +55,33 @@ export class QuestionToPass implements Question {
   }
 }
 
-export class QuestionWithExtendedAnswerToPass
+class QuestionWithExtendedAnswerToPass
   extends QuestionToPass
   implements QuestionWithExtendedAnswer
 {
   enteredAnswer: string;
 
   constructor(content = "", worth = 0, enteredAnswer = "", id = -Date.now()) {
-    super(QuestionType.EXTENDED, content, worth, id);
+    super(QUESTION_TYPE.EXTENDED, content, worth, id);
     this.enteredAnswer = enteredAnswer;
   }
 }
 
-export class QuestionWithAnswerOptionsToPass
+class QuestionWithAnswerOptionsToPass
   extends QuestionToPass
   implements QuestionWithAnswerOptions<AnswerOptionToPass>
 {
   answerOptions: AnswerOptionToPass[];
 
   constructor(
-    type:
-      | QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION
-      | QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+    type: Extract<
+      QuestionType,
+      "WITH_ONE_CORRECT_ANSWER_OPTION" | "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS"
+    >,
     content = "",
     worth = 0,
     answerOptions = [] as AnswerOptionToPass[],
-    id = -Date.now()
+    id = -Date.now(),
   ) {
     super(type, content, worth, id);
     this.answerOptions = answerOptions;
@@ -93,12 +91,12 @@ export class QuestionWithAnswerOptionsToPass
     return;
   }
 
-  deleteAnswerOption(answerOptionIndex: number) {
+  deleteAnswerOption(_answerOptionIndex: number) {
     return;
   }
 }
 
-export class AnswerOptionToPass implements AnswerOption {
+class AnswerOptionToPass implements AnswerOption {
   id: number;
   content: string;
   isChosen: boolean;
@@ -110,7 +108,7 @@ export class AnswerOptionToPass implements AnswerOption {
   }
 
   changeChoice(question: QuestionWithAnswerOptionsToPass, checked: boolean) {
-    if (question.type === QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION) {
+    if (question.type === QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION) {
       for (const answerOption of question.answerOptions) {
         answerOption.isChosen = false;
       }
@@ -118,3 +116,11 @@ export class AnswerOptionToPass implements AnswerOption {
     this.isChosen = checked;
   }
 }
+
+export {
+  AnswerOptionToPass,
+  QuestionToPass,
+  QuestionWithAnswerOptionsToPass,
+  QuestionWithExtendedAnswerToPass,
+  TestToPass,
+};

@@ -3,9 +3,7 @@
     class="extended-answer"
     type="text"
     :value="correctAnswer"
-    @input="
-      $emit('update:correctAnswer', ($event.target as HTMLInputElement).value)
-    "
+    @input="$emit('update:correctAnswer', ($event.target as HTMLInputElement).value)"
   />
 </template>
 
@@ -27,4 +25,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+style>

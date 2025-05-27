@@ -1,9 +1,10 @@
-import { type AxiosResponse, AxiosError } from "axios";
+import type { AxiosResponse } from "axios";
+import { AxiosError } from "axios";
 
+import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
-import { APIError, APIErrorCode } from "@/http/dtos/api-error";
 
-export function handleError(e: unknown): AxiosError<APIError, any> {
+function handleError(e: unknown): AxiosError<APIError, unknown> {
   if (e instanceof AxiosError) {
     return e as AxiosError<APIError>;
   } else {
@@ -11,25 +12,21 @@ export function handleError(e: unknown): AxiosError<APIError, any> {
   }
 }
 
-export function extractData<T = undefined>(
-  result: AxiosResponse<Report<T>, any> | AxiosError<APIError, any>
+function extractData<T = undefined>(
+  result: AxiosResponse<Report<T>, unknown> | AxiosError<APIError, unknown>,
 ): Report<T> | APIError {
   if (result instanceof AxiosError) {
-    if (result.code === APIErrorCode.ERR_NETWORK) {
+    if (result.code === API_ERROR_CODE.ERR_NETWORK) {
       return new APIError(
         "Failed to connect to the server. Check your Internet connection.",
-        result.code
+        result.code,
       );
     } else {
-      return new APIError(
-        (result.response as AxiosResponse<APIError>).data.message,
-        (result.response as AxiosResponse<APIError>).data.code
-      );
+      return new APIError(result.response!.data.message, result.response!.data.code);
     }
   } else {
-    return new Report(
-      (result as AxiosResponse<Report<T>>).data.message,
-      (result as AxiosResponse<Report<T>>).data.payload
-    );
+    return new Report(result.data.message, result.data.payload);
   }
 }
+
+export { extractData, handleError };

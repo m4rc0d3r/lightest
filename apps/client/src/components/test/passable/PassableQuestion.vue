@@ -10,24 +10,22 @@
         v-model:enteredAnswer="(question as QuestionWithExtendedAnswerToPass).enteredAnswer"
       />
     </div>
-    <PassableAnswerOptionBlock
-      v-else
-      :question="(question as QuestionWithAnswerOptionsToPass)"
-    />
+    <PassableAnswerOptionBlock v-else :question="questionWithAnswerOptionsToPass" />
   </li>
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from "vue";
+import type { PropType } from "vue";
+import { defineComponent } from "vue";
 
-import PassableExtendedAnswer from "./PassableExtendedAnswer.vue";
 import PassableAnswerOptionBlock from "./PassableAnswerOptionBlock.vue";
+import PassableExtendedAnswer from "./PassableExtendedAnswer.vue";
 
-import { QuestionType } from "@/models/test/base";
+import { QUESTION_TYPE } from "@/models/test/base";
 import type {
   QuestionToPass,
-  QuestionWithExtendedAnswerToPass,
   QuestionWithAnswerOptionsToPass,
+  QuestionWithExtendedAnswerToPass,
 } from "@/models/test/to-pass";
 
 export default defineComponent({
@@ -46,26 +44,23 @@ export default defineComponent({
   computed: {
     enteredOrChosenAnswer(): string | string[] {
       switch (this.question.type) {
-        case QuestionType.EXTENDED:
-          return (this.question as QuestionWithExtendedAnswerToPass)
-            .enteredAnswer;
-        case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION: {
+        case QUESTION_TYPE.EXTENDED:
+          return (this.question as QuestionWithExtendedAnswerToPass).enteredAnswer;
+        case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION: {
           const answerOption = (
             this.question as QuestionWithAnswerOptionsToPass
           ).answerOptions.find((answerOption) => answerOption.isChosen);
           if (answerOption !== undefined) {
-            const index = (
-              this.question as QuestionWithAnswerOptionsToPass
-            ).answerOptions.indexOf(answerOption);
+            const index = (this.question as QuestionWithAnswerOptionsToPass).answerOptions.indexOf(
+              answerOption,
+            );
             return `${index + 1}. ${answerOption.content}`;
           } else {
             return "";
           }
         }
-        case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: {
-          const correctAnswers = (
-            this.question as QuestionWithAnswerOptionsToPass
-          ).answerOptions
+        case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS: {
+          const correctAnswers = (this.question as QuestionWithAnswerOptionsToPass).answerOptions
             .filter((answerOption) => answerOption.isChosen)
             .map((answerOption) => {
               const index = (
@@ -81,7 +76,18 @@ export default defineComponent({
     },
 
     extendedQuestionType() {
-      return QuestionType.EXTENDED;
+      return QUESTION_TYPE.EXTENDED;
+    },
+
+    questionWithAnswerOptionsToPass() {
+      if (
+        this.question.type === QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION ||
+        this.question.type === QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS
+      ) {
+        return this.question as QuestionWithAnswerOptionsToPass;
+      } else {
+        throw new TypeError("This was expected to be a multiple choice question.");
+      }
     },
   },
 });
@@ -89,14 +95,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .question {
-  list-style-type: none;
-  border: 2px solid #1e434c;
-  border-radius: 5px;
-  padding: 10px;
-  padding-top: 30px;
   position: relative;
+
   display: flex;
   flex-direction: column;
+
+  padding: 10px;
+  padding-top: 30px;
+  border: 2px solid #1e434c;
+  border-radius: 5px;
+
+  list-style-type: none;
 
   > * {
     margin-bottom: 10px;
@@ -107,8 +116,8 @@ export default defineComponent({
 
   .content,
   .worth {
-    color: #070f11;
     font-size: 1.2rem;
+    color: #070f11;
   }
   .extended-answer {
     display: flex;
@@ -116,8 +125,8 @@ export default defineComponent({
     flex-grow: 1;
 
     > label {
-      color: #070f11;
       font-size: 1.1rem;
+      color: #070f11;
     }
   }
 }

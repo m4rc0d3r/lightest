@@ -3,9 +3,7 @@
     class="entered-answer"
     type="text"
     :value="enteredAnswer"
-    @input="
-      $emit('update:enteredAnswer', ($event.target as HTMLInputElement).value)
-    "
+    @input="$emit('update:enteredAnswer', ($event.target as HTMLInputElement).value)"
   />
 </template>
 
@@ -27,4 +25,4 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss" scoped></style>
+style>

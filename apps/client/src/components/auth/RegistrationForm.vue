@@ -13,9 +13,7 @@
         <button @click="register">Register</button>
       </div>
       <div class="errors-wrapper" v-if="errors.length > 0">
-        <span class="error" v-for="error in errors" :key="error.id">{{
-          error.message
-        }}</span>
+        <span class="error" v-for="error in errors" :key="error.id">{{ error.message }}</span>
       </div>
     </form>
   </div>
@@ -24,11 +22,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
+import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
+import { Report } from "@/http/dtos/report";
+import { Notification, STATUS } from "@/models/notification";
 import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
-import { Notification, Status } from "@/models/notification";
-import { Report } from "@/http/dtos/report";
-import { APIError, APIErrorCode } from "@/http/dtos/api-error";
 
 export default defineComponent({
   data() {
@@ -45,19 +43,15 @@ export default defineComponent({
     async register() {
       const result = await this.authStore.register(this.email, this.password);
       if (result instanceof Report) {
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
-        this.$router.push("/");
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+        void this.$router.push("/");
       } else if (result instanceof APIError) {
-        if (result.code === APIErrorCode.ERR_NETWORK) {
-          this.notificationStore.add(
-            new Notification(Status.FAILURE, result.message)
-          );
+        if (result.code === API_ERROR_CODE.ERR_NETWORK) {
+          this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
         } else {
           this.errors = result.message
             .split("\n")
-            .map((error) => new Notification(Status.FAILURE, error));
+            .map((error) => new Notification(STATUS.FAILURE, error));
         }
       }
     },
@@ -79,16 +73,17 @@ export default defineComponent({
 }
 
 form {
-  border: 2px solid #1e434c;
-  border-radius: 5px;
-  margin: auto;
-  min-width: 300px;
-  min-height: 200px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+
+  min-width: 300px;
+  min-height: 200px;
+  margin: auto;
   padding: 20px;
+  border: 2px solid #1e434c;
+  border-radius: 5px;
 }
 
 form > *:last-child {
@@ -129,14 +124,15 @@ form > *:last-child {
 
 .errors-wrapper {
   @include form-element;
-  background-color: white;
+
   margin: 0 10px;
+  background-color: white;
 }
 
 .error {
-  color: red;
-  font-size: 1.3rem;
   margin: auto;
   padding: 0 10px;
+  font-size: 1.3rem;
+  color: red;
 }
 </style>

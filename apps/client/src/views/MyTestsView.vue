@@ -3,10 +3,7 @@
     <select
       class="type-of-displayed-tests"
       :value="displayedTests"
-      @change="
-        displayedTests = ($event.target as HTMLSelectElement)
-          .value as DisplayedTest
-      "
+      @change="displayedTests = ($event.target as HTMLSelectElement).value as DisplayedTest"
     >
       <option
         v-for="questionType in allDisplayedTestsForSelect"
@@ -26,11 +23,7 @@
   <TestList
     v-if="tests.length > 0"
     :tests="tests"
-    :test-mode="
-      displayedTests === createdDisplayedTest
-        ? editableTestMode
-        : passedTestMode
-    "
+    :test-mode="displayedTests === createdDisplayedTest ? editableTestMode : passedTestMode"
   />
   <p v-else>There are currently no tests created.</p>
 </template>
@@ -38,21 +31,21 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { TestMode } from "@/components/tests-view/TestItem.vue";
-
-import { useNotificationStore } from "@/stores/notification";
-import { Notification, Status } from "@/models/notification";
+import { TEST_MODE } from "@/components/tests-view/shared";
 import TestList from "@/components/tests-view/TestList.vue";
-import type { BriefTest, BriefPassedTest } from "@/dtos/test/brief";
-import { Report } from "@/http/dtos/report";
-import { TestService } from "@/services/test-service";
-import { extractData } from "@/services/helpers";
+import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
 import type { APIError } from "@/http/dtos/api-error";
+import { Report } from "@/http/dtos/report";
+import { Notification, STATUS } from "@/models/notification";
+import { extractData } from "@/services/helpers";
+import { TestService } from "@/services/test-service";
+import { useNotificationStore } from "@/stores/notification";
 
-enum DisplayedTest {
-  CREATED = "CREATED",
-  PASSED = "PASSED",
-}
+const DISPLAYED_TEST = {
+  CREATED: "CREATED",
+  PASSED: "PASSED",
+} as const;
+type DisplayedTest = (typeof DISPLAYED_TEST)[keyof typeof DISPLAYED_TEST];
 
 const DisplayedTestCount = 2;
 
@@ -75,7 +68,7 @@ export default defineComponent({
     return {
       tests: [] as BriefTest[] | BriefPassedTest[],
       notificationStore: useNotificationStore(),
-      displayedTests: DisplayedTest.CREATED,
+      displayedTests: DISPLAYED_TEST.CREATED as DisplayedTest,
     };
   },
 
@@ -97,30 +90,30 @@ export default defineComponent({
 
   computed: {
     editableTestMode() {
-      return TestMode.EDITABLE;
+      return TEST_MODE.EDITABLE;
     },
 
     passedTestMode() {
-      return TestMode.PASSED;
+      return TEST_MODE.PASSED;
     },
 
     createdDisplayedTest() {
-      return DisplayedTest.CREATED;
+      return DISPLAYED_TEST.CREATED;
     },
 
     passedDisplayedTest() {
-      return DisplayedTest.PASSED;
+      return DISPLAYED_TEST.PASSED;
     },
 
     allDisplayedTestsForSelect() {
       const questionTypes = [
-        new DisplayedTestForSelect(DisplayedTest.CREATED, "Created by me"),
-        new DisplayedTestForSelect(DisplayedTest.PASSED, "Passed me by"),
+        new DisplayedTestForSelect(DISPLAYED_TEST.CREATED, "Created by me"),
+        new DisplayedTestForSelect(DISPLAYED_TEST.PASSED, "Passed me by"),
       ];
 
       if (questionTypes.length !== DisplayedTestCount) {
         throw new Error(
-          `Number of displayed tests ${DisplayedTestCount}, not ${questionTypes.length}.`
+          `Number of displayed tests ${DisplayedTestCount}, not ${questionTypes.length}.`,
         );
       }
 
@@ -130,32 +123,24 @@ export default defineComponent({
 
   methods: {
     async loadTests() {
-      let result:
-        | APIError
-        | Report<BriefTest[]>
-        | Report<BriefPassedTest[]>
-        | null = null;
+      let result: APIError | Report<BriefTest[]> | Report<BriefPassedTest[]> | null = null;
 
       switch (this.displayedTests) {
-        case DisplayedTest.CREATED:
+        case DISPLAYED_TEST.CREATED:
           result = extractData(await TestService.getBriefTestsCreatedByUser());
           break;
-        case DisplayedTest.PASSED:
+        case DISPLAYED_TEST.PASSED:
           result = extractData(await TestService.getBriefTestsPassedByUser());
           break;
       }
 
       if (result instanceof Report) {
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
         if (result.payload) {
           return result.payload;
         }
       } else {
-        this.notificationStore.add(
-          new Notification(Status.FAILURE, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
       }
     },
   },
@@ -166,13 +151,12 @@ export default defineComponent({
 .control-panel {
   display: flex;
   justify-content: space-between;
-
   padding: 10px 0;
 
   .type-of-displayed-tests {
-    background-color: #1e434c;
-    color: white;
     padding: 5px;
+    color: white;
+    background-color: #1e434c;
 
     > option {
       background-color: #1e434c;
@@ -180,13 +164,15 @@ export default defineComponent({
   }
 
   > .create-test-button {
-    background-color: #1e434c;
+    padding: 5px;
     border: 1px solid black;
     border-radius: 5px;
-    padding: 5px;
+
     color: white;
-    text-decoration: none;
     text-align: center;
+    text-decoration: none;
+
+    background-color: #1e434c;
   }
 }
 </style>

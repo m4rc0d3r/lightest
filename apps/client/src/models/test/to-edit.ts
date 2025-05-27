@@ -1,22 +1,19 @@
 import type {
-  Test,
-  Question,
-  QuestionWithExtendedAnswer,
-  QuestionWithAnswerOptions,
   AnswerOption,
+  Question,
+  QuestionType,
+  QuestionWithAnswerOptions,
+  QuestionWithExtendedAnswer,
+  Test,
 } from "./base";
-import { QuestionType } from "./base";
+import { QUESTION_TYPE } from "./base";
 
-export class TestToEdit implements Test<QuestionToEdit> {
+class TestToEdit implements Test<QuestionToEdit> {
   id: number;
   title: string;
   questions: QuestionToEdit[];
 
-  constructor(
-    title = "",
-    questions = [] as QuestionToEdit[],
-    id = -Date.now()
-  ) {
+  constructor(title = "", questions = [] as QuestionToEdit[], id = -Date.now()) {
     this.id = id;
     this.title = title;
     this.questions = questions;
@@ -32,12 +29,12 @@ export class TestToEdit implements Test<QuestionToEdit> {
 
   changeQuestionType(questionIndex: number, type: QuestionType) {
     switch (type) {
-      case QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION:
-      case QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
+      case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION:
+      case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
         if (
           [
-            QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION,
-            QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+            QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION,
+            QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
           ].includes(this.questions[questionIndex].type)
         ) {
           this.questions[questionIndex] = new QuestionWithAnswerOptionsToEdit(
@@ -45,9 +42,9 @@ export class TestToEdit implements Test<QuestionToEdit> {
             this.questions[questionIndex].content,
             this.questions[questionIndex].worth,
             this.getCopiedAnswersOptions(
-              this.questions[questionIndex] as QuestionWithAnswerOptionsToEdit
+              this.questions[questionIndex] as QuestionWithAnswerOptionsToEdit,
             ),
-            this.questions[questionIndex].id
+            this.questions[questionIndex].id,
           );
         } else {
           this.questions[questionIndex] = new QuestionWithAnswerOptionsToEdit(
@@ -55,16 +52,16 @@ export class TestToEdit implements Test<QuestionToEdit> {
             this.questions[questionIndex].content,
             this.questions[questionIndex].worth,
             [],
-            this.questions[questionIndex].id
+            this.questions[questionIndex].id,
           );
         }
         break;
-      case QuestionType.EXTENDED:
+      case QUESTION_TYPE.EXTENDED:
         this.questions[questionIndex] = new QuestionWithExtendedAnswerToEdit(
           this.questions[questionIndex].content,
           this.questions[questionIndex].worth,
           "",
-          this.questions[questionIndex].id
+          this.questions[questionIndex].id,
         );
         break;
     }
@@ -81,15 +78,11 @@ export class TestToEdit implements Test<QuestionToEdit> {
   private getCopiedAnswersOptions(question: QuestionWithAnswerOptionsToEdit) {
     const answerOptions = question.answerOptions.map(
       (answerOption) =>
-        new AnswerOptionToEdit(
-          answerOption.content,
-          answerOption.isCorrect,
-          answerOption.id
-        )
+        new AnswerOptionToEdit(answerOption.content, answerOption.isCorrect, answerOption.id),
     );
 
     if (
-      question.type === QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS &&
+      question.type === QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS &&
       answerOptions.filter((answerOption) => answerOption.isCorrect).length > 1
     ) {
       for (const answerOption of answerOptions) {
@@ -101,17 +94,17 @@ export class TestToEdit implements Test<QuestionToEdit> {
   }
 }
 
-export class QuestionToEdit implements Question {
+class QuestionToEdit implements Question {
   id: number;
   type: QuestionType;
   content: string;
   worth: number;
 
   constructor(
-    type = QuestionType.EXTENDED,
+    type = QUESTION_TYPE.EXTENDED as QuestionType,
     content = "",
     worth = 0,
-    id = -Date.now()
+    id = -Date.now(),
   ) {
     this.id = id;
     this.type = type;
@@ -120,32 +113,33 @@ export class QuestionToEdit implements Question {
   }
 }
 
-export class QuestionWithExtendedAnswerToEdit
+class QuestionWithExtendedAnswerToEdit
   extends QuestionToEdit
   implements QuestionWithExtendedAnswer
 {
   correctAnswer: string;
 
   constructor(content = "", worth = 0, correctAnswer = "", id = -Date.now()) {
-    super(QuestionType.EXTENDED, content, worth, id);
+    super(QUESTION_TYPE.EXTENDED, content, worth, id);
     this.correctAnswer = correctAnswer;
   }
 }
 
-export class QuestionWithAnswerOptionsToEdit
+class QuestionWithAnswerOptionsToEdit
   extends QuestionToEdit
   implements QuestionWithAnswerOptions<AnswerOptionToEdit>
 {
   answerOptions: AnswerOptionToEdit[];
 
   constructor(
-    type:
-      | QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION
-      | QuestionType.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+    type: Extract<
+      QuestionType,
+      "WITH_ONE_CORRECT_ANSWER_OPTION" | "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS"
+    >,
     content = "",
     worth = 0,
     answerOptions = [] as AnswerOptionToEdit[],
-    id = -Date.now()
+    id = -Date.now(),
   ) {
     super(type, content, worth, id);
     this.answerOptions = answerOptions;
@@ -160,7 +154,7 @@ export class QuestionWithAnswerOptionsToEdit
   }
 }
 
-export class AnswerOptionToEdit implements AnswerOption {
+class AnswerOptionToEdit implements AnswerOption {
   id: number;
   content: string;
   isCorrect: boolean;
@@ -171,11 +165,8 @@ export class AnswerOptionToEdit implements AnswerOption {
     this.isCorrect = isCorrect;
   }
 
-  changeCorrectness(
-    question: QuestionWithAnswerOptionsToEdit,
-    checked: boolean
-  ) {
-    if (question.type === QuestionType.WITH_ONE_CORRECT_ANSWER_OPTION) {
+  changeCorrectness(question: QuestionWithAnswerOptionsToEdit, checked: boolean) {
+    if (question.type === QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION) {
       for (const answerOption of question.answerOptions) {
         answerOption.isCorrect = false;
       }
@@ -183,3 +174,11 @@ export class AnswerOptionToEdit implements AnswerOption {
     this.isCorrect = checked;
   }
 }
+
+export {
+  AnswerOptionToEdit,
+  QuestionToEdit,
+  QuestionWithAnswerOptionsToEdit,
+  QuestionWithExtendedAnswerToEdit,
+  TestToEdit,
+};

@@ -1,24 +1,19 @@
 <template>
-  <TestList
-    v-if="tests.length > 0"
-    :tests="tests"
-    :test-mode="passableTestMode"
-  />
+  <TestList v-if="tests.length > 0" :tests="tests" :test-mode="passableTestMode" />
   <p v-else>There are currently no tests created.</p>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 
+import { TEST_MODE } from "@/components/tests-view/shared";
 import TestList from "@/components/tests-view/TestList.vue";
-import { TestMode } from "@/components/tests-view/TestItem.vue";
-
-import { useNotificationStore } from "@/stores/notification";
-import { Notification, Status } from "@/models/notification";
 import type { BriefTest } from "@/dtos/test/brief";
 import { Report } from "@/http/dtos/report";
-import { TestService } from "@/services/test-service";
+import { Notification, STATUS } from "@/models/notification";
 import { extractData } from "@/services/helpers";
+import { TestService } from "@/services/test-service";
+import { useNotificationStore } from "@/stores/notification";
 
 export default defineComponent({
   components: {
@@ -38,7 +33,7 @@ export default defineComponent({
 
   computed: {
     passableTestMode() {
-      return TestMode.PASSABLE;
+      return TEST_MODE.PASSABLE;
     },
   },
 
@@ -47,20 +42,16 @@ export default defineComponent({
       const result = extractData(await TestService.getBriefTests());
 
       if (result instanceof Report) {
-        this.notificationStore.add(
-          new Notification(Status.SUCCESS, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
         if (result.payload) {
           this.tests = result.payload;
         }
       } else {
-        this.notificationStore.add(
-          new Notification(Status.FAILURE, result.message)
-        );
+        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
       }
     },
   },
 });
 </script>
 
-<style scoped></style>
+style>

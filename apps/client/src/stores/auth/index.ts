@@ -1,11 +1,10 @@
 import { defineStore } from "pinia";
-import { AxiosError, type AxiosResponse } from "axios";
 
-import type { TokenType } from "@/stores/auth/dtos/token";
+import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
+import { Report } from "@/http/dtos/report";
 import { AuthService } from "@/services/auth-service";
 import { extractData } from "@/services/helpers";
-import { Report } from "@/http/dtos/report";
-import { APIError, APIErrorCode } from "@/http/dtos/api-error";
+import type { TokenType } from "@/stores/auth/dtos/token";
 
 export const useAuthStore = defineStore("auth", {
   state() {
@@ -25,13 +24,8 @@ export const useAuthStore = defineStore("auth", {
   },
 
   actions: {
-    async register(
-      email: string,
-      password: string
-    ): Promise<Report | APIError | undefined> {
-      const responseData = extractData<TokenType>(
-        await AuthService.register(email, password)
-      );
+    async register(email: string, password: string): Promise<Report | APIError | undefined> {
+      const responseData = extractData<TokenType>(await AuthService.register(email, password));
 
       if (responseData instanceof Report) {
         if (responseData.payload) {
@@ -43,13 +37,8 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    async login(
-      email: string,
-      password: string
-    ): Promise<Report | APIError | undefined> {
-      const responseData = extractData<TokenType>(
-        await AuthService.login(email, password)
-      );
+    async login(email: string, password: string): Promise<Report | APIError | undefined> {
+      const responseData = extractData<TokenType>(await AuthService.login(email, password));
 
       if (responseData instanceof Report) {
         if (responseData.payload) {
@@ -66,8 +55,7 @@ export const useAuthStore = defineStore("auth", {
 
       if (
         responseData instanceof Report ||
-        (responseData instanceof APIError &&
-          responseData.code !== APIErrorCode.ERR_NETWORK)
+        (responseData instanceof APIError && responseData.code !== API_ERROR_CODE.ERR_NETWORK)
       ) {
         this._token = "";
       }
