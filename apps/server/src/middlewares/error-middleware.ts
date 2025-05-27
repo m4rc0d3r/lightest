@@ -1,12 +1,13 @@
-import { NextFunction, Request, Response } from "express";
-import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
-import { ParamsDictionary, ParsedQs } from "../types/express.js";
+import type { NextFunction, Request, Response } from "express";
 
-export function errorMiddleware(
+import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
+import type { ParamsDictionary, ParsedQs } from "../types/express.js";
+
+function errorMiddleware(
   err: APIError | Error,
-  req: Request<ParamsDictionary, APIError, unknown, ParsedQs, Record<string, unknown>>,
+  _req: Request<ParamsDictionary, APIError, unknown, ParsedQs, Record<string, unknown>>,
   res: Response<APIError, Record<string, unknown>>,
-  next: NextFunction,
+  _next: NextFunction,
 ): void {
   console.log("error-middleware got an error:");
   console.log(err);
@@ -30,3 +31,5 @@ export function errorMiddleware(
     res.status(500).json(APIError.InternalServerError(err.message, APIErrorCode.GENERAL));
   }
 }
+
+export { errorMiddleware };

@@ -1,11 +1,11 @@
-export class DAOError extends Error {}
+class DAOError extends Error {}
 
-export enum ConstraintType {
+enum ConstraintType {
   FOREIGNKEY = "FOREIGNKEY",
   UNIQUE = "UNIQUE",
 }
 
-export class DAOConstraintError extends DAOError {
+class DAOConstraintError extends DAOError {
   readonly type: ConstraintType;
 
   constructor(message: string, type: ConstraintType) {
@@ -14,7 +14,7 @@ export class DAOConstraintError extends DAOError {
   }
 }
 
-export class DAOConstraintUniqueError extends DAOConstraintError {
+class DAOConstraintUniqueError extends DAOConstraintError {
   readonly columnName: string;
 
   constructor(message: string, columnName: string) {
@@ -23,8 +23,16 @@ export class DAOConstraintUniqueError extends DAOConstraintError {
   }
 }
 
-export class DAOConstraintForeignKeyError extends DAOConstraintError {
+class DAOConstraintForeignKeyError extends DAOConstraintError {
   constructor(message: string) {
     super(message, ConstraintType.FOREIGNKEY);
   }
 }
+
+export {
+  ConstraintType,
+  DAOConstraintError,
+  DAOConstraintForeignKeyError,
+  DAOConstraintUniqueError,
+  DAOError,
+};

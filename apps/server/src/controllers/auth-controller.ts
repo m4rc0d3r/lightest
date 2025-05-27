@@ -1,18 +1,19 @@
-import { NextFunction, Request, Response } from "express";
-import { authService } from "../services/auth-service.js";
-import { Tokens } from "../services/token-service.js";
-import { AuthData } from "../types/auth-data.js";
-import { ParamsDictionary, ParsedQs } from "../types/express.js";
-import { Report } from "../types/report.js";
+import type { NextFunction, Request, Response } from "express";
 
-const API_URL = process.env.API_URL || "undefined";
+import { authService } from "../services/auth-service.js";
+import type { Tokens } from "../services/token-service.js";
+import type { AuthData } from "../types/auth-data.js";
+import type { ParamsDictionary, ParsedQs } from "../types/express.js";
+import type { Report } from "../types/report.js";
+
+const API_URL = process.env["API_URL"] ?? "undefined";
 
 if (API_URL === "undefined") {
   throw new Error("'API_URL' not specified in config file '.env'.");
 }
 
 class AuthController {
-  public async register(
+  async register(
     req: Request<ParamsDictionary, Report<string>, AuthData, ParsedQs, Record<string, unknown>>,
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
@@ -31,7 +32,7 @@ class AuthController {
     }
   }
 
-  public async login(
+  async login(
     req: Request<ParamsDictionary, Report<string>, AuthData, ParsedQs, Record<string, unknown>>,
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
@@ -50,13 +51,16 @@ class AuthController {
     }
   }
 
-  public async logout(
+  async logout(
     req: Request<ParamsDictionary, Report, AuthData, ParsedQs, Record<string, unknown>>,
     res: Response<Report, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
     try {
       const { refreshToken } = req.cookies;
+      if (typeof refreshToken !== "string")
+        throw new TypeError("The request cookie must contain a refresh token.");
+
       await authService.logout(refreshToken);
       res.clearCookie("refreshToken");
       res.json({ message: "Account logout completed successfully." });
@@ -65,13 +69,16 @@ class AuthController {
     }
   }
 
-  public async refresh(
+  async refresh(
     req: Request<ParamsDictionary, Report<string>, unknown, ParsedQs, Record<string, unknown>>,
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
     try {
       const { refreshToken } = req.cookies;
+      if (typeof refreshToken !== "string")
+        throw new TypeError("The request cookie must contain a refresh token.");
+
       const { tokens, refreshTokenExpirationDate } = await authService.refresh(refreshToken);
       this.sendRequestWithTokens(
         res,
@@ -84,7 +91,7 @@ class AuthController {
     }
   }
 
-  public async activate(
+  async activate(
     req: Request<ParamsDictionary, Report, unknown, ParsedQs, Record<string, unknown>>,
     res: Response<Report, Record<string, unknown>>,
     next: NextFunction,
@@ -112,4 +119,6 @@ class AuthController {
   }
 }
 
-export const authController = new AuthController();
+const authController = new AuthController();
+
+export { authController };

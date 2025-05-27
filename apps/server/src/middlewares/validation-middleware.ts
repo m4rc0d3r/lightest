@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
-import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
-import { ParamsDictionary, ParsedQs } from "../types/express.js";
 
-export function validationMiddleware(
+import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
+import type { ParamsDictionary, ParsedQs } from "../types/express.js";
+
+function validationMiddleware(
   req: Request<ParamsDictionary, unknown, unknown, ParsedQs, Record<string, unknown>>,
-  res: Response<unknown, Record<string, unknown>>,
+  _res: Response<unknown, Record<string, unknown>>,
   next: NextFunction,
 ): void {
   const errors = validationResult(req);
@@ -17,7 +18,8 @@ export function validationMiddleware(
       APIError.BadRequest(
         errors
           .array()
-          .map((error) => error.msg)
+          .map(({ msg }) => (typeof msg === "string" ? msg : ""))
+          .filter((value) => !!value)
           .join("\n"),
         APIErrorCode.INVALID_DATA_FORMAT,
       ),
@@ -26,3 +28,5 @@ export function validationMiddleware(
     next();
   }
 }
+
+export { validationMiddleware };

@@ -1,53 +1,52 @@
 import dotenv from "dotenv";
-import sqlite3 from "sqlite3";
 import { Database } from "sqlite";
+import sqlite3 from "sqlite3";
 
-import { DAO } from "../app/dao.js";
-import { DAOError, DAOConstraintUniqueError } from "../app/errors.js";
-import { User, FieldName as UserFieldName } from "../../dtos/app/user.js";
-import { Session, FieldName as SessionFieldName } from "../../dtos/app/session.js";
-import { Test } from "../../dtos/app/test/base/index.js";
-import { BriefTest, BriefPassedTest } from "../../dtos/app/test/brief/index.js";
-import { SQLiteUser } from "../../dtos/sqlite/user.js";
-import { SQLiteSession } from "../../dtos/sqlite/session.js";
-import {
-  convertUserFieldNameToColumnName,
-  convertSessionFieldNameToColumnName,
-} from "../../dtos/sqlite/utils.js";
-import { QuestionType } from "../../dtos/app/test/base/index.js";
-import {
+import type { Session, FieldName as SessionFieldName } from "../../dtos/app/session.js";
+import type { Test } from "../../dtos/app/test/base";
+import { QuestionType } from "../../dtos/app/test/base";
+import type { BriefPassedTest, BriefTest } from "../../dtos/app/test/brief";
+import type {
+  PassedQuestionWithAnswerOptions,
+  PassedQuestionWithExtendedAnswer,
+} from "../../dtos/app/test/passed";
+import type {
   AnswerOptionToEdit,
   QuestionWithAnswerOptionsToEdit,
-} from "../../dtos/app/test/to-edit/index.js";
-import { QuestionWithExtendedAnswerToEdit } from "../../dtos/app/test/to-edit/index.js";
-import { SQLiteTest } from "../../dtos/sqlite/test/test.js";
-import { SQLiteQuestion } from "../../dtos/sqlite/test/question.js";
-import { SQLiteQuestionType } from "../../dtos/sqlite/test/question-type.js";
-import { SQLiteAnswerOption } from "../../dtos/sqlite/test/answer-option.js";
-
-import {
+  QuestionWithExtendedAnswerToEdit,
+} from "../../dtos/app/test/to-edit";
+import type {
   AnswerOptionToPass,
   QuestionWithAnswerOptionsToPass,
   QuestionWithExtendedAnswerToPass,
-} from "../../dtos/app/test/to-pass/index.js";
+} from "../../dtos/app/test/to-pass";
+import type { User, FieldName as UserFieldName } from "../../dtos/app/user.js";
+import type { SQLiteSession } from "../../dtos/sqlite/session.js";
+import type { SQLiteAnswerOption } from "../../dtos/sqlite/test/answer-option.js";
+import type { SQLiteExtendedAnswer } from "../../dtos/sqlite/test/correct-extended-answer.js";
+import type { SQLitePassedAnswerOption } from "../../dtos/sqlite/test/passed/answer-option.js";
+import type { SQLitePassedExtendedAnswer } from "../../dtos/sqlite/test/passed/correct-extended-answer.js";
+import type { SQLitePassedQuestion } from "../../dtos/sqlite/test/passed/question.js";
+import type { SQLitePassedTest } from "../../dtos/sqlite/test/passed/test.js";
+import type { SQLiteQuestionType } from "../../dtos/sqlite/test/question-type.js";
+import type { SQLiteQuestion } from "../../dtos/sqlite/test/question.js";
+import type { SQLiteTest } from "../../dtos/sqlite/test/test.js";
+import type { SQLiteUser } from "../../dtos/sqlite/user.js";
 import {
-  PassedQuestionWithAnswerOptions,
-  PassedQuestionWithExtendedAnswer,
-} from "../../dtos/app/test/passed/index.js";
-import { SQLiteExtendedAnswer } from "../../dtos/sqlite/test/correct-extended-answer.js";
-import { SQLitePassedQuestion } from "../../dtos/sqlite/test/passed/question.js";
-import { SQLitePassedExtendedAnswer } from "../../dtos/sqlite/test/passed/correct-extended-answer.js";
-import { SQLitePassedAnswerOption } from "../../dtos/sqlite/test/passed/answer-option.js";
-import { SQLitePassedTest } from "../../dtos/sqlite/test/passed/test.js";
+  convertSessionFieldNameToColumnName,
+  convertUserFieldNameToColumnName,
+} from "../../dtos/sqlite/utils.js";
+import type { DAO } from "../app/dao.js";
+import { DAOConstraintUniqueError, DAOError } from "../app/errors.js";
 
 dotenv.config();
 
-const DB_NAME = process.env.DB_NAME;
+const DB_NAME = process.env["DB_NAME"];
 
 class SQLiteDAO implements DAO {
   private _database: Database;
 
-  public constructor() {
+  constructor() {
     if (DB_NAME === undefined) {
       throw new Error("'DB_NAME' not specified in the config file '.env'.");
     }
@@ -58,7 +57,7 @@ class SQLiteDAO implements DAO {
     });
   }
 
-  public async init(): Promise<void> {
+  async init(): Promise<void> {
     try {
       await this._database.open();
       await this._database.run("pragma foreign_keys = on");
@@ -74,7 +73,7 @@ class SQLiteDAO implements DAO {
     }
   }
 
-  public async createUser(
+  async createUser(
     email: User["email"],
     password: User["password"],
     activationLink: User["activationLink"],
@@ -101,7 +100,7 @@ class SQLiteDAO implements DAO {
     }
   }
 
-  public async getUserBy<T extends UserFieldName>(
+  async getUserBy<T extends UserFieldName>(
     fieldName: T,
     value: User[T],
   ): Promise<User | undefined> {
@@ -111,18 +110,18 @@ class SQLiteDAO implements DAO {
       value,
     );
 
-    if (user !== undefined) {
-      return {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        activationLink: user.activation_link,
-        isActivated: Boolean(user.is_activated),
-      };
-    }
+    return user
+      ? {
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          activationLink: user.activation_link,
+          isActivated: Boolean(user.is_activated),
+        }
+      : undefined;
   }
 
-  public async activateUser(id: User["id"]): Promise<void> {
+  async activateUser(id: User["id"]): Promise<void> {
     const result = await this._database.run(
       "update user set is_activated = ? where id = ?",
       true,
@@ -134,7 +133,7 @@ class SQLiteDAO implements DAO {
     }
   }
 
-  public async getUsers(): Promise<User[]> {
+  async getUsers(): Promise<User[]> {
     const users = await this._database.all<SQLiteUser[]>("select * from user");
 
     return users.map((user) => {
@@ -148,7 +147,7 @@ class SQLiteDAO implements DAO {
     });
   }
 
-  public async createSession(
+  async createSession(
     userId: User["id"],
     refreshToken: Session["refreshToken"],
     expires: Session["expires"],
@@ -178,7 +177,7 @@ class SQLiteDAO implements DAO {
     }
   }
 
-  public async getSessionBy<T extends SessionFieldName>(
+  async getSessionBy<T extends SessionFieldName>(
     fieldName: T,
     value: Session[T],
   ): Promise<Session | undefined> {
@@ -188,17 +187,17 @@ class SQLiteDAO implements DAO {
       value,
     );
 
-    if (session !== undefined) {
-      return {
-        id: session.id,
-        userId: session.user_id,
-        refreshToken: session.refresh_token,
-        expires: session.expires,
-      };
-    }
+    return session
+      ? {
+          id: session.id,
+          userId: session.user_id,
+          refreshToken: session.refresh_token,
+          expires: session.expires,
+        }
+      : undefined;
   }
 
-  public async updateSessionBy<T extends SessionFieldName>(
+  async updateSessionBy<T extends SessionFieldName>(
     fieldName: T,
     value: Session[T],
     refreshToken: Session["refreshToken"],
@@ -217,7 +216,7 @@ class SQLiteDAO implements DAO {
     }
   }
 
-  public async destroySessionBy<T extends SessionFieldName>(
+  async destroySessionBy<T extends SessionFieldName>(
     fieldName: T,
     value: Session[T],
   ): Promise<void> {
@@ -229,7 +228,7 @@ class SQLiteDAO implements DAO {
     }
   }
 
-  public async createTest(author_id: User["id"], test: Test): Promise<Test["id"]> {
+  async createTest(author_id: User["id"], test: Test): Promise<Test["id"]> {
     const errorText = "Failed to create test.";
     await this._database.get("begin transaction;");
 
@@ -297,7 +296,7 @@ class SQLiteDAO implements DAO {
     return testId;
   }
 
-  public async getTestToEdit(test_id: Test["id"]): Promise<Test | undefined> {
+  async getTestToEdit(test_id: Test["id"]): Promise<Test | undefined> {
     const test = await this._database.get<SQLiteTest>("select * from test where id = ?;", test_id);
 
     if (test === undefined) {
@@ -365,7 +364,7 @@ class SQLiteDAO implements DAO {
     return testToEdit;
   }
 
-  public async updateTest(test: Test): Promise<void> {
+  async updateTest(test: Test): Promise<void> {
     const errorText = "Failed to update test.";
 
     await this._database.get("begin transaction;");
@@ -880,24 +879,24 @@ class SQLiteDAO implements DAO {
     await this._database.get("end transaction;");
   }
 
-  public async getTestAuthor(test_id: Test["id"]): Promise<User | undefined> {
+  async getTestAuthor(test_id: Test["id"]): Promise<User | undefined> {
     const user = await this._database.get<SQLiteUser>(
       "select user.* from user inner join test on user.id = test.author_id where test.id = ?;",
       test_id,
     );
 
-    if (user !== undefined) {
-      return {
-        id: user.id,
-        email: user.email,
-        password: user.password,
-        activationLink: user.activation_link,
-        isActivated: Boolean(user.is_activated),
-      };
-    }
+    return user
+      ? {
+          id: user.id,
+          email: user.email,
+          password: user.password,
+          activationLink: user.activation_link,
+          isActivated: Boolean(user.is_activated),
+        }
+      : undefined;
   }
 
-  public async getBriefTests(): Promise<BriefTest[]> {
+  async getBriefTests(): Promise<BriefTest[]> {
     const briefTests = await this._database.all<BriefTest[]>(
       "select test.id, test.title, count(question.id) as 'numberOfQuestions', sum(question.worth) as 'grade' from test left join question on test.id = question.test_id group by test.id, test.title;",
     );
@@ -905,7 +904,7 @@ class SQLiteDAO implements DAO {
     return briefTests;
   }
 
-  public async getBriefTestsCreatedByUser(authorId: User["id"]): Promise<BriefTest[]> {
+  async getBriefTestsCreatedByUser(authorId: User["id"]): Promise<BriefTest[]> {
     const briefTests = await this._database.all<BriefTest[]>(
       "select test.id, test.title, count(question.id) as 'numberOfQuestions', sum(question.worth) as 'grade' from test left join question on test.id = question.test_id where test.author_id = ? group by test.id, test.title;",
       authorId,
@@ -914,7 +913,7 @@ class SQLiteDAO implements DAO {
     return briefTests;
   }
 
-  public async getBriefTestsPassedByUser(passingId: User["id"]): Promise<BriefPassedTest[]> {
+  async getBriefTestsPassedByUser(passingId: User["id"]): Promise<BriefPassedTest[]> {
     const briefTests = await this._database.all<BriefPassedTest[]>(
       "select passed_test.id, test.title, (select count(*) from passed_question as pq where pq.passed_test_id = passed_test.id) as 'numberOfQuestions', (select sum(q.worth) from passed_question as pq inner join question as q on pq.question_id = q.id where pq.passed_test_id = passed_test.id) as 'grade', sum(case question.type_id when 1 then iif(passed_extended_answer.content = correct_extended_answer.content, question.worth, 0) when 2 then iif((select count(*) from passed_answer_option as pao inner join answer_option as ao on pao.answer_option_id = ao.id inner join passed_question as pq on pao.passed_question_id = pq.id where pq.id = passed_question.id and pao.is_chosen = ao.is_correct and ao.is_correct = true) = 1, question.worth, 0) when 3 then ( CAST((select count(*) from passed_answer_option as pao inner join answer_option as ao on pao.answer_option_id = ao.id inner join passed_question as pq on pao.passed_question_id = pq.id where pq.id = passed_question.id and pao.is_chosen = ao.is_correct and ao.is_correct = true) as REAL) / (select count(*) from passed_answer_option as pao inner join answer_option as ao on pao.answer_option_id = ao.id where pao.passed_question_id = passed_question.id and ao.is_correct = true) ) * question.worth end) as 'score' from passed_test inner join passed_question on passed_test.id = passed_question.passed_test_id left join passed_extended_answer on passed_question.id = passed_extended_answer.passed_question_id inner join test on passed_test.test_id = test.id left join question on passed_question.question_id = question.id left join correct_extended_answer on passed_extended_answer.correct_answer_id = correct_extended_answer.id where passed_test.passing_id = ? group by passed_test.id;",
       passingId,
@@ -923,7 +922,7 @@ class SQLiteDAO implements DAO {
     return briefTests;
   }
 
-  public async getTestToPass(id: Test["id"]): Promise<Test | undefined> {
+  async getTestToPass(id: Test["id"]): Promise<Test | undefined> {
     const test = await this._database.get<SQLiteTest>("select * from test where id = ?;", id);
 
     if (test === undefined) {
@@ -982,7 +981,7 @@ class SQLiteDAO implements DAO {
     return testToPass;
   }
 
-  public async createPassedTest(passingId: User["id"], test: Test): Promise<Test["id"]> {
+  async createPassedTest(passingId: User["id"], test: Test): Promise<Test["id"]> {
     const errorText = "Failed to create test pass record.";
     await this._database.get("begin transaction;");
 
@@ -1058,7 +1057,7 @@ class SQLiteDAO implements DAO {
     return passedTestId;
   }
 
-  public async getPassedTest(id: Test["id"]): Promise<Test | undefined> {
+  async getPassedTest(id: Test["id"]): Promise<Test | undefined> {
     const accomplishedTest = await this._database.get<SQLitePassedTest>(
       "select * from passed_test where id = ?;",
       id,
@@ -1157,11 +1156,12 @@ class SQLiteDAO implements DAO {
           content: question.content,
           worth: question.worth,
           answerOptions: answerOptions.map((answerOption, index) => {
+            const isChosen = passedAnswerOptions[index]?.is_chosen;
             return {
               id: answerOption.id,
               content: answerOption.content,
               isCorrect: answerOption.is_correct,
-              isChosen: passedAnswerOptions[index].is_chosen,
+              isChosen,
             } as AnswerOptionToPass;
           }),
         } as PassedQuestionWithAnswerOptions);
@@ -1172,4 +1172,6 @@ class SQLiteDAO implements DAO {
   }
 }
 
-export const dao: DAO = new SQLiteDAO();
+const dao: DAO = new SQLiteDAO();
+
+export { dao };

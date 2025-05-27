@@ -1,4 +1,4 @@
-export enum Code {
+enum Code {
   GENERAL = "GENERAL",
   BAD_REQUEST = "BAD_REQUEST",
   UNAUTHORIZED = "UNAUTHORIZED",
@@ -11,7 +11,7 @@ export enum Code {
   DATA_CANNOT_BE_PARSED = "DATA_CANNOT_BE_PARSED",
 }
 
-export class APIError extends Error {
+class APIError extends Error {
   status: number;
   code: Code;
 
@@ -42,3 +42,5 @@ export class APIError extends Error {
     return { message: this.message, code: this.code };
   }
 }
+
+export { APIError, Code };

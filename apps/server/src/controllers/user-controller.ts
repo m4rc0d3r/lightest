@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response } from "express";
-import { User } from "../dtos/app/user.js";
+import type { NextFunction, Request, Response } from "express";
+
+import type { User } from "../dtos/app/user.js";
 import { userService } from "../services/user-service.js";
-import { ParamsDictionary, ParsedQs } from "../types/express.js";
+import type { ParamsDictionary, ParsedQs } from "../types/express.js";
 
 class UserController {
   async getUsers(
-    req: Request<ParamsDictionary, User[], unknown, ParsedQs, Record<string, unknown>>,
+    _req: Request<ParamsDictionary, User[], unknown, ParsedQs, Record<string, unknown>>,
     res: Response<User[], Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
@@ -18,4 +19,6 @@ class UserController {
   }
 }
 
-export const userController = new UserController();
+const userController = new UserController();
+
+export { userController };

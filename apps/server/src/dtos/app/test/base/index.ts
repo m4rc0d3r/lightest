@@ -1,29 +1,32 @@
-export interface Test {
+type Test = {
   id: number;
   title: string;
   questions: Question[];
-}
+};
 
-export interface Question {
+type Question = {
   id: number;
   type: QuestionType;
   content: string;
   worth: number;
-}
+};
 
-export enum QuestionType {
+enum QuestionType {
   EXTENDED = "EXTENDED",
   WITH_ONE_CORRECT_ANSWER_OPTION = "WITH_ONE_CORRECT_ANSWER_OPTION",
   WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS = "WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS",
 }
 
-export type QuestionWithExtendedAnswer = Question;
+type QuestionWithExtendedAnswer = Question;
 
-export interface QuestionWithAnswerOptions extends Question {
+type QuestionWithAnswerOptions = {
   answerOptions: AnswerOption[];
-}
+} & Question;
 
-export interface AnswerOption {
+type AnswerOption = {
   id: number;
   content: string;
-}
+};
+
+export { QuestionType };
+export type { AnswerOption, Question, QuestionWithAnswerOptions, QuestionWithExtendedAnswer, Test };

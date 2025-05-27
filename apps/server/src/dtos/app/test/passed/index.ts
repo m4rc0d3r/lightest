@@ -1,14 +1,20 @@
 import type { QuestionWithAnswerOptions } from "../base";
-import type { QuestionWithExtendedAnswerToEdit, AnswerOptionToEdit } from "../to-edit";
+import type { AnswerOptionToEdit, QuestionWithExtendedAnswerToEdit } from "../to-edit";
 
-export interface PassedQuestionWithExtendedAnswer extends QuestionWithExtendedAnswerToEdit {
+type PassedQuestionWithExtendedAnswer = {
   enteredAnswer: string;
-}
+} & QuestionWithExtendedAnswerToEdit;
 
-export interface PassedQuestionWithAnswerOptions extends QuestionWithAnswerOptions {
+type PassedQuestionWithAnswerOptions = {
   answerOptions: PassedAnswerOption[];
-}
+} & QuestionWithAnswerOptions;
 
-export interface PassedAnswerOption extends AnswerOptionToEdit {
+type PassedAnswerOption = {
   isChosen: boolean;
-}
+} & AnswerOptionToEdit;
+
+export type {
+  PassedAnswerOption,
+  PassedQuestionWithAnswerOptions,
+  PassedQuestionWithExtendedAnswer,
+};

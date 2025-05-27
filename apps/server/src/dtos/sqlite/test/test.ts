@@ -1,7 +1,9 @@
-import { SQLiteUser } from "../user.js";
+import type { SQLiteUser } from "../user.js";
 
-export interface SQLiteTest {
+type SQLiteTest = {
   id: number;
   author_id: SQLiteUser["id"];
   title: string;
-}
+};
+
+export type { SQLiteTest };

@@ -1,3 +1,5 @@
-import { User } from "../dtos/app/user";
+import type { User } from "../dtos/app/user";
 
-export type AuthData = Pick<User, "email" | "password">;
+type AuthData = Pick<User, "email" | "password">;
+
+export type { AuthData };

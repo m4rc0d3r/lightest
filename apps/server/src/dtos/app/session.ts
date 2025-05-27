@@ -1,8 +1,10 @@
-export interface Session {
+type Session = {
   id: number;
   userId: number;
   refreshToken: string;
   expires: string;
-}
+};
 
-export type FieldName = keyof Session;
+type FieldName = keyof Session;
+
+export type { FieldName, Session };

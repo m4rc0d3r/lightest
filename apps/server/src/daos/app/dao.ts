@@ -1,10 +1,10 @@
-import { User, FieldName as UserFieldName } from "../../dtos/app/user.js";
-import { Session, FieldName as SessionFieldName } from "../../dtos/app/session.js";
-import { Test } from "../../dtos/app/test/base/index.js";
-import { BriefTest, BriefPassedTest } from "../../dtos/app/test/brief/index.js";
+import type { Session, FieldName as SessionFieldName } from "../../dtos/app/session.js";
+import type { Test } from "../../dtos/app/test/base";
+import type { BriefPassedTest, BriefTest } from "../../dtos/app/test/brief";
+import type { User, FieldName as UserFieldName } from "../../dtos/app/user.js";
 
-export interface DAO {
-  init(): void;
+type DAO = {
+  init(): Promise<void>;
 
   createUser(
     email: User["email"],
@@ -42,4 +42,6 @@ export interface DAO {
   getTestToPass(id: Test["id"]): Promise<Test | undefined>;
   createPassedTest(passingId: User["id"], test: Test): Promise<Test["id"]>;
   getPassedTest(id: Test["id"]): Promise<Test | undefined>;
-}
+};
+
+export type { DAO };

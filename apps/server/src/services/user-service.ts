@@ -1,6 +1,6 @@
 import { dao } from "../daos/sqlite/dao.js";
-import { User } from "../dtos/app/user.js";
-import { Test } from "../dtos/app/test/base/index.js";
+import type { Test } from "../dtos/app/test/base";
+import type { User } from "../dtos/app/user.js";
 
 class UserService {
   async getUsers(): Promise<User[]> {
@@ -12,4 +12,6 @@ class UserService {
   }
 }
 
-export const userService = new UserService();
+const userService = new UserService();
+
+export { userService };

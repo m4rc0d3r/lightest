@@ -1,7 +1,7 @@
-export type ParamsDictionary = {
-  [key: string]: string;
-};
+type ParamsDictionary = Record<string, string>;
 
-export type ParsedQs = {
+type ParsedQs = {
   [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 };
+
+export type { ParamsDictionary, ParsedQs };

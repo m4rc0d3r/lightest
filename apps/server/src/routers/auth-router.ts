@@ -4,7 +4,9 @@ import { body } from "express-validator";
 import { authController } from "../controllers/auth-controller.js";
 import { validationMiddleware } from "../middlewares/validation-middleware.js";
 
-export const router = Router();
+import { withIgnoringPromise } from "./shared.js";
+
+const router: ReturnType<typeof Router> = Router();
 
 router.post(
   "/register",
@@ -19,7 +21,7 @@ router.post(
     .isLength({ min: 4, max: 10 })
     .withMessage("Password must contain at least 4 characters and no more than 10."),
   validationMiddleware,
-  authController.register.bind(authController),
+  withIgnoringPromise(authController, "register"),
 );
 
 router.post(
@@ -35,9 +37,11 @@ router.post(
     .isLength({ min: 4, max: 10 })
     .withMessage("Password must contain at least 4 characters and no more than 10."),
   validationMiddleware,
-  authController.login.bind(authController),
+  withIgnoringPromise(authController, "login"),
 );
 
-router.post("/logout", authController.logout.bind(authController));
-router.post("/refresh", authController.refresh.bind(authController));
-router.get("/activate/:link", authController.activate.bind(authController));
+router.post("/logout", withIgnoringPromise(authController, "logout"));
+router.post("/refresh", withIgnoringPromise(authController, "refresh"));
+router.get("/activate/:link", withIgnoringPromise(authController, "activate"));
+
+export { router };

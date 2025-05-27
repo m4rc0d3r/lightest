@@ -1,12 +1,14 @@
 import { dao } from "../daos/sqlite/dao.js";
-import { tokenService, Tokens } from "./token-service.js";
-import { User } from "../dtos/app/user.js";
-import { Session } from "../dtos/app/session.js";
+import type { Session } from "../dtos/app/session.js";
+import type { User } from "../dtos/app/user.js";
 
-export interface SessionInfo {
+import type { Tokens } from "./token-service.js";
+import { tokenService } from "./token-service.js";
+
+type SessionInfo = {
   tokens: Tokens;
   refreshTokenExpirationDate: Date;
-}
+};
 
 class SessionService {
   async createSession(user: User): Promise<SessionInfo> {
@@ -39,4 +41,7 @@ class SessionService {
   }
 }
 
-export const sessionService = new SessionService();
+const sessionService = new SessionService();
+
+export { sessionService };
+export type { SessionInfo };

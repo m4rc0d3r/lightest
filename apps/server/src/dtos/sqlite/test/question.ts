@@ -1,10 +1,12 @@
-import { SQLiteTest } from "./test.js";
-import { SQLiteQuestionType } from "./question-type.js";
+import type { SQLiteQuestionType } from "./question-type.js";
+import type { SQLiteTest } from "./test.js";
 
-export interface SQLiteQuestion {
+type SQLiteQuestion = {
   id: number;
   test_id: SQLiteTest["id"];
   type_id: SQLiteQuestionType["id"];
   content: string;
   worth: number;
-}
+};
+
+export type { SQLiteQuestion };

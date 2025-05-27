@@ -1,7 +1,9 @@
-import { SQLiteQuestion } from "./question.js";
+import type { SQLiteQuestion } from "./question.js";
 
-export interface SQLiteExtendedAnswer {
+type SQLiteExtendedAnswer = {
   id: number;
   question_id: SQLiteQuestion["id"];
   content: string;
-}
+};
+
+export type { SQLiteExtendedAnswer };

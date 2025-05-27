@@ -1,7 +1,7 @@
 import { dao } from "../daos/sqlite/dao.js";
-import { Test } from "../dtos/app/test/base";
-import { BriefTest, BriefPassedTest } from "../dtos/app/test/brief/index.js";
-import { User } from "../dtos/app/user.js";
+import type { Test } from "../dtos/app/test/base";
+import type { BriefPassedTest, BriefTest } from "../dtos/app/test/brief";
+import type { User } from "../dtos/app/user.js";
 import { APIError } from "../exceptions/api-error.js";
 
 class TestService {
@@ -70,4 +70,6 @@ class TestService {
   }
 }
 
-export const testService = new TestService();
+const testService = new TestService();
+
+export { testService };

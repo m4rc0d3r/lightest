@@ -1,11 +1,12 @@
-import { NextFunction, Request, Response } from "express";
-import { Test } from "../dtos/app/test/base";
-import { BriefPassedTest, BriefTest } from "../dtos/app/test/brief/index.js";
+import type { NextFunction, Request, Response } from "express";
+
+import type { Test } from "../dtos/app/test/base";
+import type { BriefPassedTest, BriefTest } from "../dtos/app/test/brief";
 import { APIError } from "../exceptions/api-error.js";
 import { testService } from "../services/test-service.js";
 import { userService } from "../services/user-service.js";
-import { ParamsDictionary, ParsedQs } from "../types/express.js";
-import { Report } from "../types/report.js";
+import type { ParamsDictionary, ParsedQs } from "../types/express.js";
+import type { Report } from "../types/report.js";
 
 class TestController {
   async create(
@@ -63,7 +64,13 @@ class TestController {
   }
 
   async getBriefTests(
-    req: Request<ParamsDictionary, Report<BriefTest[]>, unknown, ParsedQs, Record<string, unknown>>,
+    _req: Request<
+      ParamsDictionary,
+      Report<BriefTest[]>,
+      unknown,
+      ParsedQs,
+      Record<string, unknown>
+    >,
     res: Response<Report<BriefTest[]>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
@@ -167,4 +174,6 @@ class TestController {
   }
 }
 
-export const testController = new TestController();
+const testController = new TestController();
+
+export { testController };

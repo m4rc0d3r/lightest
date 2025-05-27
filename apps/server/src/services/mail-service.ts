@@ -1,17 +1,20 @@
-import dotenv from "dotenv";
-import nodeMailer, { TestAccount, Transporter } from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 import fs from "fs/promises";
 import path from "path";
+
+import dotenv from "dotenv";
+import type { TestAccount, Transporter } from "nodemailer";
+import nodeMailer from "nodemailer";
+import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import pug from "pug";
-import { User } from "../dtos/app/user";
+
+import type { User } from "../dtos/app/user";
 
 dotenv.config();
 
-const SMTP_HOST = process.env.SMTP_HOST || "undefined";
-const SMTP_PORT = Number(process.env.SMTP_PORT || NaN);
-const USE_FAKE_EMAIL_SENDING = process.env.USE_FAKE_EMAIL_SENDING || "undefined";
-const CLIENT_URL = process.env.CLIENT_URL || "undefined";
+const SMTP_HOST = process.env["SMTP_HOST"] ?? "undefined";
+const SMTP_PORT = Number(process.env["SMTP_PORT"] ?? NaN);
+const USE_FAKE_EMAIL_SENDING = process.env["USE_FAKE_EMAIL_SENDING"] ?? "undefined";
+const CLIENT_URL = process.env["CLIENT_URL"] ?? "undefined";
 
 const PATH_TO_FOLDER_WITH_LETTER_TEMPLATES = "src/mail-templates";
 const FOLDER_NAME_WITH_ACTIVATION_LETTERS = "activation-letters";
@@ -89,4 +92,6 @@ class MailService {
   }
 }
 
-export const mailService = new MailService();
+const mailService = new MailService();
+
+export { mailService };

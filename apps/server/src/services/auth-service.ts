@@ -1,22 +1,24 @@
-import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 import * as uuid from "uuid";
 
+import { DAOConstraintUniqueError, DAOError } from "../daos/app/errors.js";
 import { dao } from "../daos/sqlite/dao.js";
-import { DAOError, DAOConstraintUniqueError } from "../daos/app/errors.js";
-import { mailService } from "./mail-service.js";
-import { tokenService } from "./token-service.js";
-import { sessionService, SessionInfo } from "./session-service.js";
-import { User } from "../dtos/app/user.js";
-import { Session } from "../dtos/app/session.js";
+import type { Session } from "../dtos/app/session.js";
+import type { User } from "../dtos/app/user.js";
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
+
+import { mailService } from "./mail-service.js";
+import type { SessionInfo } from "./session-service.js";
+import { sessionService } from "./session-service.js";
+import { tokenService } from "./token-service.js";
 
 dotenv.config();
 
 const NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD = Number(
-  process.env.NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD || NaN,
+  process.env["NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD"] ?? NaN,
 );
-const CLIENT_URL = process.env.CLIENT_URL || "undefined";
+const CLIENT_URL = process.env["CLIENT_URL"] ?? "undefined";
 
 if (isNaN(NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD) || CLIENT_URL === "undefined") {
   throw new Error(
@@ -120,4 +122,6 @@ class AuthService {
   }
 }
 
-export const authService = new AuthService();
+const authService = new AuthService();
+
+export { authService };

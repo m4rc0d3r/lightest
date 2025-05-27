@@ -3,10 +3,10 @@ import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || "undefined";
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || "undefined";
-const JWT_ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || "undefined";
-const JWT_REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || "undefined";
+const JWT_ACCESS_SECRET = process.env["JWT_ACCESS_SECRET"] ?? "undefined";
+const JWT_REFRESH_SECRET = process.env["JWT_REFRESH_SECRET"] ?? "undefined";
+const JWT_ACCESS_EXPIRES_IN = process.env["JWT_ACCESS_EXPIRES_IN"] ?? "undefined";
+const JWT_REFRESH_EXPIRES_IN = process.env["JWT_REFRESH_EXPIRES_IN"] ?? "undefined";
 
 if (
   JWT_ACCESS_SECRET === "undefined" ||
@@ -19,10 +19,10 @@ if (
   );
 }
 
-export interface Tokens {
+type Tokens = {
   accessToken: string;
   refreshToken: string;
-}
+};
 
 class TokenService {
   generateTokens(payload: object): Tokens {
@@ -60,4 +60,7 @@ class TokenService {
   }
 }
 
-export const tokenService = new TokenService();
+const tokenService = new TokenService();
+
+export { tokenService };
+export type { Tokens };

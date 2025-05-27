@@ -1,14 +1,19 @@
-import type { QuestionWithExtendedAnswer, QuestionWithAnswerOptions, AnswerOption } from "../base";
+import type { AnswerOption, QuestionWithAnswerOptions, QuestionWithExtendedAnswer } from "../base";
 
-export interface QuestionWithExtendedAnswerToEdit extends QuestionWithExtendedAnswer {
+type QuestionWithExtendedAnswerToEdit = {
   correctAnswer: string;
-}
+} & QuestionWithExtendedAnswer;
 
-export interface QuestionWithAnswerOptionsToEdit
-  extends Omit<QuestionWithAnswerOptions, "answerOptions"> {
+type QuestionWithAnswerOptionsToEdit = {
   answerOptions: AnswerOptionToEdit[];
-}
+} & Omit<QuestionWithAnswerOptions, "answerOptions">;
 
-export interface AnswerOptionToEdit extends AnswerOption {
+type AnswerOptionToEdit = {
   isCorrect: boolean;
-}
+} & AnswerOption;
+
+export type {
+  AnswerOptionToEdit,
+  QuestionWithAnswerOptionsToEdit,
+  QuestionWithExtendedAnswerToEdit,
+};

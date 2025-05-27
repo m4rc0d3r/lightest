@@ -1,4 +1,4 @@
-export class SQLiteError extends Error {
+class SQLiteError extends Error {
   readonly code: string;
   readonly errno: number;
 
@@ -9,12 +9,12 @@ export class SQLiteError extends Error {
   }
 }
 
-export enum ConstraintType {
+enum ConstraintType {
   FOREIGNKEY = "FOREIGNKEY",
   UNIQUE = "UNIQUE",
 }
 
-export class SQLiteConstraintError extends SQLiteError {
+class SQLiteConstraintError extends SQLiteError {
   readonly type: ConstraintType;
 
   constructor(message: string, code: string, errno: number, type: ConstraintType) {
@@ -23,7 +23,7 @@ export class SQLiteConstraintError extends SQLiteError {
   }
 }
 
-export class SQLiteConstraintUnique<T extends string> extends SQLiteConstraintError {
+class SQLiteConstraintUnique<T extends string> extends SQLiteConstraintError {
   readonly columnName: T;
 
   constructor(message: string, code: string, errno: number, columnName: T) {
@@ -32,8 +32,16 @@ export class SQLiteConstraintUnique<T extends string> extends SQLiteConstraintEr
   }
 }
 
-export class SQLiteConstraintForeignKey extends SQLiteConstraintError {
+class SQLiteConstraintForeignKey extends SQLiteConstraintError {
   constructor(message: string, code: string, errno: number) {
     super(message, code, errno, ConstraintType.FOREIGNKEY);
   }
 }
+
+export {
+  ConstraintType,
+  SQLiteConstraintError,
+  SQLiteConstraintForeignKey,
+  SQLiteConstraintUnique,
+  SQLiteError,
+};

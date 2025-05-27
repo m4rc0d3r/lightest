@@ -1,20 +1,20 @@
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import cors from "cors";
-import cookieParser from "cookie-parser";
 
 import { dao } from "./daos/sqlite/dao.js";
-import { mailService } from "./services/mail-service.js";
-import { router as authRouter } from "./routers/auth-router.js";
-import { router as userRouter } from "./routers/user-router.js";
-import { router as testRouter } from "./routers/test-router.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
+import { router as authRouter } from "./routers/auth-router.js";
+import { router as testRouter } from "./routers/test-router.js";
+import { router as userRouter } from "./routers/user-router.js";
+import { mailService } from "./services/mail-service.js";
 
 dotenv.config();
 
-const HOSTNAME = process.env.HOSTNAME || "undefined";
-const PORT = Number(process.env.PORT || NaN);
-const CLIENT_URL = process.env.CLIENT_URL || "undefined";
+const HOSTNAME = process.env["HOSTNAME"] ?? "undefined";
+const PORT = Number(process.env["PORT"] ?? NaN);
+const CLIENT_URL = process.env["CLIENT_URL"] ?? "undefined";
 
 if (HOSTNAME === "undefined" || isNaN(PORT) || CLIENT_URL === "undefined") {
   throw new Error(
@@ -39,7 +39,7 @@ app.use("/api/tests", testRouter);
 
 app.use(errorMiddleware);
 
-start();
+await start();
 
 async function start(): Promise<void> {
   try {

@@ -1,6 +1,8 @@
-import { QuestionType } from "../../app/test/base/index.js";
+import type { QuestionType } from "../../app/test/base";
 
-export interface SQLiteQuestionType {
+type SQLiteQuestionType = {
   id: number;
   name: QuestionType;
-}
+};
+
+export type { SQLiteQuestionType };
