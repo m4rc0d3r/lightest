@@ -39,9 +39,9 @@
   },
   "keywords": [],
   "license": "ISC",
-  "main": "./build/index.js",
+  "main": "dist/main.js",
   "scripts": {
-    "dev": "nodemon ./build/index.js",
+    "dev": "nodemon dist/main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module"
