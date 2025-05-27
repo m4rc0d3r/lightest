@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@test-and-be-tested/eslint-config':
+        specifier: workspace:*
+        version: link:packages/eslint-config
       '@test-and-be-tested/prettier-config':
         specifier: workspace:*
         version: link:packages/prettier-config
