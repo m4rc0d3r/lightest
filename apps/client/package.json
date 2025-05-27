@@ -36,13 +36,13 @@
     "vue-tsc": "^2.2.10"
   },
   "scripts": {
-    "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview",
+    "dev": "vite",
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "lint:check": "eslint . && stylelint '**/*.{scss,vue}'",
     "lint:fix": "eslint --fix . && stylelint --fix '**/*.{scss,vue}'",
+    "preview": "vite preview",
     "type-check": "concurrently -p \"[{name}]\" -n \"App,Node\" -c \"blue.bold,yellow.bold\" \"pnpm type-check-app\" \"pnpm type-check-node\"",
     "type-check-app": "vue-tsc --noEmit -p tsconfig.app.json",
     "type-check-node": "vue-tsc --noEmit -p tsconfig.node.json"

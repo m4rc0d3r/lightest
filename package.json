@@ -1,11 +1,6 @@
 {
   "name": "test-and-be-tested",
   "version": "0.0.0",
-  "engines": {
-    "node": ">=22"
-  },
-  "packageManager": "pnpm@9.15.1",
-  "type": "module",
   "devDependencies": {
     "@test-and-be-tested/eslint-config": "workspace:*",
     "@test-and-be-tested/lint-staged-config": "workspace:*",
@@ -15,6 +10,10 @@
     "prettier": "^3.5.3",
     "syncpack": "^13.0.4"
   },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@9.15.1",
   "scripts": {
     "build": "pnpm --filter './**' build",
     "dev": "pnpm build && pnpm --parallel --filter './**' dev",
@@ -24,5 +23,6 @@
     "lint:fix": "eslint --fix --flag unstable_config_lookup_from_file --ignore-pattern 'apps' '.'; pnpm --filter './apps/**' lint:fix",
     "prepare": "husky",
     "type-check": "pnpm --parallel --filter './**' type-check"
-  }
+  },
+  "type": "module"
 }
