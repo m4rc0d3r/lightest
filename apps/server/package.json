@@ -19,6 +19,8 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@swc/cli": "^0.7.7",
+    "@swc/core": "^1.11.29",
     "@test-and-be-tested/eslint-config": "workspace:*",
     "@test-and-be-tested/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.0",
