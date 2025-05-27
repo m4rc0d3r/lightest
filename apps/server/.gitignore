@@ -1,0 +1,9 @@
+# Dependency directories
+node_modules
+
+# vscode
+.vscode
+*code-workspace
+
+# compiled app
+dist
