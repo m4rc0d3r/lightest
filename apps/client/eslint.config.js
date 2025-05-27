@@ -10,7 +10,9 @@ export default defineConfig([
     extends: base,
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["*.config.js"],
+        },
         tsconfigRootDir: import.meta.dirname,
         extraFileExtensions: ["vue"],
       },
