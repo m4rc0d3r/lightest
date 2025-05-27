@@ -4,8 +4,13 @@
   "packageManager": "pnpm@9.15.1",
   "type": "module",
   "devDependencies": {
-    "prettier": "^3.5.3",
+    "@test-and-be-tested/eslint-config": "workspace:*",
     "@test-and-be-tested/prettier-config": "workspace:*",
-    "@test-and-be-tested/eslint-config": "workspace:*"
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3"
+  },
+  "scripts": {
+    "stub-for-husky": "echo \"This is a temporary script to test husky functionality.\"",
+    "prepare": "husky"
   }
 }
