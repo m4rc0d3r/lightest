@@ -33,16 +33,28 @@
     "@types/pug": "^2.0.6",
     "@types/sqlite3": "^3.1.8",
     "@types/uuid": "^8.3.4",
+    "concurrently": "^9.1.2",
     "globals": "^16.2.0",
-    "nodemon": "^2.0.19",
     "typescript": "^5.8.3"
   },
   "keywords": [],
   "license": "ISC",
   "main": "dist/main.js",
   "scripts": {
-    "dev": "nodemon dist/main.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "concurrently --kill-others-on-fail -p \"[{name}]\" -n \"TSC,SWC\" -c \"blue.bold,yellow.bold\" \"pnpm build:ts\" \"pnpm build:swc\"",
+    "build:swc": "swc src -d dist --strip-leading-paths",
+    "build:ts": "tsc",
+    "dev": "pnpm build && concurrently -k -p \"[{name}]\" -n \"TSC,SWC,App\" -c \"blue.bold,yellow.bold,red.bold\" \"pnpm watch:ts\" \"pnpm watch:swc\" \"pnpm dev:start\"",
+    "dev:start": "node --watch --watch-preserve-output $npm_package_main",
+    "format:check": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "lint:check": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "start": "pnpm build && node $npm_package_main",
+    "type-check": "tsc --noEmit -p .",
+    "watch": "concurrently -k -p \"[{name}]\" -n \"TSC,SWC\" -c \"blue.bold,yellow.bold\" \"pnpm watch:ts\" \"pnpm watch:swc\"",
+    "watch:swc": "pnpm build:swc -w",
+    "watch:ts": "pnpm build:ts -w --preserveWatchOutput"
   },
   "type": "module"
 }
