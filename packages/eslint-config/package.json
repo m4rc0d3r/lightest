@@ -1,0 +1,16 @@
+{
+  "name": "@test-and-be-tested/eslint-config",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./base": "./src/base.js"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-import-resolver-typescript": "^4.4.1",
+    "eslint-plugin-import": "^2.31.0",
+    "typescript-eslint": "^8.32.1"
+  }
+}
