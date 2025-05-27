@@ -1,0 +1,14 @@
+{
+  "name": "@test-and-be-tested/lint-staged-config",
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./base": "./src/base.js",
+    "./commands": "./src/commands.js",
+    "./globs": "./src/globs.js",
+    "./helpers": "./src/helpers.js"
+  },
+  "devDependencies": {
+    "lint-staged": "^16.0.0"
+  }
+}
