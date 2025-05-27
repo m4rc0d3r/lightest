@@ -1,6 +1,9 @@
 {
   "name": "test-and-be-tested",
-  "version": "1.0.0",
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=22"
+  },
   "packageManager": "pnpm@9.15.1",
   "type": "module",
   "devDependencies": {

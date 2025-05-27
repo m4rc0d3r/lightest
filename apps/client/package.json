@@ -46,5 +46,6 @@
     "type-check": "concurrently -p \"[{name}]\" -n \"App,Node\" -c \"blue.bold,yellow.bold\" \"pnpm type-check-app\" \"pnpm type-check-node\"",
     "type-check-app": "vue-tsc --noEmit -p tsconfig.app.json",
     "type-check-node": "vue-tsc --noEmit -p tsconfig.node.json"
-  }
+  },
+  "type": "module"
 }
