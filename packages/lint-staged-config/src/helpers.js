@@ -3,6 +3,7 @@ import { runEslint, runPrettier, runTsc } from "./commands.js";
 /**
  * @template {string} TaskName
  * @typedef {object} Option
+ * @property {string} [program="tsc"] Default is `"tsc"`
  * @property {string} glob
  * @property {string} pathToConfigFile
  * @property {Record<TaskName,string | (files: string[]) => string>} [additionalTasks]
@@ -21,29 +22,32 @@ import { runEslint, runPrettier, runTsc } from "./commands.js";
  * @param {Option<TaskName>[]} options
  */
 function setUpTasksForTypescriptFiles(options) {
-  return options.reduce((acc, { glob, pathToConfigFile, additionalTasks, launchOptions }) => {
-    acc[glob] = (files) => {
-      const listOfFiles = files.join(" ");
+  return options.reduce(
+    (acc, { program, glob, pathToConfigFile, additionalTasks, launchOptions }) => {
+      acc[glob] = (files) => {
+        const listOfFiles = files.join(" ");
 
-      const defaultTasks = Object.entries({
-        tsc: runTsc(pathToConfigFile),
-        eslint: runEslint(listOfFiles),
-        prettier: runPrettier(listOfFiles),
-      });
+        const defaultTasks = Object.entries({
+          tsc: runTsc(pathToConfigFile, program),
+          eslint: runEslint(listOfFiles),
+          prettier: runPrettier(listOfFiles),
+        });
 
-      /** @type {[string, string][]} */
-      const additionalTasks2 = Object.entries(additionalTasks ?? {}).map(([name, command]) => [
-        name,
-        typeof command === "string" ? command : command(listOfFiles),
-      ]);
+        /** @type {[string, string][]} */
+        const additionalTasks2 = Object.entries(additionalTasks ?? {}).map(([name, command]) => [
+          name,
+          typeof command === "string" ? command : command(listOfFiles),
+        ]);
 
-      return getTasksToRun(
-        [...defaultTasks, ...additionalTasks2],
-        Object.entries(launchOptions ?? {}),
-      ).map(([, command]) => command);
-    };
-    return acc;
-  }, {});
+        return getTasksToRun(
+          [...defaultTasks, ...additionalTasks2],
+          Object.entries(launchOptions ?? {}),
+        ).map(([, command]) => command);
+      };
+      return acc;
+    },
+    {},
+  );
 }
 
 /**

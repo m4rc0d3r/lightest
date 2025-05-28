@@ -7,8 +7,21 @@ const LINT_STAGED_CONFIG_FILE_NAMES = ["lint-staged.config.js"];
 const PRETTIER_COMMAND = "prettier --write";
 const STYLELINT_COMMAND = "stylelint --fix";
 const ESLINT_COMMAND = "eslint --fix --flag unstable_config_lookup_from_file";
-const TSC_COMMAND = "tsc --noEmit -p";
 const SYNCPACK_FORMAT_COMMAND = "syncpack format --source";
+
+/**
+ * @typedef {object} TscCommand
+ * @property {string} [program="tsc"] Default is `"tsc"`
+ * @property {string[]} [args=[]] Default is `[]`
+ */
+
+const TSC = "tsc";
+const TSC_ARGUMENTS = ["--noEmit", "-p"];
+
+/** @param {TscCommand} command */
+function TSC_COMMAND({ program = TSC, args = TSC_ARGUMENTS }) {
+  return [program, ...args].join(" ");
+}
 
 /**
  * @param {string} command
@@ -33,9 +46,12 @@ function runEslint(listOfFiles) {
   return executeCommand(ESLINT_COMMAND, listOfFiles);
 }
 
-/** @param {string} pathToProject */
-function runTsc(pathToProject) {
-  return executeCommand(TSC_COMMAND, pathToProject);
+/**
+ * @param {string} pathToProject
+ * @param {string} [program="tsc"] Default is `"tsc"`
+ */
+function runTsc(pathToProject, program = TSC) {
+  return executeCommand(TSC_COMMAND({ program }), pathToProject);
 }
 
 /** @param {string[]} listOfFiles */
@@ -55,4 +71,13 @@ async function runSyncpackFormat(listOfFiles) {
   return executeCommand(SYNCPACK_FORMAT_COMMAND, glob);
 }
 
-export { runEslint, runPrettier, runStylelint, runSyncpackFormat, runTsc, STYLELINT_COMMAND };
+export {
+  runEslint,
+  runPrettier,
+  runStylelint,
+  runSyncpackFormat,
+  runTsc,
+  STYLELINT_COMMAND,
+  TSC,
+  TSC_COMMAND,
+};
