@@ -5,12 +5,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
 import type { PropType } from "vue";
+import { defineComponent } from "vue";
+
+import type { TestMode } from "./shared";
 
 import TestItem from "@/components/tests-view/TestItem.vue";
-import type { TestMode } from "@/components/tests-view/TestItem.vue";
-import type { BriefTest, BriefPassedTest } from "@/dtos/test/brief";
+import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
 
 export default defineComponent({
   components: {

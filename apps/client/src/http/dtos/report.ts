@@ -1,6 +1,6 @@
 export class Report<T = undefined> {
   message: string;
-  payload?: T;
+  payload?: T | undefined;
 
   constructor(message: string, payload?: T) {
     this.message = message;

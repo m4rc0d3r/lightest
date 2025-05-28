@@ -142,6 +142,7 @@ export default defineComponent({
       } else {
         this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
       }
+      return undefined;
     },
   },
 });

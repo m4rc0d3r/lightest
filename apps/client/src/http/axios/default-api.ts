@@ -1,3 +1,4 @@
+import type { AxiosRequestConfig } from "axios";
 import axios, { AxiosError } from "axios";
 
 import { API_URL } from "@/env";
@@ -22,25 +23,27 @@ defaultAPI.interceptors.response.use(
     return config;
   },
   async (error) => {
-    if (error instanceof AxiosError) {
-      const originalRequest = error.config;
-      if (error.response?.status === 401 && !(originalRequest as { _retry: boolean })._retry) {
-        (originalRequest as { _retry: boolean })._retry = true;
-        try {
-          await useAuthStore(pinia).refresh();
-          const originalResponse = await defaultAPI.request(originalRequest);
+    if (!(error instanceof AxiosError)) throw error;
 
-          return originalResponse;
-        } catch (e) {
-          if (e instanceof AxiosError) {
-            return e;
-          }
-        }
-      } else {
-        throw error;
-      }
-    }
+    const originalRequest = error.config;
+    if (
+      !(
+        error.response?.status === 401 &&
+        (!isRequestWithRetryFlag(originalRequest) || !originalRequest[RETRY_FLAG_KEY])
+      )
+    )
+      throw error;
+
+    (originalRequest as REQUEST_WITH_RETRY_FLAG)[RETRY_FLAG_KEY] = true;
+    await useAuthStore(pinia).refresh();
+    return await defaultAPI.request(originalRequest);
   },
 );
+
+const RETRY_FLAG_KEY = "_retry";
+type REQUEST_WITH_RETRY_FLAG = AxiosRequestConfig & { [RETRY_FLAG_KEY]: boolean };
+function isRequestWithRetryFlag(request: AxiosRequestConfig): request is REQUEST_WITH_RETRY_FLAG {
+  return RETRY_FLAG_KEY in request && typeof request[RETRY_FLAG_KEY] === "boolean";
+}
 
 export { defaultAPI };

@@ -28,40 +28,43 @@ class TestToEdit implements Test<QuestionToEdit> {
   }
 
   changeQuestionType(questionIndex: number, type: QuestionType) {
+    const question = this.questions[questionIndex];
+    if (!question) return;
+
     switch (type) {
       case QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION:
       case QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS:
         if (
-          [
-            QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION,
-            QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
-          ].includes(this.questions[questionIndex].type)
+          (
+            [
+              QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION,
+              QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
+            ] as string[]
+          ).includes(this.questions[questionIndex]?.type ?? "")
         ) {
           this.questions[questionIndex] = new QuestionWithAnswerOptionsToEdit(
             type,
-            this.questions[questionIndex].content,
-            this.questions[questionIndex].worth,
-            this.getCopiedAnswersOptions(
-              this.questions[questionIndex] as QuestionWithAnswerOptionsToEdit,
-            ),
-            this.questions[questionIndex].id,
+            question.content,
+            question.worth,
+            this.getCopiedAnswersOptions(question as QuestionWithAnswerOptionsToEdit),
+            question.id,
           );
         } else {
           this.questions[questionIndex] = new QuestionWithAnswerOptionsToEdit(
             type,
-            this.questions[questionIndex].content,
-            this.questions[questionIndex].worth,
+            question.content,
+            question.worth,
             [],
-            this.questions[questionIndex].id,
+            question.id,
           );
         }
         break;
       case QUESTION_TYPE.EXTENDED:
         this.questions[questionIndex] = new QuestionWithExtendedAnswerToEdit(
-          this.questions[questionIndex].content,
-          this.questions[questionIndex].worth,
+          question.content,
+          question.worth,
           "",
-          this.questions[questionIndex].id,
+          question.id,
         );
         break;
     }
