@@ -18,6 +18,7 @@ export default {
   },
   ...setUpTasksForTypescriptFiles([
     {
+      program: "vue-tsc",
       glob: "src/**/*.{ts,mts,cts,tsx,vue}",
       pathToConfigFile: "tsconfig.app.json",
       additionalTasks: {
