@@ -2,6 +2,9 @@
   "name": "test-and-be-tested",
   "version": "0.0.0",
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/types": "^19.8.1",
     "@test-and-be-tested/eslint-config": "workspace:*",
     "@test-and-be-tested/lint-staged-config": "workspace:*",
     "@test-and-be-tested/prettier-config": "workspace:*",
