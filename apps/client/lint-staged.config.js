@@ -22,7 +22,7 @@ export default {
       glob: "src/**/*.{ts,mts,cts,tsx,vue}",
       pathToConfigFile: "tsconfig.app.json",
       additionalTasks: {
-        [STYLELINT]: STYLELINT_COMMAND,
+        [STYLELINT]: (files) => [STYLELINT_COMMAND, files].join(" "),
       },
       launchOptions: {
         [STYLELINT]: true,
