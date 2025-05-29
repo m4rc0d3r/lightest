@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 
-import dotenv from "dotenv";
+import { either as e } from "fp-ts";
 import type { TestAccount, Transporter } from "nodemailer";
 import nodeMailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -9,38 +9,27 @@ import pug from "pug";
 
 import type { User } from "../dtos/app/user";
 
-dotenv.config();
+import { createConfig } from "~/infra/config";
+import { createUrl } from "~/shared";
 
-const SMTP_HOST = process.env["SMTP_HOST"] ?? "undefined";
-const SMTP_PORT = Number(process.env["SMTP_PORT"] ?? NaN);
-const USE_FAKE_EMAIL_SENDING = process.env["USE_FAKE_EMAIL_SENDING"] ?? "undefined";
-const CLIENT_URL = process.env["CLIENT_URL"] ?? "undefined";
+const eitherConfig = createConfig(process.env);
+if (e.isLeft(eitherConfig)) throw eitherConfig.left;
+const config = eitherConfig.right;
 
 const PATH_TO_FOLDER_WITH_LETTER_TEMPLATES = "src/mail-templates";
 const FOLDER_NAME_WITH_ACTIVATION_LETTERS = "activation-letters";
-
-if (
-  SMTP_HOST === "undefined" ||
-  isNaN(SMTP_PORT) ||
-  USE_FAKE_EMAIL_SENDING === "undefined" ||
-  CLIENT_URL === "undefined"
-) {
-  throw new Error(
-    "'SMTP_HOST', 'SMTP_PORT', 'USE_FAKE_EMAIL_SENDING' and/or 'CLIENT_URL' not specified in the config file '.env'.",
-  );
-}
 
 class MailService {
   private _testEmailAccount: TestAccount | null = null;
   private _transporter: Transporter<SMTPTransport.SentMessageInfo> | null = null;
 
   async init() {
-    if (USE_FAKE_EMAIL_SENDING === "no") {
+    if (!config.mail.useFakeEmailSending) {
       this._testEmailAccount = await nodeMailer.createTestAccount();
 
       this._transporter = nodeMailer.createTransport({
-        host: SMTP_HOST,
-        port: SMTP_PORT,
+        host: config.mail.smtpHost,
+        port: config.mail.smtpPort,
         secure: false,
         auth: {
           user: this._testEmailAccount.user,
@@ -63,11 +52,12 @@ class MailService {
     );
     const letterContent = pug.renderFile(pathToLetterTemplate, { pretty: true, activationLink });
 
-    if (USE_FAKE_EMAIL_SENDING === "no") {
+    if (!config.mail.useFakeEmailSending) {
+      const { protocol, address, port } = config.clientApp;
       await this._transporter?.sendMail({
         from: this._testEmailAccount?.user,
         to,
-        subject: `Account activation on the ${CLIENT_URL}`,
+        subject: `Account activation on the ${createUrl(protocol, address, port)}`,
         html: letterContent,
       });
     } else {

@@ -6,12 +6,6 @@ import type { AuthData } from "../types/auth-data.js";
 import type { ParamsDictionary, ParsedQs } from "../types/express.js";
 import type { Report } from "../types/report.js";
 
-const API_URL = process.env["API_URL"] ?? "undefined";
-
-if (API_URL === "undefined") {
-  throw new Error("'API_URL' not specified in config file '.env'.");
-}
-
 class AuthController {
   async register(
     req: Request<ParamsDictionary, Report<string>, AuthData, ParsedQs, Record<string, unknown>>,

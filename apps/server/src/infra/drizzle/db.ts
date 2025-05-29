@@ -1,6 +1,13 @@
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/node-postgres";
 
-const db = drizzle({ connection: process.env["DATABASE_URL"]!, casing: "snake_case" });
+import { zDrizzleConfig } from "../config/drizzle";
+
+const { databaseUrl, casing } = zDrizzleConfig.parse(process.env);
+
+const db = drizzle({
+  connection: databaseUrl,
+  casing,
+});
 
 export { db };

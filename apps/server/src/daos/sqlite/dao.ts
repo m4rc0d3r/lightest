@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import { Database } from "sqlite";
 import sqlite3 from "sqlite3";
 
@@ -38,8 +37,6 @@ import {
 } from "../../dtos/sqlite/utils.js";
 import type { DAO } from "../app/dao.js";
 import { DAOConstraintUniqueError, DAOError } from "../app/errors.js";
-
-dotenv.config();
 
 const DB_NAME = process.env["DB_NAME"];
 

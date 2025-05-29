@@ -14,5 +14,5 @@
     /* Linting */
     "noUncheckedSideEffectImports": true
   },
-  "include": ["*.config.ts"]
+  "include": ["*.config.ts", "src/infra/config/drizzle.ts"]
 }

@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import dotenv from "dotenv";
+import { either as e } from "fp-ts";
 import * as uuid from "uuid";
 
 import { DAOConstraintUniqueError, DAOError } from "../daos/app/errors.js";
@@ -13,23 +13,17 @@ import type { SessionInfo } from "./session-service.js";
 import { sessionService } from "./session-service.js";
 import { tokenService } from "./token-service.js";
 
-dotenv.config();
+import { createConfig } from "~/infra/config/config.js";
+import { createUrl } from "~/shared/index.js";
 
-const NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD = Number(
-  process.env["NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD"] ?? NaN,
-);
-const CLIENT_URL = process.env["CLIENT_URL"] ?? "undefined";
-
-if (isNaN(NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD) || CLIENT_URL === "undefined") {
-  throw new Error(
-    "'NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD' and/or 'CLIENT_URL' not specified in the config file '.env'.",
-  );
-}
+const eitherConfig = createConfig(process.env);
+if (e.isLeft(eitherConfig)) throw eitherConfig.left;
+const config = eitherConfig.right;
 
 class AuthService {
   async register(email: User["email"], password: User["password"]): Promise<SessionInfo> {
     try {
-      const passwordHash = await bcrypt.hash(password, NUMBER_OF_ROUNDS_TO_HASH_THE_PASSWORD);
+      const passwordHash = await bcrypt.hash(password, config.bcrypt.roundsForPasswordHash);
       const activationLink = uuid.v4();
       const userId = await dao.createUser(email, passwordHash, activationLink);
       const user = await dao.getUserBy("id", userId);
@@ -40,7 +34,11 @@ class AuthService {
         );
       }
 
-      await mailService.sendActivationMail(email, `${CLIENT_URL}/activate/${user.activationLink}`);
+      const { protocol, address, port } = config.clientApp;
+      await mailService.sendActivationMail(
+        email,
+        `${createUrl(protocol, address, port)}/activate/${user.activationLink}`,
+      );
 
       return await sessionService.createSession(user);
     } catch (e) {

@@ -1,23 +1,11 @@
-import dotenv from "dotenv";
+import { either as e } from "fp-ts";
 import jwt from "jsonwebtoken";
 
-dotenv.config();
+import { createConfig } from "~/infra/config";
 
-const JWT_ACCESS_SECRET = process.env["JWT_ACCESS_SECRET"] ?? "undefined";
-const JWT_REFRESH_SECRET = process.env["JWT_REFRESH_SECRET"] ?? "undefined";
-const JWT_ACCESS_EXPIRES_IN = process.env["JWT_ACCESS_EXPIRES_IN"] ?? "undefined";
-const JWT_REFRESH_EXPIRES_IN = process.env["JWT_REFRESH_EXPIRES_IN"] ?? "undefined";
-
-if (
-  JWT_ACCESS_SECRET === "undefined" ||
-  JWT_REFRESH_SECRET === "undefined" ||
-  JWT_ACCESS_EXPIRES_IN === "undefined" ||
-  JWT_REFRESH_EXPIRES_IN === "undefined"
-) {
-  throw new Error(
-    "'JWT_ACCESS_SECRET', 'JWT_REFRESH_SECRET', 'JWT_ACCESS_EXPIRES_IN' and/or 'JWT_REFRESH_EXPIRES_IN' not specified in the config file '.env'.",
-  );
-}
+const eitherConfig = createConfig(process.env);
+if (e.isLeft(eitherConfig)) throw eitherConfig.left;
+const config = eitherConfig.right;
 
 type Tokens = {
   accessToken: string;
@@ -26,9 +14,11 @@ type Tokens = {
 
 class TokenService {
   generateTokens(payload: object): Tokens {
-    const accessToken = jwt.sign(payload, JWT_ACCESS_SECRET, { expiresIn: JWT_ACCESS_EXPIRES_IN });
-    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
-      expiresIn: JWT_REFRESH_EXPIRES_IN,
+    const accessToken = jwt.sign(payload, config.auth.jwt.access.secret, {
+      expiresIn: config.auth.jwt.access.lifetime,
+    });
+    const refreshToken = jwt.sign(payload, config.auth.jwt.refresh.secret, {
+      expiresIn: config.auth.jwt.refresh.lifetime,
     });
 
     return { accessToken, refreshToken };
@@ -36,7 +26,7 @@ class TokenService {
 
   validateAccessToken(token: string): jwt.JwtPayload | string | null {
     try {
-      return jwt.verify(token, JWT_ACCESS_SECRET);
+      return jwt.verify(token, config.auth.jwt.access.secret);
     } catch {
       return null;
     }
@@ -44,7 +34,7 @@ class TokenService {
 
   validateRefreshToken(token: string): jwt.JwtPayload | string | null {
     try {
-      return jwt.verify(token, JWT_REFRESH_SECRET);
+      return jwt.verify(token, config.auth.jwt.refresh.secret);
     } catch {
       return null;
     }
