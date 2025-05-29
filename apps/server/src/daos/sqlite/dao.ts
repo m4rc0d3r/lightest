@@ -38,9 +38,11 @@ import {
 import type { DAO } from "../app/dao.js";
 import { DAOConstraintUniqueError, DAOError } from "../app/errors.js";
 
+import type { AsyncInit } from "~/infra/dependencies.js";
+
 const DB_NAME = process.env["DB_NAME"];
 
-class SQLiteDAO implements DAO {
+class SQLiteDAO implements DAO, AsyncInit {
   private _database: Database;
 
   constructor() {
@@ -53,8 +55,7 @@ class SQLiteDAO implements DAO {
       driver: sqlite3.Database,
     });
   }
-
-  async init(): Promise<void> {
+  async asyncInit() {
     try {
       await this._database.open();
       await this._database.run("pragma foreign_keys = on");

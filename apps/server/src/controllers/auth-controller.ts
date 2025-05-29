@@ -1,6 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
 
-import { authService } from "../services/auth-service.js";
 import type { Tokens } from "../services/token-service.js";
 import type { AuthData } from "../types/auth-data.js";
 import type { ParamsDictionary, ParsedQs } from "../types/express.js";
@@ -12,6 +11,8 @@ class AuthController {
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { authService } = req.container.cradle;
+
     try {
       const { email, password } = req.body;
       const { tokens, refreshTokenExpirationDate } = await authService.register(email, password);
@@ -31,6 +32,8 @@ class AuthController {
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { authService } = req.container.cradle;
+
     try {
       const { email, password } = req.body;
       const { tokens, refreshTokenExpirationDate } = await authService.login(email, password);
@@ -50,6 +53,8 @@ class AuthController {
     res: Response<Report, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { authService } = req.container.cradle;
+
     try {
       const { refreshToken } = req.cookies;
       if (typeof refreshToken !== "string")
@@ -68,6 +73,8 @@ class AuthController {
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { authService } = req.container.cradle;
+
     try {
       const { refreshToken } = req.cookies;
       if (typeof refreshToken !== "string")
@@ -90,6 +97,8 @@ class AuthController {
     res: Response<Report, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { authService } = req.container.cradle;
+
     try {
       const activationLink = (req.params as unknown as { link: string }).link;
       await authService.activate(activationLink);

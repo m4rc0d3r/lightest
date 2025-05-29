@@ -1,9 +1,9 @@
-import { dao } from "../daos/postgres/dao.js";
 import type { Session } from "../dtos/app/session.js";
 import type { User } from "../dtos/app/user.js";
 
-import type { Tokens } from "./token-service.js";
-import { tokenService } from "./token-service.js";
+import type { Tokens, TokenService } from "./token-service.js";
+
+import type { DAO } from "~/daos/app/dao.js";
 
 type SessionInfo = {
   tokens: Tokens;
@@ -11,18 +11,31 @@ type SessionInfo = {
 };
 
 class SessionService {
+  constructor(
+    private readonly dao: DAO,
+    private readonly tokenService: TokenService,
+  ) {}
+
   async createSession(user: User): Promise<SessionInfo> {
-    const tokens = tokenService.generateTokens({ userId: user.id, userEmail: user.email });
-    const refreshTokenExpirationDate = tokenService.getTokenExpirationDate(tokens.refreshToken);
-    await dao.createSession(user.id, tokens.refreshToken, refreshTokenExpirationDate.toISOString());
+    const tokens = this.tokenService.generateTokens({ userId: user.id, userEmail: user.email });
+    const refreshTokenExpirationDate = this.tokenService.getTokenExpirationDate(
+      tokens.refreshToken,
+    );
+    await this.dao.createSession(
+      user.id,
+      tokens.refreshToken,
+      refreshTokenExpirationDate.toISOString(),
+    );
 
     return { tokens, refreshTokenExpirationDate };
   }
 
   async updateSession(user: User, refreshToken: Session["refreshToken"]): Promise<SessionInfo> {
-    const tokens = tokenService.generateTokens({ userId: user.id, userEmail: user.email });
-    const refreshTokenExpirationDate = tokenService.getTokenExpirationDate(tokens.refreshToken);
-    await dao.updateSessionBy(
+    const tokens = this.tokenService.generateTokens({ userId: user.id, userEmail: user.email });
+    const refreshTokenExpirationDate = this.tokenService.getTokenExpirationDate(
+      tokens.refreshToken,
+    );
+    await this.dao.updateSessionBy(
       "refreshToken",
       refreshToken,
       tokens.refreshToken,
@@ -33,15 +46,13 @@ class SessionService {
   }
 
   async destroySession(refreshToken: Session["refreshToken"]): Promise<void> {
-    await dao.destroySessionBy("refreshToken", refreshToken);
+    await this.dao.destroySessionBy("refreshToken", refreshToken);
   }
 
   async getSession(refreshToken: Session["refreshToken"]): Promise<Session | undefined> {
-    return await dao.getSessionBy("refreshToken", refreshToken);
+    return await this.dao.getSessionBy("refreshToken", refreshToken);
   }
 }
 
-const sessionService = new SessionService();
-
-export { sessionService };
+export { SessionService };
 export type { SessionInfo };

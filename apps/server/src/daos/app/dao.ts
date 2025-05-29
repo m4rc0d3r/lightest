@@ -4,8 +4,6 @@ import type { BriefPassedTest, BriefTest } from "../../dtos/app/test/brief";
 import type { User, FieldName as UserFieldName } from "../../dtos/app/user.js";
 
 type DAO = {
-  init(): Promise<void>;
-
   createUser(
     email: User["email"],
     password: User["password"],

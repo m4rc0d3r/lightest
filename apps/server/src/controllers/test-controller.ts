@@ -3,8 +3,6 @@ import type { NextFunction, Request, Response } from "express";
 import type { Test } from "../dtos/app/test/base";
 import type { BriefPassedTest, BriefTest } from "../dtos/app/test/brief";
 import { APIError } from "../exceptions/api-error.js";
-import { testService } from "../services/test-service.js";
-import { userService } from "../services/user-service.js";
 import type { ParamsDictionary, ParsedQs } from "../types/express.js";
 import type { Report } from "../types/report.js";
 
@@ -14,6 +12,8 @@ class TestController {
     res: Response<Report, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const test = req.body;
       await testService.create((req as unknown as { userId: number }).userId, test);
@@ -28,6 +28,8 @@ class TestController {
     res: Response<Report<Test>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService, userService } = req.container.cradle;
+
     try {
       const id = Number(req.params["id"]);
       const author = await userService.getTestAuthor(id);
@@ -48,6 +50,8 @@ class TestController {
     res: Response<Report<Test>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService, userService } = req.container.cradle;
+
     try {
       const test = req.body;
       const author = await userService.getTestAuthor(test.id);
@@ -64,16 +68,12 @@ class TestController {
   }
 
   async getBriefTests(
-    _req: Request<
-      ParamsDictionary,
-      Report<BriefTest[]>,
-      unknown,
-      ParsedQs,
-      Record<string, unknown>
-    >,
+    req: Request<ParamsDictionary, Report<BriefTest[]>, unknown, ParsedQs, Record<string, unknown>>,
     res: Response<Report<BriefTest[]>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const briefTests = await testService.getBriefTests();
       res.json({ message: "Brief tests retrieved successfully.", payload: briefTests });
@@ -87,6 +87,8 @@ class TestController {
     res: Response<Report<BriefTest[]>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const authorId = (req as unknown as { userId: number }).userId;
       console.log("authorId: ", authorId);
@@ -113,6 +115,8 @@ class TestController {
     res: Response<Report<BriefPassedTest[]>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const passingId = (req as unknown as { userId: number }).userId;
       console.log("passingId: ", passingId);
@@ -133,6 +137,8 @@ class TestController {
     res: Response<Report<Test>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const id = Number(req.params["id"]);
       const test = await testService.getTestToPass(id);
@@ -147,6 +153,8 @@ class TestController {
     res: Response<Report<Test["id"]>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const test = req.body;
       const testId = await testService.createPassedTest(
@@ -164,6 +172,8 @@ class TestController {
     res: Response<Report<Test>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
+    const { testService } = req.container.cradle;
+
     try {
       const id = Number(req.params["id"]);
       const test = await testService.getPassedTest(id);

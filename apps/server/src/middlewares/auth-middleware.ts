@@ -1,7 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
 import { APIError } from "../exceptions/api-error.js";
-import { tokenService } from "../services/token-service.js";
 import type { ParamsDictionary, ParsedQs } from "../types/express.js";
 
 function authMiddleware(
@@ -9,6 +8,8 @@ function authMiddleware(
   _res: Response<unknown, Record<string, unknown>>,
   next: NextFunction,
 ): void {
+  const { tokenService } = req.container.cradle;
+
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {

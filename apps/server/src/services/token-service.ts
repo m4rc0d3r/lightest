@@ -1,11 +1,7 @@
-import { either as e } from "fp-ts";
 import jwt from "jsonwebtoken";
 
-import { createConfig } from "~/infra/config";
-
-const eitherConfig = createConfig(process.env);
-if (e.isLeft(eitherConfig)) throw eitherConfig.left;
-const config = eitherConfig.right;
+import type { Config } from "~/infra/config";
+import type { AuthConfig } from "~/infra/config/auth";
 
 type Tokens = {
   accessToken: string;
@@ -13,12 +9,18 @@ type Tokens = {
 };
 
 class TokenService {
+  private readonly jwt: AuthConfig["jwt"];
+
+  constructor(config: Config) {
+    this.jwt = config.auth.jwt;
+  }
+
   generateTokens(payload: object): Tokens {
-    const accessToken = jwt.sign(payload, config.auth.jwt.access.secret, {
-      expiresIn: config.auth.jwt.access.lifetime,
+    const accessToken = jwt.sign(payload, this.jwt.access.secret, {
+      expiresIn: this.jwt.access.lifetime,
     });
-    const refreshToken = jwt.sign(payload, config.auth.jwt.refresh.secret, {
-      expiresIn: config.auth.jwt.refresh.lifetime,
+    const refreshToken = jwt.sign(payload, this.jwt.refresh.secret, {
+      expiresIn: this.jwt.refresh.lifetime,
     });
 
     return { accessToken, refreshToken };
@@ -26,7 +28,7 @@ class TokenService {
 
   validateAccessToken(token: string): jwt.JwtPayload | string | null {
     try {
-      return jwt.verify(token, config.auth.jwt.access.secret);
+      return jwt.verify(token, this.jwt.access.secret);
     } catch {
       return null;
     }
@@ -34,7 +36,7 @@ class TokenService {
 
   validateRefreshToken(token: string): jwt.JwtPayload | string | null {
     try {
-      return jwt.verify(token, config.auth.jwt.refresh.secret);
+      return jwt.verify(token, this.jwt.refresh.secret);
     } catch {
       return null;
     }
@@ -50,7 +52,5 @@ class TokenService {
   }
 }
 
-const tokenService = new TokenService();
-
-export { tokenService };
+export { TokenService };
 export type { Tokens };

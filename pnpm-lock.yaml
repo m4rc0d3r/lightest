@@ -138,6 +138,15 @@ importers:
 
   apps/server:
     dependencies:
+      awilix:
+        specifier: ^12.0.5
+        version: 12.0.5
+      awilix-express:
+        specifier: ^9.0.2
+        version: 9.0.2
+      awilix-manager:
+        specifier: ^6.1.0
+        version: 6.1.0(awilix@12.0.5)
       bcrypt:
         specifier: ^5.0.1
         version: 5.1.1(encoding@0.1.13)
@@ -1824,6 +1833,24 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
+  awilix-express@9.0.2:
+    resolution: {integrity: sha512-0DTlzKhmBsQSGlBv/veVpPoVL4R3ZZUUZ28GlAEc3ht/KBdpf/BJ+YxMMxLkZWlbd1nELWp4s1nXqVh7dI/yjQ==}
+    engines: {node: '>=16.0.0'}
+
+  awilix-manager@6.1.0:
+    resolution: {integrity: sha512-lI769LH19Co5rQoivSXBfU2nuNR/Hnwfsbc0ZSWGbz4NmZUa8J5LMdIwxSHtGgBVeoqgdYb6Lbmw/Y9C5jE5FA==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      awilix: '>=9.0.0'
+
+  awilix-router-core@2.1.2:
+    resolution: {integrity: sha512-EirsNFmOcP7WzlANNgTdFg0UBTG8lElLsoQklrOeYXlDFI66TWmlhOnL+0OmK1Usks+mKbodWlcbCxSKqmSCRA==}
+    engines: {node: '>=16.0.0'}
+
+  awilix@12.0.5:
+    resolution: {integrity: sha512-Qf/V/hRo6DK0FoBKJ9QiObasRxHAhcNi0mV6kW2JMawxS3zq6Un+VsZmVAZDUfvB+MjTEiJ2tUJUl4cr0JiUAw==}
+    engines: {node: '>=16.3.0'}
+
   axios@0.27.2:
     resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
 
@@ -1942,6 +1969,9 @@ packages:
   callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
+
+  camel-case@4.1.2:
+    resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
 
   caniuse-lite@1.0.30001718:
     resolution: {integrity: sha512-AflseV1ahcSunK53NfEs9gFWgOEmzr0f+kaMFA4xiLZlr9Hzt7HxcSpIFcnNCUkz6R6dWKa54rUz3HUmI3nVcw==}
@@ -3441,6 +3471,9 @@ packages:
     resolution: {integrity: sha512-9ie8ItPR6tjY5uYJh8K/Zrv/RMZ5VOlOWvtZdEHYSTFKZfIBPQa9tOAEeAWhd+AnIneLJ22w5fjOYtoutpWq5w==}
     engines: {node: '>=18'}
 
+  lower-case@2.0.2:
+    resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
+
   lowercase-keys@3.0.0:
     resolution: {integrity: sha512-ozCC6gdQ+glXOQsveKD0YsDy8DSQFjDTz4zyzEHNV5+JP5D62LmfDZ6o1cycFx9ouG940M5dE8C8CTewdj2YWQ==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -3719,6 +3752,9 @@ packages:
   nice-try@1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
 
+  no-case@3.0.4:
+    resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
+
   node-abi@3.75.0:
     resolution: {integrity: sha512-OhYaY5sDsIka7H7AtijtI9jwGYLyl29eQn/W623DiN/MIv5sUqc4g7BIDThX+gb7di9f6xK02nkp8sdfFWZLTg==}
     engines: {node: '>=10'}
@@ -3896,6 +3932,9 @@ packages:
   parseurl@1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
     engines: {node: '>= 0.8'}
+
+  pascal-case@3.1.2:
+    resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
 
   path-browserify@1.0.1:
     resolution: {integrity: sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==}
@@ -6598,6 +6637,24 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
+  awilix-express@9.0.2:
+    dependencies:
+      awilix-router-core: 2.1.2
+      tslib: 2.8.1
+
+  awilix-manager@6.1.0(awilix@12.0.5):
+    dependencies:
+      awilix: 12.0.5
+
+  awilix-router-core@2.1.2:
+    dependencies:
+      fast-glob: 3.3.3
+
+  awilix@12.0.5:
+    dependencies:
+      camel-case: 4.1.2
+      fast-glob: 3.3.3
+
   axios@0.27.2:
     dependencies:
       follow-redirects: 1.15.9
@@ -6769,6 +6826,11 @@ snapshots:
       get-intrinsic: 1.3.0
 
   callsites@3.1.0: {}
+
+  camel-case@4.1.2:
+    dependencies:
+      pascal-case: 3.1.2
+      tslib: 2.8.1
 
   caniuse-lite@1.0.30001718: {}
 
@@ -8323,6 +8385,10 @@ snapshots:
       strip-ansi: 7.1.0
       wrap-ansi: 9.0.0
 
+  lower-case@2.0.2:
+    dependencies:
+      tslib: 2.8.1
+
   lowercase-keys@3.0.0: {}
 
   lru-cache@10.4.3: {}
@@ -8658,6 +8724,11 @@ snapshots:
 
   nice-try@1.0.5: {}
 
+  no-case@3.0.4:
+    dependencies:
+      lower-case: 2.0.2
+      tslib: 2.8.1
+
   node-abi@3.75.0:
     dependencies:
       semver: 7.7.2
@@ -8879,6 +8950,11 @@ snapshots:
       lines-and-columns: 1.2.4
 
   parseurl@1.3.3: {}
+
+  pascal-case@3.1.2:
+    dependencies:
+      no-case: 3.0.4
+      tslib: 2.8.1
 
   path-browserify@1.0.1: {}
 

@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { either as e } from "fp-ts";
 import type { TestAccount, Transporter } from "nodemailer";
 import nodeMailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -9,27 +8,36 @@ import pug from "pug";
 
 import type { User } from "../dtos/app/user";
 
-import { createConfig } from "~/infra/config";
+import type { Config } from "~/infra/config";
+import type { ClientAppConfig } from "~/infra/config/client-app";
+import type { AsyncInit } from "~/infra/dependencies";
 import { createUrl } from "~/shared";
-
-const eitherConfig = createConfig(process.env);
-if (e.isLeft(eitherConfig)) throw eitherConfig.left;
-const config = eitherConfig.right;
 
 const PATH_TO_FOLDER_WITH_LETTER_TEMPLATES = "src/mail-templates";
 const FOLDER_NAME_WITH_ACTIVATION_LETTERS = "activation-letters";
 
-class MailService {
+class MailService implements AsyncInit {
   private _testEmailAccount: TestAccount | null = null;
   private _transporter: Transporter<SMTPTransport.SentMessageInfo> | null = null;
+  private readonly smtpHost: string;
+  private readonly smtpPort: number;
+  private readonly useFakeEmailSending: boolean;
+  private readonly clientApp: ClientAppConfig;
 
-  async init() {
-    if (!config.mail.useFakeEmailSending) {
+  constructor(config: Config) {
+    this.smtpHost = config.mail.smtpHost;
+    this.smtpPort = config.mail.smtpPort;
+    this.useFakeEmailSending = config.mail.useFakeEmailSending;
+    this.clientApp = config.clientApp;
+  }
+
+  async asyncInit() {
+    if (!this.useFakeEmailSending) {
       this._testEmailAccount = await nodeMailer.createTestAccount();
 
       this._transporter = nodeMailer.createTransport({
-        host: config.mail.smtpHost,
-        port: config.mail.smtpPort,
+        host: this.smtpHost,
+        port: this.smtpPort,
         secure: false,
         auth: {
           user: this._testEmailAccount.user,
@@ -52,8 +60,8 @@ class MailService {
     );
     const letterContent = pug.renderFile(pathToLetterTemplate, { pretty: true, activationLink });
 
-    if (!config.mail.useFakeEmailSending) {
-      const { protocol, address, port } = config.clientApp;
+    if (!this.useFakeEmailSending) {
+      const { protocol, address, port } = this.clientApp;
       await this._transporter?.sendMail({
         from: this._testEmailAccount?.user,
         to,
@@ -82,6 +90,4 @@ class MailService {
   }
 }
 
-const mailService = new MailService();
-
-export { mailService };
+export { MailService };

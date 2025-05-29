@@ -1,32 +1,41 @@
 import bcrypt from "bcrypt";
-import { either as e } from "fp-ts";
 import * as uuid from "uuid";
 
 import { DAOConstraintUniqueError, DAOError } from "../daos/app/errors.js";
-import { dao } from "../daos/postgres/dao.js";
 import type { Session } from "../dtos/app/session.js";
 import type { User } from "../dtos/app/user.js";
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
 
-import { mailService } from "./mail-service.js";
-import type { SessionInfo } from "./session-service.js";
-import { sessionService } from "./session-service.js";
-import { tokenService } from "./token-service.js";
+import type { MailService } from "./mail-service.js";
+import type { SessionInfo, SessionService } from "./session-service.js";
+import type { TokenService } from "./token-service.js";
 
-import { createConfig } from "~/infra/config/config.js";
+import type { DAO } from "~/daos/app/dao.js";
+import type { ClientAppConfig } from "~/infra/config/client-app.js";
+import type { Config } from "~/infra/config/config.js";
 import { createUrl } from "~/shared/index.js";
 
-const eitherConfig = createConfig(process.env);
-if (e.isLeft(eitherConfig)) throw eitherConfig.left;
-const config = eitherConfig.right;
-
 class AuthService {
+  private readonly roundsForPasswordHash: number;
+  private readonly clientApp: ClientAppConfig;
+
+  constructor(
+    private readonly dao: DAO,
+    private readonly sessionService: SessionService,
+    private readonly tokenService: TokenService,
+    private readonly mailService: MailService,
+    config: Config,
+  ) {
+    this.roundsForPasswordHash = config.bcrypt.roundsForPasswordHash;
+    this.clientApp = config.clientApp;
+  }
+
   async register(email: User["email"], password: User["password"]): Promise<SessionInfo> {
     try {
-      const passwordHash = await bcrypt.hash(password, config.bcrypt.roundsForPasswordHash);
+      const passwordHash = await bcrypt.hash(password, this.roundsForPasswordHash);
       const activationLink = uuid.v4();
-      const userId = await dao.createUser(email, passwordHash, activationLink);
-      const user = await dao.getUserBy("id", userId);
+      const userId = await this.dao.createUser(email, passwordHash, activationLink);
+      const user = await this.dao.getUserBy("id", userId);
 
       if (user === undefined) {
         throw APIError.InternalServerError(
@@ -34,13 +43,13 @@ class AuthService {
         );
       }
 
-      const { protocol, address, port } = config.clientApp;
-      await mailService.sendActivationMail(
+      const { protocol, address, port } = this.clientApp;
+      await this.mailService.sendActivationMail(
         email,
         `${createUrl(protocol, address, port)}/activate/${user.activationLink}`,
       );
 
-      return await sessionService.createSession(user);
+      return await this.sessionService.createSession(user);
     } catch (e) {
       if (e instanceof DAOConstraintUniqueError && e.columnName === "User.email") {
         throw APIError.BadRequest(`Email '${email}' is already taken.`, APIErrorCode.EMAIL_IS_BUSY);
@@ -51,7 +60,7 @@ class AuthService {
   }
 
   async login(email: User["email"], password: User["password"]): Promise<SessionInfo> {
-    const user = await dao.getUserBy("email", email);
+    const user = await this.dao.getUserBy("email", email);
 
     if (user === undefined) {
       throw APIError.BadRequest(
@@ -66,12 +75,12 @@ class AuthService {
       throw APIError.BadRequest("Wrong password specified.", APIErrorCode.INVALID_PASSWORD);
     }
 
-    return await sessionService.createSession(user);
+    return await this.sessionService.createSession(user);
   }
 
   async logout(refreshToken: Session["refreshToken"]): Promise<void> {
     try {
-      await sessionService.destroySession(refreshToken);
+      await this.sessionService.destroySession(refreshToken);
     } catch (e) {
       if (e instanceof DAOError) {
         throw APIError.Unauthorized();
@@ -86,28 +95,28 @@ class AuthService {
       throw APIError.Unauthorized();
     }
 
-    const payload = tokenService.validateRefreshToken(refreshToken) as {
+    const payload = this.tokenService.validateRefreshToken(refreshToken) as {
       userId: number;
       userEmail: string;
     } | null;
 
-    const session = await sessionService.getSession(refreshToken);
+    const session = await this.sessionService.getSession(refreshToken);
 
     if (!payload || !session) {
       throw APIError.Unauthorized();
     }
 
-    const user = await dao.getUserBy("id", payload.userId);
+    const user = await this.dao.getUserBy("id", payload.userId);
 
     if (user === undefined) {
       throw APIError.InternalServerError(`User with ID ${payload.userId} not found in storage.`);
     }
 
-    return await sessionService.updateSession(user, refreshToken);
+    return await this.sessionService.updateSession(user, refreshToken);
   }
 
   async activate(activationLink: User["activationLink"]): Promise<void> {
-    const user = await dao.getUserBy("activationLink", activationLink);
+    const user = await this.dao.getUserBy("activationLink", activationLink);
 
     if (user === undefined) {
       throw APIError.BadRequest(
@@ -116,10 +125,8 @@ class AuthService {
       );
     }
 
-    await dao.activateUser(user.id);
+    await this.dao.activateUser(user.id);
   }
 }
 
-const authService = new AuthService();
-
-export { authService };
+export { AuthService };
