@@ -1,4 +1,4 @@
-import { dao } from "../daos/sqlite/dao.js";
+import { dao } from "../daos/postgres/dao.js";
 import type { Test } from "../dtos/app/test/base";
 import type { BriefPassedTest, BriefTest } from "../dtos/app/test/brief";
 import type { User } from "../dtos/app/user.js";

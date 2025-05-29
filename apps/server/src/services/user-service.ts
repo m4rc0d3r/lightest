@@ -1,4 +1,4 @@
-import { dao } from "../daos/sqlite/dao.js";
+import { dao } from "../daos/postgres/dao.js";
 import type { Test } from "../dtos/app/test/base";
 import type { User } from "../dtos/app/user.js";
 

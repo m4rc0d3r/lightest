@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 
-import { dao } from "./daos/sqlite/dao.js";
+import { dao } from "./daos/postgres/dao.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
 import { router as authRouter } from "./routers/auth-router.js";
 import { router as testRouter } from "./routers/test-router.js";

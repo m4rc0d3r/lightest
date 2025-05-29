@@ -34,11 +34,13 @@ import {
   getDbQuestionTypeByApp,
 } from "./utils.js";
 
+import type { PostgresSession } from "~/dtos/postgres/session.js";
 import type { PostgresPassedAnswerOption } from "~/dtos/postgres/test/passed/answer-option.js";
 import type { PostgresPassedExtendedAnswer } from "~/dtos/postgres/test/passed/correct-extended-answer.js";
 import type { PostgresPassedQuestion } from "~/dtos/postgres/test/passed/question.js";
 import type { PostgresPassedTest } from "~/dtos/postgres/test/passed/test.js";
 import type { PostgresTest } from "~/dtos/postgres/test/test.js";
+import type { PostgresUser } from "~/dtos/postgres/user.js";
 import { db } from "~/infra/drizzle/db.js";
 import {
   answerOptionTable,
@@ -75,7 +77,7 @@ class PostgresDAO implements DAO {
     activationLink: User["activationLink"],
   ): Promise<User["id"]> {
     try {
-      const result = await db.execute<typeof userTable.$inferSelect>(sql`
+      const result = await db.execute<PostgresUser>(sql`
         INSERT INTO
           ${userTable} (email, password, activation_link)
         VALUES
@@ -111,7 +113,7 @@ class PostgresDAO implements DAO {
     fieldName: T,
     value: User[T],
   ): Promise<User | undefined> {
-    const result = await db.execute<typeof userTable.$inferSelect>(sql`
+    const result = await db.execute<PostgresUser>(sql`
       SELECT
         *
       FROM
@@ -119,8 +121,9 @@ class PostgresDAO implements DAO {
       WHERE
         ${getColumnByUserField(fieldName)} = ${value}
     `);
+    const user = result.rows[0];
 
-    return result.rows[0];
+    return user && mapDbUserToApp(user);
   }
 
   async activateUser(id: User["id"]): Promise<void> {
@@ -138,14 +141,14 @@ class PostgresDAO implements DAO {
   }
 
   async getUsers(): Promise<User[]> {
-    const result = await db.execute<typeof userTable.$inferSelect>(sql`
+    const result = await db.execute<PostgresUser>(sql`
       SELECT
         *
       FROM
         ${userTable}
     `);
 
-    return result.rows;
+    return result.rows.map(mapDbUserToApp);
   }
 
   async createSession(
@@ -154,7 +157,7 @@ class PostgresDAO implements DAO {
     expires: Session["expires"],
   ): Promise<Session["id"]> {
     try {
-      const result = await db.execute<typeof sessionTable.$inferSelect>(sql`
+      const result = await db.execute<PostgresSession>(sql`
         INSERT INTO
           ${sessionTable} (refresh_token, user_id, expires)
         VALUES
@@ -190,9 +193,7 @@ class PostgresDAO implements DAO {
     fieldName: T,
     value: Session[T],
   ): Promise<Session | undefined> {
-    const result = await db.execute<
-      Omit<typeof sessionTable.$inferSelect, "expires"> & { expires: string }
-    >(sql`
+    const result = await db.execute<PostgresSession>(sql`
       SELECT
         *
       FROM
@@ -205,7 +206,9 @@ class PostgresDAO implements DAO {
 
     return (
       session && {
-        ...session,
+        id: session.id,
+        userId: session.user_id,
+        refreshToken: session.refresh_token,
         expires: session.expires,
       }
     );
@@ -249,7 +252,7 @@ class PostgresDAO implements DAO {
     return await db.transaction(async (tx) => {
       const errorText = "Failed to create test.";
 
-      const result = await tx.execute<typeof testTable.$inferSelect>(sql`
+      const result = await tx.execute<PostgresTest>(sql`
         INSERT INTO
           ${testTable} (author_id, title)
         VALUES
@@ -264,7 +267,7 @@ class PostgresDAO implements DAO {
       if (testId === undefined) throw new DAOError(errorText);
 
       for (const question of test.questions) {
-        const result = await tx.execute<typeof questionTable.$inferSelect>(sql`
+        const result = await tx.execute<PostgresQuestion>(sql`
           INSERT INTO
             ${questionTable} (test_id, type, content, worth)
           VALUES
@@ -282,7 +285,7 @@ class PostgresDAO implements DAO {
 
         if (question.type === QuestionType.EXTENDED) {
           const questionWithExtendedAnswer = question as QuestionWithExtendedAnswerToEdit;
-          const result = await tx.execute<typeof correctExtendedAnswerTable.$inferSelect>(sql`
+          const result = await tx.execute<PostgresExtendedAnswer>(sql`
             INSERT INTO
               ${correctExtendedAnswerTable} (question_id, content)
             VALUES
@@ -297,7 +300,7 @@ class PostgresDAO implements DAO {
         } else {
           const questionWithAnswerOptions = question as QuestionWithAnswerOptionsToEdit;
           for (const answerOption of questionWithAnswerOptions.answerOptions) {
-            const result = await tx.execute<typeof answerOptionTable.$inferSelect>(sql`
+            const result = await tx.execute<PostgresAnswerOption>(sql`
               INSERT INTO
                 ${answerOptionTable} (question_id, content, is_correct)
               VALUES
@@ -319,7 +322,7 @@ class PostgresDAO implements DAO {
   }
 
   async getTestToEdit(test_id: Test["id"]): Promise<Test | undefined> {
-    const selectTestResult = await db.execute<typeof testTable.$inferSelect>(sql`
+    const selectTestResult = await db.execute<PostgresTest>(sql`
       SELECT
         *
       FROM
@@ -332,7 +335,7 @@ class PostgresDAO implements DAO {
 
     const testToEdit = { id: test.id, title: test.title, questions: [] } as Test;
 
-    const selectQuestionResult = await db.execute<typeof questionTable.$inferSelect>(sql`
+    const selectQuestionResult = await db.execute<PostgresQuestion>(sql`
       SELECT
         *
       FROM
@@ -365,16 +368,14 @@ class PostgresDAO implements DAO {
           correctAnswer: correctAnswer.content,
         } as QuestionWithExtendedAnswerToEdit);
       } else {
-        const selectAnswerOptionResult = await db.execute<typeof answerOptionTable.$inferSelect>(
-          sql`
-            SELECT
-              *
-            FROM
-              ${answerOptionTable}
-            WHERE
-              question_id = ${question.id}
-          `,
-        );
+        const selectAnswerOptionResult = await db.execute<PostgresAnswerOption>(sql`
+          SELECT
+            *
+          FROM
+            ${answerOptionTable}
+          WHERE
+            question_id = ${question.id}
+        `);
         const answerOptions = selectAnswerOptionResult.rows;
         testToEdit.questions.push({
           id: question.id,
@@ -385,7 +386,7 @@ class PostgresDAO implements DAO {
             return {
               id: answerOption.id,
               content: answerOption.content,
-              isCorrect: answerOption.isCorrect,
+              isCorrect: answerOption.is_correct,
             } as AnswerOptionToEdit;
           }),
         } as QuestionWithAnswerOptionsToEdit);
@@ -969,7 +970,7 @@ class PostgresDAO implements DAO {
   }
 
   async getTestAuthor(test_id: Test["id"]): Promise<User | undefined> {
-    const result = await db.execute<typeof userTable.$inferSelect>(sql`
+    const result = await db.execute<PostgresUser>(sql`
       SELECT
         ${userTable}.*
       FROM
@@ -978,8 +979,9 @@ class PostgresDAO implements DAO {
       WHERE
         ${testTable.id} = ${test_id}
     `);
+    const user = result.rows[0];
 
-    return result.rows[0];
+    return user && mapDbUserToApp(user);
   }
 
   async getBriefTests(): Promise<BriefTest[]> {
@@ -1108,7 +1110,7 @@ class PostgresDAO implements DAO {
   }
 
   async getTestToPass(id: Test["id"]): Promise<Test | undefined> {
-    const selectTestResult = await db.execute<typeof testTable.$inferSelect>(sql`
+    const selectTestResult = await db.execute<PostgresTest>(sql`
       SELECT
         *
       FROM
@@ -1121,7 +1123,7 @@ class PostgresDAO implements DAO {
 
     const testToPass = { id: test.id, title: test.title, questions: [] } as Test;
 
-    const selectQuestionsResult = await db.execute<typeof questionTable.$inferSelect>(sql`
+    const selectQuestionsResult = await db.execute<PostgresQuestion>(sql`
       SELECT
         *
       FROM
@@ -1141,16 +1143,14 @@ class PostgresDAO implements DAO {
           enteredAnswer: "",
         } as QuestionWithExtendedAnswerToPass);
       } else {
-        const selectAnswerOptionsResult = await db.execute<typeof answerOptionTable.$inferSelect>(
-          sql`
-            SELECT
-              *
-            FROM
-              ${answerOptionTable}
-            WHERE
-              ${answerOptionTable.questionId} = ${question.id}
-          `,
-        );
+        const selectAnswerOptionsResult = await db.execute<PostgresAnswerOption>(sql`
+          SELECT
+            *
+          FROM
+            ${answerOptionTable}
+          WHERE
+            ${answerOptionTable.questionId} = ${question.id}
+        `);
         const answerOptions = selectAnswerOptionsResult.rows;
         testToPass.questions.push({
           id: question.id,
@@ -1175,7 +1175,7 @@ class PostgresDAO implements DAO {
     return await db.transaction(async (tx) => {
       const errorText = "Failed to create test pass record.";
 
-      const insertPassedTestResult = await tx.execute<typeof passedTestTable.$inferSelect>(sql`
+      const insertPassedTestResult = await tx.execute<PostgresPassedTest>(sql`
         INSERT INTO
           ${passedTestTable} (test_id, passing_id)
         VALUES
@@ -1388,6 +1388,16 @@ class PostgresDAO implements DAO {
 
     return passedTest;
   }
+}
+
+function mapDbUserToApp(user: PostgresUser) {
+  return {
+    id: user.id,
+    email: user.email,
+    password: user.password,
+    isActivated: user.is_activated,
+    activationLink: user.activation_link,
+  };
 }
 
 const dao: DAO = new PostgresDAO();

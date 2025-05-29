@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import * as uuid from "uuid";
 
 import { DAOConstraintUniqueError, DAOError } from "../daos/app/errors.js";
-import { dao } from "../daos/sqlite/dao.js";
+import { dao } from "../daos/postgres/dao.js";
 import type { Session } from "../dtos/app/session.js";
 import type { User } from "../dtos/app/user.js";
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
