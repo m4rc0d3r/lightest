@@ -1,19 +1,27 @@
 import type { AxiosRequestConfig } from "axios";
 import axios, { AxiosError } from "axios";
 
-import { API_URL } from "@/env";
+import { createUrl } from "./shared";
+
+import { useConfigStore } from "@/infra/config/store";
 import { useAuthStore } from "@/stores/auth";
 import { pinia } from "@/stores/pinia";
 
 const defaultAPI = axios.create({
   withCredentials: true,
-  baseURL: API_URL,
 });
 
 defaultAPI.interceptors.request.use((config) => {
   if (config.headers !== undefined) {
     config.headers["authorization"] = `Bearer ${useAuthStore(pinia).token}`;
   }
+
+  const {
+    config: {
+      serverApp: { protocol, address, port, apiBaseUrl },
+    },
+  } = useConfigStore(pinia);
+  config.baseURL = createUrl(protocol, address, port, apiBaseUrl);
 
   return config;
 });

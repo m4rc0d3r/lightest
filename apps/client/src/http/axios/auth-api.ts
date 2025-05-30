@@ -1,8 +1,23 @@
 import axios from "axios";
 
-import { API_URL } from "@/env";
+import { createUrl } from "./shared";
 
-export const authAPI = axios.create({
+import { useConfigStore } from "@/infra/config/store";
+import { pinia } from "@/stores/pinia";
+
+const authAPI = axios.create({
   withCredentials: true,
-  baseURL: `${API_URL}/auth`,
 });
+
+authAPI.interceptors.request.use((config) => {
+  const {
+    config: {
+      serverApp: { protocol, address, port, apiBaseUrl },
+    },
+  } = useConfigStore(pinia);
+  config.baseURL = `${createUrl(protocol, address, port, apiBaseUrl)}/auth`;
+
+  return config;
+});
+
+export { authAPI };
