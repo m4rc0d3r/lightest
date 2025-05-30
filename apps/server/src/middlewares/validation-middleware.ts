@@ -1,32 +1,40 @@
-import type { NextFunction, Request, Response } from "express";
-import { validationResult } from "express-validator";
+import type { AppRouter, FlattenAppRouter } from "@ts-rest/core";
+import type { RequestValidationError, TsRestRequest } from "@ts-rest/express";
+import type { NextFunction, Response } from "express";
 
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
-import type { ParamsDictionary, ParsedQs } from "../types/express.js";
 
-function validationMiddleware(
-  req: Request<ParamsDictionary, unknown, unknown, ParsedQs, Record<string, unknown>>,
-  _res: Response<unknown, Record<string, unknown>>,
-  next: NextFunction,
-): void {
-  const errors = validationResult(req);
+import { isObject } from "~/shared/index.js";
 
-  if (!errors.isEmpty()) {
-    console.log("Validation middleware encountered errors:", errors);
+const validationMiddleware =
+  <T extends AppRouter>(_schema: T) =>
+  (
+    err: RequestValidationError,
+    _req: TsRestRequest<FlattenAppRouter<T>>,
+    _res: Response,
+    next: NextFunction,
+  ) => {
+    const { pathParams, query, headers, body } = err;
+    const error = pathParams ?? query ?? headers ?? body;
 
-    return next(
+    if (!error) return next();
+
+    const _ERRORS = "_errors";
+
+    next(
       APIError.BadRequest(
-        errors
-          .array()
-          .map(({ msg }) => (typeof msg === "string" ? msg : ""))
+        Object.entries(error.format())
+          .filter(([key]) => key !== _ERRORS)
+          .map(([, value]) =>
+            isObject(value) && _ERRORS in value && Array.isArray(value[_ERRORS])
+              ? value[_ERRORS].join("\n")
+              : "",
+          )
           .filter((value) => !!value)
           .join("\n"),
         APIErrorCode.INVALID_DATA_FORMAT,
       ),
     );
-  } else {
-    next();
-  }
-}
+  };
 
 export { validationMiddleware };

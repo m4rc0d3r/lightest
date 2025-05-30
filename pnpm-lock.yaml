@@ -144,6 +144,12 @@ importers:
 
   apps/server:
     dependencies:
+      '@ts-rest/core':
+        specifier: ^3.52.1
+        version: 3.52.1(@types/node@22.15.21)(zod@3.25.36)
+      '@ts-rest/express':
+        specifier: ^3.52.1
+        version: 3.52.1(@ts-rest/core@3.52.1(@types/node@22.15.21)(zod@3.25.36))(express@4.21.2)(zod@3.25.36)
       awilix:
         specifier: ^12.0.5
         version: 12.0.5
@@ -214,6 +220,9 @@ importers:
       '@swc/core':
         specifier: ^1.11.29
         version: 1.11.29
+      '@test-and-be-tested/core':
+        specifier: workspace:*
+        version: link:../../packages/core
       '@test-and-be-tested/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
@@ -1294,6 +1303,16 @@ packages:
     peerDependenciesMeta:
       '@types/node':
         optional: true
+      zod:
+        optional: true
+
+  '@ts-rest/express@3.52.1':
+    resolution: {integrity: sha512-ttVynyJSWYnVzn7FazSFvShD5j3Lq1JsIhSKereV2Z51zxWEQwo35CpCO3Q8rELzkfD9CYoT6eNSBJRlJLogIw==}
+    peerDependencies:
+      '@ts-rest/core': ~3.52.0
+      express: ^4.0.0
+      zod: ^3.22.3
+    peerDependenciesMeta:
       zod:
         optional: true
 
@@ -5983,6 +6002,13 @@ snapshots:
   '@ts-rest/core@3.52.1(@types/node@22.15.21)(zod@3.25.36)':
     optionalDependencies:
       '@types/node': 22.15.21
+      zod: 3.25.36
+
+  '@ts-rest/express@3.52.1(@ts-rest/core@3.52.1(@types/node@22.15.21)(zod@3.25.36))(express@4.21.2)(zod@3.25.36)':
+    dependencies:
+      '@ts-rest/core': 3.52.1(@types/node@22.15.21)(zod@3.25.36)
+      express: 4.21.2
+    optionalDependencies:
       zod: 3.25.36
 
   '@tybys/wasm-util@0.9.0':

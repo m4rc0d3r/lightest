@@ -1,3 +1,5 @@
+import { authContract } from "@test-and-be-tested/core";
+import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -9,7 +11,8 @@ import { either as e } from "fp-ts";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
-import { router as authRouter } from "./routers/auth-router.js";
+import { validationMiddleware } from "./middlewares/validation-middleware.js";
+import { authRouter } from "./routers/auth-router.js";
 import { router as testRouter } from "./routers/test-router.js";
 import { router as userRouter } from "./routers/user-router.js";
 import { createUrl } from "./shared";
@@ -29,9 +32,12 @@ app.use(cors(config.cors));
 
 app.use(scopePerRequest(diContainer));
 
-app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/tests", testRouter);
+
+createExpressEndpoints(authContract, authRouter, app, {
+  requestValidationErrorHandler: validationMiddleware(authContract),
+});
 
 app.use(errorMiddleware);
 

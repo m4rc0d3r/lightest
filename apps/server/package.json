@@ -2,6 +2,8 @@
   "name": "@test-and-be-tested/server",
   "version": "0.0.0",
   "dependencies": {
+    "@ts-rest/core": "^3.52.1",
+    "@ts-rest/express": "^3.52.1",
     "awilix": "^12.0.5",
     "awilix-express": "^9.0.2",
     "awilix-manager": "^6.1.0",
@@ -27,6 +29,7 @@
   "devDependencies": {
     "@swc/cli": "^0.7.7",
     "@swc/core": "^1.11.29",
+    "@test-and-be-tested/core": "workspace:*",
     "@test-and-be-tested/eslint-config": "workspace:*",
     "@test-and-be-tested/lint-staged-config": "workspace:*",
     "@test-and-be-tested/typescript-config": "workspace:*",
