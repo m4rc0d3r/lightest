@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { CookieOptions, NextFunction, Request, Response } from "express";
 
 import type { Tokens } from "../services/token-service.js";
 import type { AuthData } from "../types/auth-data.js";
@@ -11,14 +11,22 @@ class AuthController {
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
-    const { authService } = req.container.cradle;
+    const {
+      config: {
+        auth: { refreshTokenCookieName },
+      },
+      defaultCookieOptions,
+      authService,
+    } = req.container.cradle;
 
     try {
       const { email, password } = req.body;
       const { tokens, refreshTokenExpirationDate } = await authService.register(email, password);
-      this.sendRequestWithTokens(
+      this.sendResponseWithCookie(
         res,
         tokens,
+        refreshTokenCookieName,
+        defaultCookieOptions,
         refreshTokenExpirationDate,
         "Account registration completed successfully.",
       );
@@ -32,14 +40,22 @@ class AuthController {
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
-    const { authService } = req.container.cradle;
+    const {
+      config: {
+        auth: { refreshTokenCookieName },
+      },
+      defaultCookieOptions,
+      authService,
+    } = req.container.cradle;
 
     try {
       const { email, password } = req.body;
       const { tokens, refreshTokenExpirationDate } = await authService.login(email, password);
-      this.sendRequestWithTokens(
+      this.sendResponseWithCookie(
         res,
         tokens,
+        refreshTokenCookieName,
+        defaultCookieOptions,
         refreshTokenExpirationDate,
         "Account login completed successfully.",
       );
@@ -53,15 +69,18 @@ class AuthController {
     res: Response<Report, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
-    const { authService } = req.container.cradle;
+    const {
+      config: {
+        auth: { refreshTokenCookieName },
+      },
+      authService,
+    } = req.container.cradle;
 
     try {
-      const { refreshToken } = req.cookies;
-      if (typeof refreshToken !== "string")
-        throw new TypeError("The request cookie must contain a refresh token.");
+      const refreshToken = this.getRefreshTokenFromCookies(req, refreshTokenCookieName);
 
       await authService.logout(refreshToken);
-      res.clearCookie("refreshToken");
+      res.clearCookie(refreshTokenCookieName);
       res.json({ message: "Account logout completed successfully." });
     } catch (e) {
       next(e);
@@ -73,17 +92,23 @@ class AuthController {
     res: Response<Report<string>, Record<string, unknown>>,
     next: NextFunction,
   ): Promise<void> {
-    const { authService } = req.container.cradle;
+    const {
+      config: {
+        auth: { refreshTokenCookieName },
+      },
+      defaultCookieOptions,
+      authService,
+    } = req.container.cradle;
 
     try {
-      const { refreshToken } = req.cookies;
-      if (typeof refreshToken !== "string")
-        throw new TypeError("The request cookie must contain a refresh token.");
+      const refreshToken = this.getRefreshTokenFromCookies(req, refreshTokenCookieName);
 
       const { tokens, refreshTokenExpirationDate } = await authService.refresh(refreshToken);
-      this.sendRequestWithTokens(
+      this.sendResponseWithCookie(
         res,
         tokens,
+        refreshTokenCookieName,
+        defaultCookieOptions,
         refreshTokenExpirationDate,
         "Access token updated successfully.",
       );
@@ -108,15 +133,26 @@ class AuthController {
     }
   }
 
-  private sendRequestWithTokens(
+  private getRefreshTokenFromCookies(req: Request, refreshTokenCookieName: string) {
+    const { [refreshTokenCookieName]: refreshToken } = req.cookies;
+    if (typeof refreshToken !== "string")
+      throw new TypeError("The request cookie must contain a refresh token.");
+
+    return refreshToken;
+  }
+
+  private sendResponseWithCookie(
     res: Response<Report<string>, Record<string, unknown>>,
     tokens: Tokens,
+    cookieName: string,
+    cookieOptions: CookieOptions,
     refreshTokenExpirationDate: Date,
     message: string,
   ) {
-    res.cookie("refreshToken", tokens.refreshToken, {
+    res.cookie(cookieName, tokens.refreshToken, {
+      ...cookieOptions,
       expires: refreshTokenExpirationDate,
-      httpOnly: true,
+      signed: false,
     });
     res.json({ message, payload: tokens.accessToken });
   }
