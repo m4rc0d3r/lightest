@@ -276,6 +276,13 @@ importers:
         version: 5.8.3
 
   packages/core:
+    dependencies:
+      '@ts-rest/core':
+        specifier: ^3.52.1
+        version: 3.52.1(@types/node@22.15.21)(zod@3.25.36)
+      zod:
+        specifier: ^3.25.36
+        version: 3.25.36
     devDependencies:
       '@swc/cli':
         specifier: ^0.7.7
@@ -1278,6 +1285,17 @@ packages:
   '@tootallnate/once@1.1.2':
     resolution: {integrity: sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==}
     engines: {node: '>= 6'}
+
+  '@ts-rest/core@3.52.1':
+    resolution: {integrity: sha512-tAjz7Kxq/grJodcTA1Anop4AVRDlD40fkksEV5Mmal88VoZeRKAG8oMHsDwdwPZz+B/zgnz0q2sF+cm5M7Bc7g==}
+    peerDependencies:
+      '@types/node': ^18.18.7 || >=20.8.4
+      zod: ^3.22.3
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      zod:
+        optional: true
 
   '@tybys/wasm-util@0.9.0':
     resolution: {integrity: sha512-6+7nlbMVX/PVDCwaIQ8nTOPveOcFLSt8GcXdx8hD0bt39uWxYT88uXzqTd4fTvqta7oeUJqudepapKNt2DYJFw==}
@@ -5961,6 +5979,11 @@ snapshots:
 
   '@tootallnate/once@1.1.2':
     optional: true
+
+  '@ts-rest/core@3.52.1(@types/node@22.15.21)(zod@3.25.36)':
+    optionalDependencies:
+      '@types/node': 22.15.21
+      zod: 3.25.36
 
   '@tybys/wasm-util@0.9.0':
     dependencies:
