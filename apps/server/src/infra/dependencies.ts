@@ -8,6 +8,7 @@ import type {
 import { asClass, asValue, createContainer, Lifetime } from "awilix";
 import { AwilixManager } from "awilix-manager";
 import { drizzle } from "drizzle-orm/node-postgres";
+import type { CookieOptions } from "express";
 
 import type { Config } from "./config";
 
@@ -34,6 +35,7 @@ interface AsyncDispose {
 type Dependencies = {
   config: Config;
   logger: typeof logger;
+  defaultCookieOptions: CookieOptions;
   db: ReturnType<typeof drizzle>;
   dao: DAO;
   authService: AuthService;
@@ -54,12 +56,25 @@ function configureDependencies(config: Config) {
     casing,
   });
 
+  const {
+    cookie: { domain, secure },
+    server: { protocol },
+  } = config;
+
   const diContainer = createContainer<Dependencies>({
     injectionMode: "CLASSIC",
     strict: true,
   }).register({
     config: asValue(config),
     logger: asValue(logger),
+    defaultCookieOptions: asValue({
+      domain,
+      httpOnly: true,
+      path: "/",
+      sameSite: "strict",
+      secure: secure === "auto" ? protocol === "http" : secure,
+      signed: true,
+    }),
     db: asValue(db),
     ...Object.fromEntries(
       (
