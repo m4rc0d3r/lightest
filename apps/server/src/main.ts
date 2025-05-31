@@ -14,7 +14,6 @@ import { errorMiddleware } from "./middlewares/error-middleware.js";
 import { validationMiddleware } from "./middlewares/validation-middleware.js";
 import { authRouter } from "./routers/auth-router.js";
 import { router as testRouter } from "./routers/test-router.js";
-import { router as userRouter } from "./routers/user-router.js";
 import { createUrl } from "./shared";
 
 expand(dotenvConfig());
@@ -32,7 +31,6 @@ app.use(cors(config.cors));
 
 app.use(scopePerRequest(diContainer));
 
-app.use("/api/users", userRouter);
 app.use("/api/tests", testRouter);
 
 createExpressEndpoints(authContract, authRouter, app, {
