@@ -1,18 +1,38 @@
 import { z } from "zod";
 
-import { zBooleanishString } from "../zod";
+import { FALSE, TRUE } from "../zod";
+
+const MAIL_CONFIG_DISCRIMINATOR_KEY = "MAIL_USE_FAKE_SENDING";
 
 const zMailConfig = z
-  .object({
-    MAIL_SMTP_HOST: z.string(),
-    MAIL_SMTP_PORT: z.coerce.number().positive(),
-    MAIL_USE_FAKE_EMAIL_SENDING: zBooleanishString,
-  })
-  .transform(({ MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_USE_FAKE_EMAIL_SENDING }) => ({
-    smtpHost: MAIL_SMTP_HOST,
-    smtpPort: MAIL_SMTP_PORT,
-    useFakeEmailSending: MAIL_USE_FAKE_EMAIL_SENDING,
-  }));
+  .discriminatedUnion(MAIL_CONFIG_DISCRIMINATOR_KEY, [
+    z.object({
+      [MAIL_CONFIG_DISCRIMINATOR_KEY]: z.literal(TRUE),
+    }),
+    z.object({
+      [MAIL_CONFIG_DISCRIMINATOR_KEY]: z.literal(FALSE),
+      MAIL_SMTP_HOST: z.string().nonempty(),
+      MAIL_SMTP_PORT: z.coerce.number().positive(),
+      MAIL_USER: z.string().nonempty(),
+      MAIL_PASSWORD: z.string().nonempty(),
+    }),
+  ])
+  .transform((value) => {
+    if (value[MAIL_CONFIG_DISCRIMINATOR_KEY] === TRUE) {
+      return {
+        useFakeSending: true,
+      };
+    } else {
+      const { MAIL_SMTP_HOST, MAIL_SMTP_PORT, MAIL_USER, MAIL_PASSWORD } = value;
+      return {
+        useFakeSending: false,
+        smtpHost: MAIL_SMTP_HOST,
+        smtpPort: MAIL_SMTP_PORT,
+        user: MAIL_USER,
+        password: MAIL_PASSWORD,
+      };
+    }
+  });
 type MailConfig = z.infer<typeof zMailConfig>;
 
 export { zMailConfig };
