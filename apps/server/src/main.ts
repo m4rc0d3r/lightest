@@ -1,4 +1,4 @@
-import { authContract } from "@test-and-be-tested/core";
+import { authContract, testContract } from "@test-and-be-tested/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -10,10 +10,11 @@ import { either as e } from "fp-ts";
 
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
+import { authMiddleware } from "./middlewares/auth-middleware.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
 import { validationMiddleware } from "./middlewares/validation-middleware.js";
 import { authRouter } from "./routers/auth-router.js";
-import { router as testRouter } from "./routers/test-router.js";
+import { testRouter } from "./routers/test-router.js";
 import { createUrl } from "./shared";
 
 expand(dotenvConfig());
@@ -31,10 +32,20 @@ app.use(cors(config.cors));
 
 app.use(scopePerRequest(diContainer));
 
-app.use("/api/tests", testRouter);
-
 createExpressEndpoints(authContract, authRouter, app, {
   requestValidationErrorHandler: validationMiddleware(authContract),
+});
+createExpressEndpoints(testContract, testRouter, app, {
+  globalMiddleware: [
+    (req, res, next) => {
+      if (req.path === testContract.getBriefTests.path) {
+        next();
+      } else {
+        authMiddleware(req as Parameters<typeof authMiddleware>[0], res, next);
+      }
+    },
+  ],
+  requestValidationErrorHandler: validationMiddleware(testContract),
 });
 
 app.use(errorMiddleware);
