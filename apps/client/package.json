@@ -2,11 +2,13 @@
   "name": "@test-and-be-tested/client",
   "version": "0.0.0",
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.8",
     "axios": "^0.27.2",
     "fp-ts": "^2.16.10",
     "pinia": "^2.0.21",
     "sass": "^1.54.8",
     "sass-loader": "^13.0.2",
+    "tailwindcss": "^4.1.8",
     "uuid": "^9.0.0",
     "vue": "^3.2.38",
     "vue-router": "^4.1.5",

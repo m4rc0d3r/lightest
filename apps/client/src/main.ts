@@ -8,6 +8,8 @@ import App from "@/App.vue";
 import router from "@/router";
 import { pinia } from "@/stores/pinia";
 
+import "./index.css";
+
 const eitherConfig = createConfig(import.meta.env);
 if (e.isLeft(eitherConfig)) throw eitherConfig.left;
 
