@@ -9,6 +9,7 @@
     "fp-ts": "^2.16.10",
     "lucide-vue-next": "^0.511.0",
     "pinia": "^2.0.21",
+    "reka-ui": "^2.3.0",
     "sass": "^1.54.8",
     "sass-loader": "^13.0.2",
     "tailwind-merge": "^3.3.0",

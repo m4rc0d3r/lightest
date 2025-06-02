@@ -39,7 +39,7 @@ export default defineConfig([
       "vue/multi-word-component-names": [
         "error",
         {
-          ignores: [],
+          ignores: ["Button"],
         },
       ],
       "vue/no-reserved-component-names": [
