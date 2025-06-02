@@ -121,3 +121,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+body {
+  font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+}
