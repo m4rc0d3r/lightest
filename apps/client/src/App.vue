@@ -84,8 +84,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-@use "@/stylesheets/reset";
-
 body {
   font-family: Cambria, Cochin, Georgia, Times, "Times New Roman", serif;
   background-color: #f78a31;
