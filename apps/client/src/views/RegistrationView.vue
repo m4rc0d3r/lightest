@@ -1,19 +1,9 @@
-<template>
-  <div>
-    <RegistrationForm />
-  </div>
-</template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-
+<script setup lang="ts">
 import RegistrationForm from "@/components/auth/RegistrationForm.vue";
-
-export default defineComponent({
-  components: {
-    RegistrationForm,
-  },
-});
 </script>
 
-style>
+<template>
+  <div class="flex h-full">
+    <RegistrationForm class="m-auto" />
+  </div>
+</template>
