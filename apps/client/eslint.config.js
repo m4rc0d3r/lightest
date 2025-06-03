@@ -48,6 +48,7 @@ export default defineConfig([
             "Sonner",
             "Label",
             "Accordion",
+            "Calendar",
           ],
         },
       ],
