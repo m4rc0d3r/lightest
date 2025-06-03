@@ -52,6 +52,7 @@ export default defineConfig([
             "Popover",
             "Separator",
             "Switch",
+            "Textarea",
           ],
         },
       ],
