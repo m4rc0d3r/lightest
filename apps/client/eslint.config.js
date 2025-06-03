@@ -50,6 +50,7 @@ export default defineConfig([
             "Accordion",
             "Calendar",
             "Popover",
+            "Separator",
           ],
         },
       ],
