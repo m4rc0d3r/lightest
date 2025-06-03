@@ -1,38 +1,18 @@
-<template>
-  <div class="control-panel">
-    <select
-      class="type-of-displayed-tests"
-      :value="displayedTests"
-      @change="displayedTests = ($event.target as HTMLSelectElement).value as DisplayedTest"
-    >
-      <option
-        v-for="questionType in allDisplayedTestsForSelect"
-        :key="questionType.value"
-        :value="questionType.value"
-        :label="questionType.label"
-      ></option>
-    </select>
-    <router-link
-      class="create-test-button"
-      to="/create-test"
-      v-show="displayedTests === createdDisplayedTest"
-      >Create test</router-link
-    >
-  </div>
-
-  <TestList
-    v-if="tests.length > 0"
-    :tests="tests"
-    :test-mode="displayedTests === createdDisplayedTest ? editableTestMode : passedTestMode"
-  />
-  <p v-else>There are currently no tests created.</p>
-</template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { computed, onMounted, reactive, ref, watch } from "vue";
+import { RouterLink } from "vue-router";
 
 import { TEST_MODE } from "@/components/tests-view/shared";
 import TestList from "@/components/tests-view/TestList.vue";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
 import type { APIError } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
@@ -59,121 +39,107 @@ class DisplayedTestForSelect {
   }
 }
 
-export default defineComponent({
-  components: {
-    TestList,
-  },
+const tests = reactive<BriefTest[] | BriefPassedTest[]>([]);
+const notificationStore = useNotificationStore();
+const displayedTests = ref<DisplayedTest>(DISPLAYED_TEST.CREATED);
 
-  data() {
-    return {
-      tests: [] as BriefTest[] | BriefPassedTest[],
-      notificationStore: useNotificationStore(),
-      displayedTests: DISPLAYED_TEST.CREATED as DisplayedTest,
-    };
-  },
-
-  async mounted() {
-    await this.loadTests();
-  },
-
-  watch: {
-    displayedTests: {
-      async handler() {
-        const tests = await this.loadTests();
-        if (tests !== undefined) {
-          this.tests = tests;
-        }
-      },
-      immediate: true,
-    },
-  },
-
-  computed: {
-    editableTestMode() {
-      return TEST_MODE.EDITABLE;
-    },
-
-    passedTestMode() {
-      return TEST_MODE.PASSED;
-    },
-
-    createdDisplayedTest() {
-      return DISPLAYED_TEST.CREATED;
-    },
-
-    passedDisplayedTest() {
-      return DISPLAYED_TEST.PASSED;
-    },
-
-    allDisplayedTestsForSelect() {
-      const questionTypes = [
-        new DisplayedTestForSelect(DISPLAYED_TEST.CREATED, "Created by me"),
-        new DisplayedTestForSelect(DISPLAYED_TEST.PASSED, "Passed me by"),
-      ];
-
-      if (questionTypes.length !== DisplayedTestCount) {
-        throw new Error(
-          `Number of displayed tests ${DisplayedTestCount}, not ${questionTypes.length}.`,
-        );
-      }
-
-      return questionTypes;
-    },
-  },
-
-  methods: {
-    async loadTests() {
-      let result: APIError | Report<BriefTest[]> | Report<BriefPassedTest[]> | null = null;
-
-      switch (this.displayedTests) {
-        case DISPLAYED_TEST.CREATED:
-          result = extractData(await TestService.getBriefTestsCreatedByUser());
-          break;
-        case DISPLAYED_TEST.PASSED:
-          result = extractData(await TestService.getBriefTestsPassedByUser());
-          break;
-      }
-
-      if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
-        if (result.payload) {
-          return result.payload;
-        }
-      } else {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
-      }
-      return undefined;
-    },
-  },
+onMounted(async () => {
+  await loadTests();
 });
+
+watch(
+  displayedTests,
+  async () => {
+    const loadedTests = await loadTests();
+    if (loadedTests !== undefined) {
+      tests.splice(0, tests.length, ...loadedTests);
+    }
+  },
+  {
+    immediate: true,
+  },
+);
+
+const allDisplayedTestsForSelect = computed(() => {
+  const questionTypes = [
+    new DisplayedTestForSelect(DISPLAYED_TEST.CREATED, "Created by me"),
+    new DisplayedTestForSelect(DISPLAYED_TEST.PASSED, "Passed me by"),
+  ];
+
+  if (questionTypes.length !== DisplayedTestCount) {
+    throw new Error(
+      `Number of displayed tests ${DisplayedTestCount}, not ${questionTypes.length}.`,
+    );
+  }
+
+  return questionTypes;
+});
+
+async function loadTests() {
+  let result: APIError | Report<BriefTest[]> | Report<BriefPassedTest[]> | null = null;
+
+  switch (displayedTests.value) {
+    case DISPLAYED_TEST.CREATED:
+      result = extractData(await TestService.getBriefTestsCreatedByUser());
+      break;
+    case DISPLAYED_TEST.PASSED:
+      result = extractData(await TestService.getBriefTestsPassedByUser());
+      break;
+  }
+
+  if (result instanceof Report) {
+    notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+    if (result.payload) {
+      return result.payload;
+    }
+  } else {
+    notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+  }
+  return undefined;
+}
 </script>
 
-<style lang="scss" scoped>
-.control-panel {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px 0;
-
-  .type-of-displayed-tests {
-    padding: 5px;
-    color: white;
-    background-color: #1e434c;
-
-    > option {
-      background-color: #1e434c;
-    }
-  }
-
-  > .create-test-button {
-    padding: 5px;
-    border: 1px solid black;
-    border-radius: 5px;
-
-    color: white;
-    text-align: center;
-    text-decoration: none;
-
-    background-color: #1e434c;
-  }
-}
-</style>
+<template>
+  <div class="flex flex-grow flex-col gap-4 overflow-auto p-4">
+    <div class="flex justify-between">
+      <Select
+        :model-value="displayedTests"
+        @update:model-value="(value) => (displayedTests = value as DisplayedTest)"
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Select a fruit" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem
+              v-for="{ label, value } in allDisplayedTestsForSelect"
+              :key="value"
+              :value="value"
+              >{{ label }}</SelectItem
+            >
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+      <Button as-child>
+        <RouterLink
+          class="create-test-button"
+          to="/create-test"
+          v-show="displayedTests === DISPLAYED_TEST.CREATED"
+          >Create test</RouterLink
+        >
+      </Button>
+    </div>
+    <TestList
+      v-if="tests.length > 0"
+      :tests="tests"
+      :test-mode="displayedTests === DISPLAYED_TEST.CREATED ? TEST_MODE.EDITABLE : TEST_MODE.PASSED"
+    />
+    <p v-else class="m-auto text-3xl">
+      {{
+        displayedTests === DISPLAYED_TEST.CREATED
+          ? "There are currently no tests created."
+          : "You haven't taken any tests yet."
+      }}
+    </p>
+  </div>
+</template>
