@@ -49,6 +49,7 @@ export default defineConfig([
             "Label",
             "Accordion",
             "Calendar",
+            "Popover",
           ],
         },
       ],
