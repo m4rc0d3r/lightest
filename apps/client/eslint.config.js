@@ -51,6 +51,7 @@ export default defineConfig([
             "Calendar",
             "Popover",
             "Separator",
+            "Switch",
           ],
         },
       ],
