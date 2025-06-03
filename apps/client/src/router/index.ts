@@ -10,6 +10,7 @@ import TestCreationView from "../views/TestCreationView.vue";
 import TestEditingView from "../views/TestEditingView.vue";
 import TestsView from "../views/TestsView.vue";
 
+import MainLayout from "@/layouts/MainLayout.vue";
 import { useAuthStore } from "@/stores/auth";
 import PassedTestView from "@/views/PassedTestView.vue";
 import TestPassView from "@/views/TestPassView.vue";
@@ -19,22 +20,61 @@ const router = createRouter({
   routes: [
     {
       path: "/",
-      name: "tests",
-      component: TestsView,
-      alias: ["/tests", "/home"],
-    },
-    {
-      path: "/my-tests",
-      name: "my-tests",
-      component: MyTestsView,
-      beforeEnter(_to, _from) {
-        return useAuthStore().isLoggedIn;
-      },
-    },
-    {
-      path: "/about",
-      name: "about",
-      component: AboutView,
+      component: MainLayout,
+      children: [
+        {
+          path: "/",
+          name: "tests",
+          component: TestsView,
+          alias: ["/tests", "/home"],
+        },
+        {
+          path: "/my-tests",
+          name: "my-tests",
+          component: MyTestsView,
+          beforeEnter(_to, _from) {
+            return useAuthStore().isLoggedIn;
+          },
+        },
+        {
+          path: "/about",
+          name: "about",
+          component: AboutView,
+        },
+
+        {
+          path: "/create-test",
+          name: "test-creator",
+          component: TestCreationView,
+          beforeEnter(_to, _from) {
+            return useAuthStore().isLoggedIn;
+          },
+        },
+        {
+          path: "/edit-test/:id",
+          name: "test-editor",
+          component: TestEditingView,
+          beforeEnter(_to, _from) {
+            return useAuthStore().isLoggedIn;
+          },
+        },
+        {
+          path: "/pass-test/:id",
+          name: "test-passing",
+          component: TestPassView,
+          beforeEnter(_to, _from) {
+            return useAuthStore().isLoggedIn;
+          },
+        },
+        {
+          path: "/passed-test/:id",
+          name: "passed-test",
+          component: PassedTestView,
+          beforeEnter(_to, _from) {
+            return useAuthStore().isLoggedIn;
+          },
+        },
+      ],
     },
     {
       path: "/register",
@@ -56,38 +96,6 @@ const router = createRouter({
       path: "/activate/:link",
       name: "activation",
       component: ActivationView,
-    },
-    {
-      path: "/create-test",
-      name: "test-creator",
-      component: TestCreationView,
-      beforeEnter(_to, _from) {
-        return useAuthStore().isLoggedIn;
-      },
-    },
-    {
-      path: "/edit-test/:id",
-      name: "test-editor",
-      component: TestEditingView,
-      beforeEnter(_to, _from) {
-        return useAuthStore().isLoggedIn;
-      },
-    },
-    {
-      path: "/pass-test/:id",
-      name: "test-passing",
-      component: TestPassView,
-      beforeEnter(_to, _from) {
-        return useAuthStore().isLoggedIn;
-      },
-    },
-    {
-      path: "/passed-test/:id",
-      name: "passed-test",
-      component: PassedTestView,
-      beforeEnter(_to, _from) {
-        return useAuthStore().isLoggedIn;
-      },
     },
   ],
 });
