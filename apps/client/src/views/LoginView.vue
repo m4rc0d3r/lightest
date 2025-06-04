@@ -1,19 +1,9 @@
-<template>
-  <div>
-    <LoginForm />
-  </div>
-</template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-
+<script setup lang="ts">
 import LoginForm from "@/components/auth/LoginForm.vue";
-
-export default defineComponent({
-  components: {
-    LoginForm,
-  },
-});
 </script>
 
-style>
+<template>
+  <div class="flex h-full">
+    <LoginForm class="m-auto" />
+  </div>
+</template>

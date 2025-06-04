@@ -1,138 +1,94 @@
-<template>
-  <div class="form-wrapper">
-    <form class="form" @submit.prevent>
-      <div class="email-wrapper">
-        <label for="email">Email</label>
-        <input type="email" id="email" required v-model="email" />
-      </div>
-      <div class="password-wrapper">
-        <label for="password">Password</label>
-        <input type="password" id="password" required v-model="password" />
-      </div>
-      <div class="button-wrapper">
-        <button @click="login">Login</button>
-      </div>
-      <div class="errors-wrapper" v-if="errors.length > 0">
-        <span class="error" v-for="error in errors" :key="error.id">{{ error.message }}</span>
-      </div>
-    </form>
-  </div>
-</template>
+<script setup lang="ts">
+import { toTypedSchema } from "@vee-validate/zod";
+import { useForm } from "vee-validate";
+import { reactive } from "vue";
+import { useRouter } from "vue-router";
+import { z } from "zod";
 
-<script lang="ts">
-import { defineComponent } from "vue";
-
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { RouterLink2 } from "@/components/ui/router-link-2";
 import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
 import { Notification, STATUS } from "@/models/notification";
 import { useAuthStore } from "@/stores/auth";
 import { useNotificationStore } from "@/stores/notification";
 
-export default defineComponent({
-  data() {
-    return {
-      email: "",
-      password: "",
-      errors: [] as Notification[],
-      authStore: useAuthStore(),
-      notificationStore: useNotificationStore(),
-    };
-  },
+const router = useRouter();
 
-  methods: {
-    async login() {
-      const result = await this.authStore.login(this.email, this.password);
-      if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
-        void this.$router.push("/");
-      } else if (result instanceof APIError) {
-        if (result.code === API_ERROR_CODE.ERR_NETWORK) {
-          this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
-        } else {
-          this.errors = result.message
-            .split("\n")
-            .map((error) => new Notification(STATUS.FAILURE, error));
-        }
-      }
-    },
-  },
+const schema = toTypedSchema(
+  z.object({
+    email: z.string().email(),
+    password: z.string().min(6).max(32),
+  }),
+);
+
+const form = useForm({
+  validationSchema: schema,
 });
+const errors = reactive<Notification[]>([]);
+const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
+
+async function onSubmit(e?: Event) {
+  await form.handleSubmit(async ({ email, password }) => {
+    const result = await authStore.login(email, password);
+    if (result instanceof Report) {
+      notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+      void router.push("/");
+    } else if (result instanceof APIError) {
+      if (result.code === API_ERROR_CODE.ERR_NETWORK) {
+        notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+      } else {
+        errors.splice(
+          0,
+          errors.length,
+          ...result.message.split("\n").map((error) => new Notification(STATUS.FAILURE, error)),
+        );
+      }
+    }
+  })(e);
+}
 </script>
 
-<style lang="scss" scoped>
-@mixin form-element {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  margin-bottom: 10px;
-}
-
-.form-wrapper {
-  display: flex;
-  height: 100vh;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  min-width: 300px;
-  min-height: 200px;
-  margin: auto;
-  padding: 20px;
-  border: 2px solid #1e434c;
-  border-radius: 5px;
-}
-
-form > *:last-child {
-  margin-bottom: 0;
-}
-
-.email-wrapper {
-  @include form-element;
-
-  > label {
-    font-size: 2rem;
-  }
-
-  > input {
-    font-size: 1.5rem;
-  }
-}
-
-.password-wrapper {
-  @include form-element;
-
-  > label {
-    font-size: 2rem;
-  }
-
-  > input {
-    font-size: 1.5rem;
-  }
-}
-
-.button-wrapper {
-  @include form-element;
-
-  > button {
-    font-size: 1.5rem;
-  }
-}
-
-.errors-wrapper {
-  @include form-element;
-
-  margin: 0 10px;
-  background-color: white;
-}
-
-.error {
-  margin: auto;
-  padding: 0 10px;
-  font-size: 1.3rem;
-  color: red;
-}
-</style>
+<template>
+  <Card>
+    <CardContent class="flex flex-col gap-4">
+      <form class="flex flex-col items-center gap-4" @submit="onSubmit">
+        <FormField v-slot="{ componentField }" name="email">
+          <FormItem>
+            <FormLabel>Email</FormLabel>
+            <FormControl>
+              <Input placeholder="Email" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <FormField v-slot="{ componentField }" name="password">
+          <FormItem>
+            <FormLabel>Password</FormLabel>
+            <FormControl>
+              <Input type="password" placeholder="Password" v-bind="componentField" />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+        <Button type="submit">Login</Button>
+      </form>
+      <ul v-if="errors.length > 0">
+        <li
+          v-for="{ id, message } in errors"
+          :key="id"
+          class="text-destructive-foreground text-center text-sm"
+        >
+          <p>{{ message }}</p>
+        </li>
+      </ul>
+    </CardContent>
+    <CardFooter class="justify-center">
+      <p><RouterLink2 to="/register">Create</RouterLink2>&nbsp;an account</p>
+    </CardFooter>
+  </Card>
+</template>
