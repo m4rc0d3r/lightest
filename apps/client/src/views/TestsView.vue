@@ -1,10 +1,5 @@
-<template>
-  <TestList v-if="tests.length > 0" :tests="tests" :test-mode="passableTestMode" />
-  <p v-else>There are currently no tests created.</p>
-</template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { onMounted, reactive } from "vue";
 
 import { TEST_MODE } from "@/components/tests-view/shared";
 import TestList from "@/components/tests-view/TestList.vue";
@@ -15,43 +10,35 @@ import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
 import { useNotificationStore } from "@/stores/notification";
 
-export default defineComponent({
-  components: {
-    TestList,
-  },
+const tests = reactive<BriefTest[]>([]);
+const notificationStore = useNotificationStore();
 
-  data() {
-    return {
-      tests: [] as BriefTest[],
-      notificationStore: useNotificationStore(),
-    };
-  },
-
-  async mounted() {
-    await this.loadTests();
-  },
-
-  computed: {
-    passableTestMode() {
-      return TEST_MODE.PASSABLE;
-    },
-  },
-
-  methods: {
-    async loadTests() {
-      const result = extractData(await TestService.getBriefTests());
-
-      if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
-        if (result.payload) {
-          this.tests = result.payload;
-        }
-      } else {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
-      }
-    },
-  },
+onMounted(async () => {
+  await loadTests();
 });
+
+async function loadTests() {
+  const result = extractData(await TestService.getBriefTests());
+
+  if (result instanceof Report) {
+    notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+    if (result.payload) {
+      tests.splice(0, tests.length, ...result.payload);
+    }
+  } else {
+    notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+  }
+}
 </script>
 
-style>
+<template>
+  <div class="flex flex-grow overflow-auto p-4">
+    <TestList
+      v-if="tests.length > 0"
+      :tests="tests"
+      :test-mode="TEST_MODE.PASSABLE"
+      class="w-full"
+    />
+    <p v-else class="m-auto text-3xl">No user has created a test yet.</p>
+  </div>
+</template>
