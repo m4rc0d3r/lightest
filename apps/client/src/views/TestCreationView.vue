@@ -1,19 +1,9 @@
-<template>
-  <main>
-    <EditableTest />
-  </main>
-</template>
-
-<script lang="ts">
-import { defineComponent } from "vue";
-
-import EditableTest from "@/components/test/editable/EditableTest.vue";
-
-export default defineComponent({
-  components: {
-    EditableTest,
-  },
-});
+<script setup lang="ts">
+import { TestCreationForm } from "@/components/test/create";
 </script>
 
-style>
+<template>
+  <div class="flex-grow p-4">
+    <TestCreationForm />
+  </div>
+</template>

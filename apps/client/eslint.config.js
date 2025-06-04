@@ -62,6 +62,12 @@ export default defineConfig([
           htmlElementCaseSensitive: true,
         },
       ],
+      "vue/no-unused-vars": [
+        "error",
+        {
+          ignorePattern: "^_",
+        },
+      ],
     },
   },
 ]);
