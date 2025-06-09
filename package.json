@@ -1,13 +1,13 @@
 {
-  "name": "test-and-be-tested",
+  "name": "lightest",
   "version": "0.0.0",
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/types": "^19.8.1",
-    "@test-and-be-tested/eslint-config": "workspace:*",
-    "@test-and-be-tested/lint-staged-config": "workspace:*",
-    "@test-and-be-tested/prettier-config": "workspace:*",
+    "@lightest/eslint-config": "workspace:*",
+    "@lightest/lint-staged-config": "workspace:*",
+    "@lightest/prettier-config": "workspace:*",
     "husky": "^9.1.7",
     "lint-staged": "^16.0.0",
     "prettier": "^3.5.3",

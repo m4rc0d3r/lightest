@@ -1,3 +1,3 @@
-import base from "@test-and-be-tested/eslint-config/base";
+import base from "@lightest/eslint-config/base";
 
 export default base;

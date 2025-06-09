@@ -1,5 +1,5 @@
 {
-  "name": "@test-and-be-tested/client",
+  "name": "@lightest/client",
   "version": "0.0.0",
   "dependencies": {
     "@internationalized/date": "^3.8.1",
@@ -27,10 +27,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.27.0",
-    "@test-and-be-tested/eslint-config": "workspace:*",
-    "@test-and-be-tested/lint-staged-config": "workspace:*",
-    "@test-and-be-tested/prettier-config": "workspace:*",
-    "@test-and-be-tested/typescript-config": "workspace:*",
+    "@lightest/eslint-config": "workspace:*",
+    "@lightest/lint-staged-config": "workspace:*",
+    "@lightest/prettier-config": "workspace:*",
+    "@lightest/typescript-config": "workspace:*",
     "@types/sass-loader": "^8.0.3",
     "@types/uuid": "^8.3.4",
     "@vitejs/plugin-vue": "^5.2.3",

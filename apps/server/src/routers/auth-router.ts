@@ -1,4 +1,4 @@
-import { authContract } from "@test-and-be-tested/core";
+import { authContract } from "@lightest/core";
 import type { CookieOptions, Request, Response } from "express";
 
 import type { Tokens } from "../services/token-service.js";

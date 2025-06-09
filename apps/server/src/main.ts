@@ -1,4 +1,4 @@
-import { authContract, testContract } from "@test-and-be-tested/core";
+import { authContract, testContract } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";

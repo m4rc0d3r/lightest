@@ -1,5 +1,5 @@
 {
-  "name": "@test-and-be-tested/eslint-config",
+  "name": "@lightest/eslint-config",
   "version": "0.0.0",
   "devDependencies": {
     "@eslint/js": "^9.27.0",

@@ -17,13 +17,13 @@ importers:
       '@commitlint/types':
         specifier: ^19.8.1
         version: 19.8.1
-      '@test-and-be-tested/eslint-config':
+      '@lightest/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
-      '@test-and-be-tested/lint-staged-config':
+      '@lightest/lint-staged-config':
         specifier: workspace:*
         version: link:packages/lint-staged-config
-      '@test-and-be-tested/prettier-config':
+      '@lightest/prettier-config':
         specifier: workspace:*
         version: link:packages/prettier-config
       husky:
@@ -111,16 +111,16 @@ importers:
       '@eslint/js':
         specifier: ^9.27.0
         version: 9.27.0
-      '@test-and-be-tested/eslint-config':
+      '@lightest/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
-      '@test-and-be-tested/lint-staged-config':
+      '@lightest/lint-staged-config':
         specifier: workspace:*
         version: link:../../packages/lint-staged-config
-      '@test-and-be-tested/prettier-config':
+      '@lightest/prettier-config':
         specifier: workspace:*
         version: link:../../packages/prettier-config
-      '@test-and-be-tested/typescript-config':
+      '@lightest/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       '@types/sass-loader':
@@ -259,24 +259,24 @@ importers:
         specifier: ^3.25.36
         version: 3.25.36
     devDependencies:
+      '@lightest/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@lightest/eslint-config':
+        specifier: workspace:*
+        version: link:../../packages/eslint-config
+      '@lightest/lint-staged-config':
+        specifier: workspace:*
+        version: link:../../packages/lint-staged-config
+      '@lightest/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@swc/cli':
         specifier: ^0.7.7
         version: 0.7.7(@swc/core@1.11.29(@swc/helpers@0.5.17))(chokidar@4.0.3)
       '@swc/core':
         specifier: ^1.11.29
         version: 1.11.29(@swc/helpers@0.5.17)
-      '@test-and-be-tested/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@test-and-be-tested/eslint-config':
-        specifier: workspace:*
-        version: link:../../packages/eslint-config
-      '@test-and-be-tested/lint-staged-config':
-        specifier: workspace:*
-        version: link:../../packages/lint-staged-config
-      '@test-and-be-tested/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
       '@types/bcrypt':
         specifier: ^5.0.0
         version: 5.0.2
@@ -338,21 +338,21 @@ importers:
         specifier: ^3.25.36
         version: 3.25.36
     devDependencies:
+      '@lightest/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@lightest/lint-staged-config':
+        specifier: workspace:*
+        version: link:../lint-staged-config
+      '@lightest/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       '@swc/cli':
         specifier: ^0.7.7
         version: 0.7.7(@swc/core@1.11.29(@swc/helpers@0.5.17))(chokidar@4.0.3)
       '@swc/core':
         specifier: ^1.11.29
         version: 1.11.29(@swc/helpers@0.5.17)
-      '@test-and-be-tested/eslint-config':
-        specifier: workspace:*
-        version: link:../eslint-config
-      '@test-and-be-tested/lint-staged-config':
-        specifier: workspace:*
-        version: link:../lint-staged-config
-      '@test-and-be-tested/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       concurrently:
         specifier: ^9.1.2
         version: 9.1.2

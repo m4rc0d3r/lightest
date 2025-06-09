@@ -1,11 +1,7 @@
-import base from "@test-and-be-tested/lint-staged-config/base";
-import {
-  runEslint,
-  runPrettier,
-  STYLELINT_COMMAND,
-} from "@test-and-be-tested/lint-staged-config/commands";
-import { JS_GLOB } from "@test-and-be-tested/lint-staged-config/globs";
-import { setUpTasksForTypescriptFiles } from "@test-and-be-tested/lint-staged-config/helpers";
+import base from "@lightest/lint-staged-config/base";
+import { runEslint, runPrettier, STYLELINT_COMMAND } from "@lightest/lint-staged-config/commands";
+import { JS_GLOB } from "@lightest/lint-staged-config/globs";
+import { setUpTasksForTypescriptFiles } from "@lightest/lint-staged-config/helpers";
 
 const STYLELINT = "stylelint";
 

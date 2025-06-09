@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 
-import { testContract } from "@test-and-be-tested/core";
+import { testContract } from "@lightest/core";
 
 import { QuestionType } from "~/dtos/app/test/base/index.js";
 import { APIError } from "~/exceptions/api-error.js";

@@ -1,4 +1,4 @@
-import base from "@test-and-be-tested/prettier-config/base";
+import base from "@lightest/prettier-config/base";
 
 /**
  * @type {import("prettier").Config}

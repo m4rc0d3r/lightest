@@ -1,5 +1,5 @@
 import js from "@eslint/js";
-import base from "@test-and-be-tested/eslint-config/base";
+import base from "@lightest/eslint-config/base";
 import pluginVue from "eslint-plugin-vue";
 import { defineConfig } from "eslint/config";
 import globals from "globals";
