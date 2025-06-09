@@ -10,15 +10,8 @@ const zIn = zUser.pick({
 });
 type In = z.infer<typeof zIn>;
 
-const zOut = zUser.pick({
-  id: true,
-  firstName: true,
-  lastName: true,
-  avatar: true,
-  email: true,
-  passwordHash: true,
-  createdAt: true,
-  updatedAt: true,
+const zOut = zUser.omit({
+  password: true,
 });
 type Out = z.infer<typeof zOut>;
 

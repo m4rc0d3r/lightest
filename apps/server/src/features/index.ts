@@ -1,1 +1,1 @@
-export { Service as UserService } from "./user";
+export { DrizzleRepository as DrizzleUserRepository, Service as UserService } from "./user";

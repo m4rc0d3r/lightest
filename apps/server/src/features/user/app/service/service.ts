@@ -4,14 +4,13 @@ import type { Repository } from "../ports";
 
 import type { Create } from "./ios";
 
+import type { UniqueKeyViolationError } from "~/app";
+
 class Service {
   constructor(private readonly repository: Repository.Repository) {}
 
-  create({ password, ...rest }: Create.In): taskEither.TaskEither<string, Repository.Create.Out> {
-    return this.repository.create({
-      passwordHash: password,
-      ...rest,
-    });
+  create(params: Create.In): taskEither.TaskEither<UniqueKeyViolationError, Repository.Create.Out> {
+    throw new Error("Method not implemented.");
   }
 }
 

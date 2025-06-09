@@ -191,7 +191,7 @@ export {
   TABLE_NAME,
   testRelations,
   testTable,
-  userRelations,
+  userRelations,CONSTRAINT,
   users,
   userTable,
 };
