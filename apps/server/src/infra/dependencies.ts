@@ -5,7 +5,7 @@ import type {
   Constructor,
   DisposableResolver,
 } from "awilix";
-import { asClass, asValue, createContainer, Lifetime } from "awilix";
+import { asClass, asFunction, asValue, createContainer, Lifetime } from "awilix";
 import { AwilixManager } from "awilix-manager";
 import { drizzle } from "drizzle-orm/node-postgres";
 import type { CookieOptions } from "express";
@@ -14,6 +14,7 @@ import type { Config } from "./config";
 
 import type { DAO } from "~/daos/app/dao";
 import { PostgresDAO } from "~/daos/postgres/dao";
+import { JwtFeature, UserFeature } from "~/features";
 import { AuthService } from "~/services/auth-service";
 import { MailService } from "~/services/mail-service";
 import { SessionService } from "~/services/session-service";
@@ -44,6 +45,10 @@ type Dependencies = {
   testService: TestService;
   tokenService: TokenService;
   userService: UserService;
+  userService2: UserFeature.Service.Service;
+  userRepository: UserFeature.Repository.Repository;
+  accessTokenService: JwtFeature.Service.Service;
+  refreshTokenService: JwtFeature.Service.Service;
 };
 const logger = {
   log: (message: string) => console.log(message),
@@ -76,6 +81,28 @@ function configureDependencies(config: Config) {
       signed: true,
     }),
     db: asValue(db),
+    accessTokenService: asFunction(() => {
+      const {
+        auth: {
+          jwt: {
+            access: { secret, lifetime },
+          },
+        },
+      } = config;
+      const { generateJwt, verifyJwt } = JwtFeature;
+      return new JwtFeature.Service.Service(secret, lifetime, generateJwt, verifyJwt);
+    }),
+    refreshTokenService: asFunction(() => {
+      const {
+        auth: {
+          jwt: {
+            refresh: { secret, lifetime },
+          },
+        },
+      } = config;
+      const { generateJwt, verifyJwt } = JwtFeature;
+      return new JwtFeature.Service.Service(secret, lifetime, generateJwt, verifyJwt);
+    }),
     ...Object.fromEntries(
       (
         [
@@ -86,6 +113,8 @@ function configureDependencies(config: Config) {
           ["testService", TestService],
           ["tokenService", TokenService],
           ["userService", UserService],
+          ["userService2", UserFeature.Service.Service],
+          ["userRepository", UserFeature.DrizzleRepository],
         ] as [string, Constructor<object>][]
       ).map(([key, value]) => [
         key,

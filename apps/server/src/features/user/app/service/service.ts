@@ -7,7 +7,7 @@ import type { Create } from "./ios";
 import type { UniqueKeyViolationError } from "~/app";
 
 class Service {
-  constructor(private readonly repository: Repository.Repository) {}
+  constructor(private readonly userRepository: Repository.Repository) {}
 
   create(params: Create.In): taskEither.TaskEither<UniqueKeyViolationError, Repository.Create.Out> {
     throw new Error("Method not implemented.");

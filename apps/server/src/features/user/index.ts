@@ -1,2 +1,2 @@
-export { Service } from "./app";
+export { Repository, Service } from "./app";
 export { DrizzleRepository } from "./infra";
