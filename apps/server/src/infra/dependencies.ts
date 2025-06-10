@@ -14,7 +14,7 @@ import type { Config } from "./config";
 
 import type { DAO } from "~/daos/app/dao";
 import { PostgresDAO } from "~/daos/postgres/dao";
-import { JwtFeature, UserFeature } from "~/features";
+import { HashingFeature, JwtFeature, UserFeature } from "~/features";
 import { AuthService } from "~/services/auth-service";
 import { MailService } from "~/services/mail-service";
 import { SessionService } from "~/services/session-service";
@@ -49,6 +49,7 @@ type Dependencies = {
   userRepository: UserFeature.Repository.Repository;
   accessTokenService: JwtFeature.Service.Service;
   refreshTokenService: JwtFeature.Service.Service;
+  passwordHashingService: HashingFeature.Service.Service;
 };
 const logger = {
   log: (message: string) => console.log(message),
@@ -100,9 +101,26 @@ function configureDependencies(config: Config) {
           },
         },
       } = config;
-      const { generateJwt, verifyJwt } = JwtFeature;
-      return new JwtFeature.Service.Service(secret, lifetime, generateJwt, verifyJwt);
+      const {
+        generateJwt,
+        verifyJwt,
+        Service: { Service },
+      } = JwtFeature;
+      return new Service(secret, lifetime, generateJwt, verifyJwt);
     }),
+    passwordHashingService: asValue(
+      (() => {
+        const {
+          bcrypt: { roundsForPasswordHash },
+        } = config;
+        const {
+          createBcryptHashFunction,
+          bcryptCompareFunction,
+          Service: { Service },
+        } = HashingFeature;
+        return new Service(createBcryptHashFunction(roundsForPasswordHash), bcryptCompareFunction);
+      })(),
+    ),
     ...Object.fromEntries(
       (
         [

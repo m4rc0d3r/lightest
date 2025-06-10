@@ -1,5 +1,6 @@
 import type { taskEither } from "fp-ts";
 
+import type { Service as HashingService } from "../../../hashing";
 import type { Repository } from "../ports";
 
 import type { Create } from "./ios";
@@ -7,10 +8,19 @@ import type { Create } from "./ios";
 import type { UniqueKeyViolationError } from "~/app";
 
 class Service {
-  constructor(private readonly userRepository: Repository.Repository) {}
+  constructor(
+    private readonly userRepository: Repository.Repository,
+    private readonly passwordHashingService: HashingService.Service,
+  ) {}
 
-  create(params: Create.In): taskEither.TaskEither<UniqueKeyViolationError, Repository.Create.Out> {
-    throw new Error("Method not implemented.");
+  async create({
+    password,
+    ...rest
+  }: Create.In): Promise<taskEither.TaskEither<UniqueKeyViolationError, Repository.Create.Out>> {
+    return this.userRepository.create({
+      passwordHash: await this.passwordHashingService.hash(password),
+      ...rest,
+    });
   }
 }
 
