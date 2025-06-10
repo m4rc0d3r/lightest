@@ -1,7 +1,7 @@
 import { taskEither } from "fp-ts";
 import jwt from "jsonwebtoken";
 
-import type { Payload, VerifyJwt } from "../app";
+import type { PayloadToSign, VerifyJwt } from "../app";
 import { ExpirationError, VerificationError } from "../app/errors";
 
 const REASONS_BY_MESSAGE: Record<string, VerificationError["reason"]> = {
@@ -11,7 +11,7 @@ const REASONS_BY_MESSAGE: Record<string, VerificationError["reason"]> = {
   "invalid signature": "CRYPTOGRAPHICALLY_INVALID",
 };
 
-const verifyJwt: VerifyJwt.Fn = <T extends Payload>({ secret, token }: VerifyJwt.In) => {
+const verifyJwt: VerifyJwt.Fn = <T extends PayloadToSign>({ secret, token }: VerifyJwt.In) => {
   return taskEither.tryCatch(
     () =>
       new Promise<T>((resolve, reject) =>

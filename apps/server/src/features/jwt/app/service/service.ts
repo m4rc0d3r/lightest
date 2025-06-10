@@ -2,7 +2,7 @@ import type { taskEither } from "fp-ts";
 
 import type { ExpirationError, VerificationError } from "../errors";
 import type { GenerateJwt, VerifyJwt } from "../ports";
-import type { Payload } from "../types";
+import type { PayloadToSign, SignedPayload } from "../types";
 
 class Service {
   constructor(
@@ -12,7 +12,7 @@ class Service {
     private readonly verifyJwt: VerifyJwt.Fn,
   ) {}
 
-  generate<T extends Payload, U extends T>(
+  generate<T extends PayloadToSign, U extends SignedPayload<T>>(
     payload: GenerateJwt.In<T>["payload"],
   ): GenerateJwt.Out<U> {
     return this.generateJwt({
@@ -22,7 +22,7 @@ class Service {
     });
   }
 
-  verify<T extends Payload>(
+  verify<T extends PayloadToSign>(
     token: VerifyJwt.In["token"],
   ): taskEither.TaskEither<VerificationError | ExpirationError, T> {
     return this.verifyJwt({

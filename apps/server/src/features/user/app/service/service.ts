@@ -1,4 +1,4 @@
-import type { taskEither } from "fp-ts";
+import type { either } from "fp-ts";
 
 import type { Service as HashingService } from "../../../hashing";
 import type { Repository } from "../ports";
@@ -16,11 +16,11 @@ class Service {
   async create({
     password,
     ...rest
-  }: Create.In): Promise<taskEither.TaskEither<UniqueKeyViolationError, Repository.Create.Out>> {
+  }: Create.In): Promise<either.Either<UniqueKeyViolationError, Repository.Create.Out>> {
     return this.userRepository.create({
       passwordHash: await this.passwordHashingService.hash(password),
       ...rest,
-    });
+    })();
   }
 }
 

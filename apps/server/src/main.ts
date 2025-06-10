@@ -1,4 +1,4 @@
-import { authContract, testContract } from "@lightest/core";
+import { auth2Contract, authContract, testContract } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -8,6 +8,7 @@ import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
 
+import { AuthFeature } from "./features";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { authMiddleware } from "./middlewares/auth-middleware.js";
@@ -47,6 +48,7 @@ createExpressEndpoints(testContract, testRouter, app, {
   ],
   requestValidationErrorHandler: validationMiddleware(testContract),
 });
+createExpressEndpoints(auth2Contract, AuthFeature.router, app);
 
 app.use(errorMiddleware);
 

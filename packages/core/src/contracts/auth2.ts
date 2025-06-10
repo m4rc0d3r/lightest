@@ -19,7 +19,6 @@ const zMe = zUser.pick({
   lastName: true,
   avatar: true,
   email: true,
-  password: true,
   verificationCode: true,
   createdAt: true,
 });

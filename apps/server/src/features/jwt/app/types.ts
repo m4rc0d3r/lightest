@@ -1,3 +1,8 @@
-type Payload = Record<string, unknown>;
+type PayloadToSign = Record<string, unknown>;
 
-export type { Payload };
+type SignedPayload<T extends PayloadToSign> = T & {
+  exp: number;
+  iat: number;
+};
+
+export type { PayloadToSign, SignedPayload };

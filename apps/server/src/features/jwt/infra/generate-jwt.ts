@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
-import type { GenerateJwt, Payload } from "../app";
+import type { GenerateJwt, PayloadToSign } from "../app";
 
-const generateJwt: GenerateJwt.Fn = async <T extends Payload, U extends T>({
+const generateJwt: GenerateJwt.Fn = async <T extends PayloadToSign, U extends T>({
   secret,
   payload,
   lifetime,

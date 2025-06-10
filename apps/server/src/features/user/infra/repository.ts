@@ -27,7 +27,7 @@ class DrizzleRepository extends Repository.Repository {
         () => this.db.insert(TABLE.users).values(params).returning(),
         (reason) => {
           if (isUniqueKeyViolation(reason)) {
-            const constraintName = CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT[reason.cause.constraint];
+            const constraintName = CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT[reason.constraint];
             if (!constraintName) throw reason;
 
             return new UniqueKeyViolationError(constraintName);
