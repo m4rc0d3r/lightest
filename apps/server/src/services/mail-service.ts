@@ -29,7 +29,7 @@ class MailService implements AsyncInit {
 
   async asyncInit() {
     const secure = false;
-    if (this.mailConfig.useFakeSending) {
+    if (!this.mailConfig.useRealSending) {
       this.testAccount = await nodeMailer.createTestAccount();
       this.from = this.testAccount.user;
 
