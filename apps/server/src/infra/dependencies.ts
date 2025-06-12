@@ -18,6 +18,7 @@ import { JwtFeature } from "~/features";
 import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
 import { bcryptCompareFn, createBcryptHashFn, HashingService } from "~/features/hashing";
 import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
+import { MailService as MailService2, NodemailerApi } from "~/features/mail";
 import type { UserRepository } from "~/features/user";
 import { DrizzleUserRepository, UserService as UserService2 } from "~/features/user";
 import { AuthService } from "~/services/auth-service";
@@ -56,6 +57,7 @@ type Dependencies = {
   refreshTokenService: JwtService;
   passwordHashingService: HashingService;
   blobService: BlobService;
+  mailService2: MailService2;
 };
 const logger = {
   log: (message: string) => console.log(message),
@@ -123,6 +125,13 @@ function configureDependencies(config: Config) {
           vercel: { blobReadWriteToken },
         } = config;
         return new BlobService(new VercelBlobStorageProvider(blobReadWriteToken));
+      })(),
+    ),
+    mailService2: asValue(
+      (() => {
+        const api = new NodemailerApi(config.mail);
+        void api.asyncInit();
+        return new MailService2(api);
       })(),
     ),
     ...Object.fromEntries(
