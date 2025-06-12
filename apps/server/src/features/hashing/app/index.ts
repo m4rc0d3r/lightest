@@ -1,2 +1,2 @@
 export type * from "./ports";
-export * as Service from "./service";
+export * from "./service";

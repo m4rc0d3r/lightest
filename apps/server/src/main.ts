@@ -8,7 +8,6 @@ import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
 
-import { AuthFeature } from "./features";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { authMiddleware } from "./middlewares/auth-middleware.js";
@@ -17,6 +16,8 @@ import { validationMiddleware } from "./middlewares/validation-middleware.js";
 import { authRouter } from "./routers/auth-router.js";
 import { testRouter } from "./routers/test-router.js";
 import { createUrl } from "./shared";
+
+import { authRouter as authRouter2 } from "~/features/auth";
 
 expand(dotenvConfig());
 
@@ -48,7 +49,7 @@ createExpressEndpoints(testContract, testRouter, app, {
   ],
   requestValidationErrorHandler: validationMiddleware(testContract),
 });
-createExpressEndpoints(auth2Contract, AuthFeature.router, app);
+createExpressEndpoints(auth2Contract, authRouter2, app);
 
 app.use(errorMiddleware);
 

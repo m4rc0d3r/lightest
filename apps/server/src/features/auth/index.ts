@@ -1,1 +1,1 @@
-export { router } from "./infra";
+export { router as authRouter } from "./infra";

@@ -1,4 +1,4 @@
-export * as Error from "./errors";
+export * from "./errors";
 export type * from "./ports";
-export * as Service from "./service";
+export * from "./service";
 export type * from "./types";

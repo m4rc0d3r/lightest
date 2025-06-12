@@ -1,2 +1,2 @@
-export * from "./generate-jwt";
-export * from "./verify-jwt";
+export * from "./generate";
+export * from "./verify";

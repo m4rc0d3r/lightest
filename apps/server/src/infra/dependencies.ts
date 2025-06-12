@@ -14,7 +14,11 @@ import type { Config } from "./config";
 
 import type { DAO } from "~/daos/app/dao";
 import { PostgresDAO } from "~/daos/postgres/dao";
-import { HashingFeature, JwtFeature, UserFeature } from "~/features";
+import { JwtFeature } from "~/features";
+import { bcryptCompareFn, createBcryptHashFn, HashingService } from "~/features/hashing";
+import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
+import type { UserRepository } from "~/features/user";
+import { DrizzleUserRepository, UserService as UserService2 } from "~/features/user";
 import { AuthService } from "~/services/auth-service";
 import { MailService } from "~/services/mail-service";
 import { SessionService } from "~/services/session-service";
@@ -45,11 +49,11 @@ type Dependencies = {
   testService: TestService;
   tokenService: TokenService;
   userService: UserService;
-  userService2: UserFeature.Service.Service;
-  userRepository: UserFeature.Repository.Repository;
-  accessTokenService: JwtFeature.Service.Service;
-  refreshTokenService: JwtFeature.Service.Service;
-  passwordHashingService: HashingFeature.Service.Service;
+  userService2: UserService2;
+  userRepository: UserRepository;
+  accessTokenService: JwtService;
+  refreshTokenService: JwtService;
+  passwordHashingService: HashingService;
 };
 const logger = {
   log: (message: string) => console.log(message),
@@ -90,8 +94,7 @@ function configureDependencies(config: Config) {
           },
         },
       } = config;
-      const { generateJwt, verifyJwt } = JwtFeature;
-      return new JwtFeature.Service.Service(secret, lifetime, generateJwt, verifyJwt);
+      return new JwtService(secret, lifetime, generateJwt, verifyJwt);
     }),
     refreshTokenService: asFunction(() => {
       const {
@@ -101,24 +104,15 @@ function configureDependencies(config: Config) {
           },
         },
       } = config;
-      const {
-        generateJwt,
-        verifyJwt,
-        Service: { Service },
-      } = JwtFeature;
-      return new Service(secret, lifetime, generateJwt, verifyJwt);
+      const { generateJwt, verifyJwt } = JwtFeature;
+      return new JwtService(secret, lifetime, generateJwt, verifyJwt);
     }),
     passwordHashingService: asValue(
       (() => {
         const {
           bcrypt: { roundsForPasswordHash },
         } = config;
-        const {
-          createBcryptHashFunction,
-          bcryptCompareFunction,
-          Service: { Service },
-        } = HashingFeature;
-        return new Service(createBcryptHashFunction(roundsForPasswordHash), bcryptCompareFunction);
+        return new HashingService(createBcryptHashFn(roundsForPasswordHash), bcryptCompareFn);
       })(),
     ),
     ...Object.fromEntries(
@@ -131,8 +125,8 @@ function configureDependencies(config: Config) {
           ["testService", TestService],
           ["tokenService", TokenService],
           ["userService", UserService],
-          ["userService2", UserFeature.Service.Service],
-          ["userRepository", UserFeature.DrizzleRepository],
+          ["userService2", UserService2],
+          ["userRepository", DrizzleUserRepository],
         ] as [string, Constructor<object>][]
       ).map(([key, value]) => [
         key,

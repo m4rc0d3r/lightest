@@ -1,1 +1,1 @@
-export * as Repository from "./repository";
+export * from "./repository";

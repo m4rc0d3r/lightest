@@ -1,27 +1,24 @@
 import { ImpossibleError } from "@lightest/core";
 import { function as function_, taskEither } from "fp-ts";
 
+import type { RepositoryIos } from "../app";
 import { Repository } from "../app";
 
 import { UniqueKeyViolationError } from "~/app";
 import type { Dependencies } from "~/infra";
-import {
-  CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT,
-  isUniqueKeyViolation,
-  TABLE,
-} from "~/infra/drizzle";
+import { CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT, isUniqueKeyViolation, TABLE } from "~/infra";
 
 const MESSAGE_ABOUT_INCORRECT_INSERTION_RESULT =
   "The array of rows returned from the database must contain 1 element since no errors occurred during the insert.";
 
-class DrizzleRepository extends Repository.Repository {
+class DrizzleRepository extends Repository {
   constructor(private readonly db: Dependencies["db"]) {
     super();
   }
 
   override create(
-    params: Repository.Create.In,
-  ): taskEither.TaskEither<UniqueKeyViolationError, Repository.Create.Out> {
+    params: RepositoryIos.Create.In,
+  ): taskEither.TaskEither<UniqueKeyViolationError, RepositoryIos.Create.Out> {
     return function_.pipe(
       taskEither.tryCatch(
         () => this.db.insert(TABLE.users).values(params).returning(),

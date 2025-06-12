@@ -1,2 +1,2 @@
-export * from "./ios";
+export * as ServiceIos from "./ios";
 export * from "./service";
