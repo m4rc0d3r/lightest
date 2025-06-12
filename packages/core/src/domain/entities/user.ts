@@ -1,14 +1,14 @@
 import { z } from "zod";
 
-import { zPassword, zPasswordHash } from "../value-objects";
+import { zAvatar, zPassword, zPasswordHash } from "../value-objects";
 
-import { zEmail, zInt, zTrimmedStr, zUrlOrEmptyStr } from "~/zod";
+import { zEmail, zInt, zTrimmedStr } from "~/zod";
 
 const zUser = z.object({
   id: zInt,
   firstName: zTrimmedStr,
   lastName: zTrimmedStr,
-  avatar: zUrlOrEmptyStr,
+  avatar: zAvatar,
   email: zEmail,
   password: zPassword,
   passwordHash: zPasswordHash,

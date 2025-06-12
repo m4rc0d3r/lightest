@@ -3,15 +3,18 @@ import { z } from "zod";
 
 import { getErrorWithHttpStatusCode, zUniqueKeyViolationError } from "./error-schemas";
 
-import { zUser } from "~/domain";
+import { zAvatarAsFile, zUser } from "~/domain";
 
-const zRegisterReq = zUser.pick({
-  firstName: true,
-  lastName: true,
-  avatar: true,
-  email: true,
-  password: true,
-});
+const zRegisterReq = zUser
+  .pick({
+    firstName: true,
+    lastName: true,
+    email: true,
+    password: true,
+  })
+  .extend({
+    avatar: z.union([zUser.shape.avatar, zAvatarAsFile]),
+  });
 
 const zMe = zUser.pick({
   id: true,
@@ -34,6 +37,7 @@ const auth2Contract = c.router(
     register: {
       method: "POST",
       path: "/register",
+      contentType: "multipart/form-data",
       body: zRegisterReq,
       responses: {
         201: zRegisterSuccessfulRes,
