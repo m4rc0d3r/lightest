@@ -8,6 +8,7 @@ import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
 
+import { tsRestContentTypeMiddleware } from "./infra";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { multipartMiddleware } from "./middlewares";
@@ -51,7 +52,10 @@ createExpressEndpoints(testContract, testRouter, app, {
   ],
   requestValidationErrorHandler: validationMiddleware(testContract),
 });
-createExpressEndpoints(auth2Contract, authRouter2, app);
+
+createExpressEndpoints(auth2Contract, authRouter2, app, {
+  globalMiddleware: [tsRestContentTypeMiddleware],
+});
 
 app.use(errorMiddleware);
 
