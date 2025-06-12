@@ -10,6 +10,7 @@ import { either as e } from "fp-ts";
 
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
+import { multipartMiddleware } from "./middlewares";
 import { authMiddleware } from "./middlewares/auth-middleware.js";
 import { errorMiddleware } from "./middlewares/error-middleware.js";
 import { validationMiddleware } from "./middlewares/validation-middleware.js";
@@ -31,6 +32,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser(config.cookie.secret));
 app.use(cors(config.cors));
+app.use(multipartMiddleware());
 
 app.use(scopePerRequest(diContainer));
 
