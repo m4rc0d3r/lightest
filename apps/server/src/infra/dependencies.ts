@@ -15,6 +15,7 @@ import type { Config } from "./config";
 import type { DAO } from "~/daos/app/dao";
 import { PostgresDAO } from "~/daos/postgres/dao";
 import { JwtFeature } from "~/features";
+import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
 import { bcryptCompareFn, createBcryptHashFn, HashingService } from "~/features/hashing";
 import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
 import type { UserRepository } from "~/features/user";
@@ -54,6 +55,7 @@ type Dependencies = {
   accessTokenService: JwtService;
   refreshTokenService: JwtService;
   passwordHashingService: HashingService;
+  blobService: BlobService;
 };
 const logger = {
   log: (message: string) => console.log(message),
@@ -113,6 +115,14 @@ function configureDependencies(config: Config) {
           bcrypt: { roundsForPasswordHash },
         } = config;
         return new HashingService(createBcryptHashFn(roundsForPasswordHash), bcryptCompareFn);
+      })(),
+    ),
+    blobService: asValue(
+      (() => {
+        const {
+          vercel: { blobReadWriteToken },
+        } = config;
+        return new BlobService(new VercelBlobStorageProvider(blobReadWriteToken));
       })(),
     ),
     ...Object.fromEntries(

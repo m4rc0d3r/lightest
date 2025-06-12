@@ -9,6 +9,7 @@ import { zCorsConfig } from "./cors";
 import { zDrizzleConfig } from "./drizzle";
 import { zMailConfig } from "./mail";
 import { zServerConfig } from "./server";
+import { zVercelConfig } from "./vercel";
 
 const zConfig = z
   .object({
@@ -21,6 +22,7 @@ const zConfig = z
     drizzle: zDrizzleConfig,
     mail: zMailConfig,
     server: zServerConfig,
+    vercel: zVercelConfig,
   })
   .transform(({ NODE_ENV, ...rest }) => ({
     nodeEnv: NODE_ENV,
