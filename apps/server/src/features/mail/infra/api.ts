@@ -1,3 +1,4 @@
+import { Str } from "@lightest/core";
 import type { TestAccount, Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -66,7 +67,13 @@ class NodemailerApi extends Api implements AsyncInit {
       text,
       html,
     });
-    console.log("Result of sending email:", sendingResult);
+
+    const logMessage = [`Message with ID ${sendingResult.messageId} has been sent.`];
+    if (!this.mailConfig.useRealSending) {
+      logMessage.push(`Preview URL: ${nodemailer.getTestMessageUrl(sendingResult)}`);
+    }
+
+    console.log(logMessage.join(Str.SPACE));
 
     return sendingResult.accepted.includes(to);
   }
