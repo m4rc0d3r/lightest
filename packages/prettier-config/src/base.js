@@ -9,6 +9,12 @@ const config = {
   identifierCase: "lower",
   overrides: [
     {
+      files: "*.pug",
+      options: {
+        plugins: ["@prettier/plugin-pug"],
+      },
+    },
+    {
       files: "*.svg",
       options: {
         plugins: ["@prettier/plugin-xml"],
