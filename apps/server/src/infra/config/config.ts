@@ -9,6 +9,7 @@ import { zCorsConfig } from "./cors";
 import { zDrizzleConfig } from "./drizzle";
 import { zMailConfig } from "./mail";
 import { zServerConfig } from "./server";
+import { zUserConfig } from "./user";
 import { zVercelConfig } from "./vercel";
 
 const zConfig = z
@@ -22,6 +23,7 @@ const zConfig = z
     drizzle: zDrizzleConfig,
     mail: zMailConfig,
     server: zServerConfig,
+    user: zUserConfig,
     vercel: zVercelConfig,
   })
   .transform(({ NODE_ENV, ...rest }) => ({

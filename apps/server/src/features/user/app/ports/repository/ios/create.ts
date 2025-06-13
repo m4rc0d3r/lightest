@@ -7,6 +7,7 @@ const zIn = zUser.pick({
   avatar: true,
   email: true,
   passwordHash: true,
+  verificationCode: true,
 });
 type In = z.infer<typeof zIn>;
 
