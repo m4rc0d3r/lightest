@@ -1,6 +1,7 @@
 import { either as e } from "fp-ts";
 import { z } from "zod";
 
+import { zAppConfig } from "./app";
 import { zAuthConfig } from "./auth";
 import { zBcryptConfig } from "./bcrypt";
 import { zClientAppConfig } from "./client-app";
@@ -15,6 +16,7 @@ import { zVercelConfig } from "./vercel";
 const zConfig = z
   .object({
     NODE_ENV: z.enum(["dev", "prod"]),
+    app: zAppConfig,
     auth: zAuthConfig,
     bcrypt: zBcryptConfig,
     clientApp: zClientAppConfig,
