@@ -16,6 +16,7 @@ import type { DAO } from "~/daos/app/dao";
 import { PostgresDAO } from "~/daos/postgres/dao";
 import { JwtFeature } from "~/features";
 import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
+import { CryptoService, generateSafeUid } from "~/features/crypto";
 import { bcryptCompareFn, createBcryptHashFn, HashingService } from "~/features/hashing";
 import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
 import { MailService as MailService2, NodemailerApi } from "~/features/mail";
@@ -58,6 +59,7 @@ type Dependencies = {
   passwordHashingService: HashingService;
   blobService: BlobService;
   mailService2: MailService2;
+  cryptoService: CryptoService;
 };
 const logger = {
   log: (message: string) => console.log(message),
@@ -134,6 +136,7 @@ function configureDependencies(config: Config) {
         return new MailService2(api);
       })(),
     ),
+    cryptoService: asValue(new CryptoService(generateSafeUid)),
     ...Object.fromEntries(
       (
         [
