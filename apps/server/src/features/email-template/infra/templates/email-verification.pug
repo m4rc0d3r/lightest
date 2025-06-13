@@ -1,0 +1,13 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title Email confirmation for the #{ appName }
+  body
+    h2 Thank you for registering on
+      |
+      |
+      a(href=clientAppUrl)= appName
+    p To gain full access to your account on our site, please confirm your email address:
+    a(href=linkToConfirmEmailAddress) Confirm my email address

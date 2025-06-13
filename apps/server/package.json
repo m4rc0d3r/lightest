@@ -43,6 +43,7 @@
     "@types/jsonwebtoken": "^8.5.8",
     "@types/ms": "^0.7.34",
     "@types/multer": "^1.4.13",
+    "@types/node": "^24.0.1",
     "@types/nodemailer": "^6.4.5",
     "@types/pg": "^8.15.2",
     "@types/pug": "^2.0.6",
@@ -59,7 +60,7 @@
   "main": "dist/main.js",
   "scripts": {
     "build": "concurrently --kill-others-on-fail -p \"[{name}]\" -n \"TSC,SWC\" -c \"blue.bold,yellow.bold\" \"pnpm build:ts\" \"pnpm build:swc\"",
-    "build:swc": "swc src -d dist --strip-leading-paths",
+    "build:swc": "swc src -d dist --strip-leading-paths --copy-files",
     "build:ts": "tsc",
     "dev": "pnpm build && concurrently -k -p \"[{name}]\" -n \"TSC,SWC,App\" -c \"blue.bold,yellow.bold,red.bold\" \"pnpm watch:ts\" \"pnpm watch:swc\" \"pnpm dev:start\"",
     "dev:start": "node --watch --watch-preserve-output $npm_package_main",
