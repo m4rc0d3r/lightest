@@ -44,6 +44,9 @@ class Service {
       avatar instanceof File ? await this.blobService.upload(avatar)() : either.right(avatar);
     if (either.isLeft(eitherAvatar)) return eitherAvatar;
 
+    const hashResult = await this.passwordHashingService.hash(password)();
+    if (either.isLeft(hashResult)) return hashResult;
+
     const generationResult = await this.cryptoService.generateUid(
       Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
     )();
@@ -52,7 +55,7 @@ class Service {
     const verificationCode = generationResult.right;
     const resultOfCreation = await this.userRepository.create({
       avatar: eitherAvatar.right,
-      passwordHash: await this.passwordHashingService.hash(password)(),
+      passwordHash: hashResult.right,
       verificationCode,
       ...rest,
     })();

@@ -1,5 +1,9 @@
-import type { task } from "fp-ts";
+import type { UnexpectedError } from "@lightest/core";
+import type { taskEither } from "fp-ts";
 
-type CompareDataHash = (data: string, hash: string) => task.Task<boolean>;
+type CompareDataHash = (
+  data: string,
+  hash: string,
+) => taskEither.TaskEither<UnexpectedError, boolean>;
 
 export type { CompareDataHash };
