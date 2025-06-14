@@ -4,6 +4,7 @@ import { either } from "fp-ts";
 
 import type { AuthTokenPayload } from "./types";
 
+import { UniqueKeyViolationError } from "~/app";
 import type { JwtSignedPayload } from "~/features/jwt";
 import { tsRestNoBody, tsRestServer } from "~/infra";
 import { isObject } from "~/shared";
@@ -22,11 +23,17 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
       } = req.container.cradle;
       const resultOfCreation = await userService2.create(body);
 
-      if (either.isLeft(resultOfCreation))
-        return {
-          status: 409,
-          body: resultOfCreation.left,
-        };
+      if (either.isLeft(resultOfCreation)) {
+        const error = resultOfCreation.left;
+
+        if (error instanceof UniqueKeyViolationError)
+          return {
+            status: 409,
+            body: resultOfCreation.left,
+          };
+
+        return tsRestNoBody(500);
+      }
 
       const { passwordHash, updatedAt, ...me } = resultOfCreation.right;
       const generationResult = await authTokenService.generate({ userId: me.id })();

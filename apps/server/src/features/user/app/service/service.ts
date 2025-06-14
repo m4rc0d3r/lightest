@@ -1,4 +1,4 @@
-import { Bool, ClientApp, Http, ImpossibleError, Str } from "@lightest/core";
+import { Bool, ClientApp, Http, ImpossibleError, Str, UnexpectedError } from "@lightest/core";
 import { either, function as function_, taskEither } from "fp-ts";
 
 import type { Repository, RepositoryIos } from "../ports";
@@ -37,7 +37,9 @@ class Service {
     avatar,
     password,
     ...rest
-  }: Create.In): Promise<either.Either<UniqueKeyViolationError, RepositoryIos.Common.Out>> {
+  }: Create.In): Promise<
+    either.Either<UnexpectedError | UniqueKeyViolationError, RepositoryIos.Common.Out>
+  > {
     const resultOfCreation = await this.userRepository.create({
       avatar: avatar instanceof File ? await this.blobService.upload(avatar) : avatar,
       passwordHash: await this.passwordHashingService.hash(password)(),
@@ -53,17 +55,21 @@ class Service {
         throw new ImpossibleError("verificationCode is null but must be a string.");
 
       const clientAppUrl = Http.createUrl(this.clientApp);
+      const renderingResult = await this.emailTemplateService.emailVerification({
+        appName: this.appName,
+        clientAppUrl,
+        linkToConfirmEmailAddress: ClientApp.getRouterPathToVerifyEmail(
+          clientAppUrl,
+          verificationCode,
+        ),
+      })();
+      if (either.isLeft(renderingResult))
+        return either.left(new UnexpectedError(renderingResult.left));
+
       await this.mailService2.send({
         to: email,
         subject: `Welcome to ${this.appName}, please confirm your email address`,
-        html: await this.emailTemplateService.emailVerification({
-          appName: this.appName,
-          clientAppUrl,
-          linkToConfirmEmailAddress: ClientApp.getRouterPathToVerifyEmail(
-            clientAppUrl,
-            verificationCode,
-          ),
-        }),
+        html: renderingResult.right,
       });
     }
 

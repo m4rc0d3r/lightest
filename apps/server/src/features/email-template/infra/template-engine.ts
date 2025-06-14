@@ -1,5 +1,7 @@
 import path from "node:path";
 
+import { FpTs, UnexpectedError } from "@lightest/core";
+import { taskEither } from "fp-ts";
 import pug from "pug";
 
 import type { TemplateEngineIos } from "../app";
@@ -14,13 +16,20 @@ class PugTemplateEngine extends TemplateEngine {
     super();
   }
 
-  override emailVerification(params: TemplateEngineIos.EmailVerification.In): Promise<string> {
-    return new Promise<string>((resolve, reject) =>
-      pug.renderFile(
-        getPathToTemplate(TEMPLATE_FILE_NAMES.emailVerification),
-        params,
-        (err, html) => (err === null ? resolve(html) : reject(err)),
+  override emailVerification(
+    params: TemplateEngineIos.EmailVerification.In,
+  ): taskEither.TaskEither<UnexpectedError, string> {
+    return taskEither.tryCatch(
+      FpTs.Task.fromPromise(
+        new Promise<string>((resolve, reject) =>
+          pug.renderFile(
+            getPathToTemplate(TEMPLATE_FILE_NAMES.emailVerification),
+            params,
+            (err, html) => (err === null ? resolve(html) : reject(err)),
+          ),
+        ),
       ),
+      (reason) => new UnexpectedError(reason),
     );
   }
 }
