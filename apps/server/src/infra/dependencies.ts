@@ -12,8 +12,6 @@ import type { CookieOptions } from "express";
 
 import type { Config } from "./config";
 
-import type { DAO } from "~/daos/app/dao";
-import { PostgresDAO } from "~/daos/postgres/dao";
 import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
 import { CryptoService, generateSafeUid } from "~/features/crypto";
 import { EmailTemplateService, PugTemplateEngine } from "~/features/email-template";
@@ -22,12 +20,6 @@ import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
 import { MailService as MailService2, NodemailerApi } from "~/features/mail";
 import type { UserRepository } from "~/features/user";
 import { DrizzleUserRepository, UserService as UserService2 } from "~/features/user";
-import { AuthService } from "~/services/auth-service";
-import { MailService } from "~/services/mail-service";
-import { SessionService } from "~/services/session-service";
-import { TestService } from "~/services/test-service";
-import { TokenService } from "~/services/token-service";
-import { UserService } from "~/services/user-service";
 import { hasMethod } from "~/shared";
 import type { AnyFn } from "~/types/utility";
 
@@ -45,13 +37,6 @@ type Dependencies = {
   logger: typeof logger;
   defaultCookieOptions: CookieOptions;
   db: ReturnType<typeof drizzle>;
-  dao: DAO;
-  authService: AuthService;
-  mailService: MailService;
-  sessionService: SessionService;
-  testService: TestService;
-  tokenService: TokenService;
-  userService: UserService;
   userService2: UserService2;
   userRepository: UserRepository;
   authTokenService: JwtService;
@@ -130,13 +115,6 @@ function configureDependencies(config: Config) {
     ...Object.fromEntries(
       (
         [
-          ["dao", PostgresDAO],
-          ["authService", AuthService],
-          ["mailService", MailService],
-          ["sessionService", SessionService],
-          ["testService", TestService],
-          ["tokenService", TokenService],
-          ["userService", UserService],
           ["userService2", UserService2],
           ["userRepository", DrizzleUserRepository],
         ] as [string, Constructor<object>][]

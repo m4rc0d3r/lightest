@@ -1,4 +1,4 @@
-import { auth2Contract, authContract, testContract } from "@lightest/core";
+import { auth2Contract } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -12,11 +12,6 @@ import { tsRestContentTypeMiddleware } from "./infra";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { multipartMiddleware } from "./middlewares";
-import { authMiddleware } from "./middlewares/auth-middleware.js";
-import { errorMiddleware } from "./middlewares/error-middleware.js";
-import { validationMiddleware } from "./middlewares/validation-middleware.js";
-import { authRouter } from "./routers/auth-router.js";
-import { testRouter } from "./routers/test-router.js";
 import { createUrl } from "./shared";
 
 import { authRouter as authRouter2 } from "~/features/auth";
@@ -37,30 +32,12 @@ app.use(multipartMiddleware());
 
 app.use(scopePerRequest(diContainer));
 
-createExpressEndpoints(authContract, authRouter, app, {
-  requestValidationErrorHandler: validationMiddleware(authContract),
-});
-createExpressEndpoints(testContract, testRouter, app, {
-  globalMiddleware: [
-    (req, res, next) => {
-      if (req.path === testContract.getBriefTests.path) {
-        next();
-      } else {
-        authMiddleware(req as Parameters<typeof authMiddleware>[0], res, next);
-      }
-    },
-  ],
-  requestValidationErrorHandler: validationMiddleware(testContract),
-});
-
 createExpressEndpoints(auth2Contract, authRouter2, app, {
   globalMiddleware: [
     (...args) =>
       tsRestContentTypeMiddleware(...(args as Parameters<typeof tsRestContentTypeMiddleware>)),
   ],
 });
-
-app.use(errorMiddleware);
 
 try {
   const { protocol, address, port } = config.server;
