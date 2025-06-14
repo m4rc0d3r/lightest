@@ -12,6 +12,7 @@ import type { CookieOptions } from "express";
 
 import type { Config } from "./config";
 
+import type { AuthTokenPayload } from "~/features/auth";
 import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
 import { CryptoService, generateSafeUid } from "~/features/crypto";
 import { EmailTemplateService, PugTemplateEngine } from "~/features/email-template";
@@ -39,7 +40,7 @@ type Dependencies = {
   db: ReturnType<typeof drizzle>;
   userService2: UserService2;
   userRepository: UserRepository;
-  authTokenService: JwtService;
+  authTokenService: JwtService<AuthTokenPayload>;
   passwordHashingService: HashingService;
   blobService: BlobService;
   mailService2: MailService2;
@@ -85,7 +86,7 @@ function configureDependencies(config: Config) {
           },
         },
       } = config;
-      return new JwtService(secret, lifetime, generateJwt, verifyJwt);
+      return new JwtService<AuthTokenPayload>(secret, lifetime, generateJwt, verifyJwt);
     }),
     passwordHashingService: asValue(
       (() => {

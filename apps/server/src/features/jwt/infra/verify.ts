@@ -1,8 +1,12 @@
+import { UnexpectedError } from "@lightest/core";
+import type { either } from "fp-ts";
 import { taskEither } from "fp-ts";
 import jwt from "jsonwebtoken";
 
-import type { PayloadToSign, Verify } from "../app";
+import type { VerifyToken } from "../app";
 import { ExpirationError, VerificationError } from "../app";
+
+import type { AuthTokenPayload } from "~/features/auth";
 
 const REASONS_BY_MESSAGE: Record<string, VerificationError["reason"]> = {
   "invalid token": "SYNTACTICALLY_INCORRECT",
@@ -11,12 +15,17 @@ const REASONS_BY_MESSAGE: Record<string, VerificationError["reason"]> = {
   "invalid signature": "CRYPTOGRAPHICALLY_INVALID",
 };
 
-const verifyJwt: Verify.Fn = <T extends PayloadToSign>({ secret, token }: Verify.In) => {
+type DecodedPayload = Extract<
+  Awaited<ReturnType<VerifyToken.Out<AuthTokenPayload>>>,
+  either.Right<unknown>
+>["right"];
+
+const verifyJwt: VerifyToken.Fn<AuthTokenPayload> = ({ secret, token }) => {
   return taskEither.tryCatch(
     () =>
-      new Promise<T>((resolve, reject) =>
+      new Promise<DecodedPayload>((resolve, reject) =>
         jwt.verify(token, secret, (error, decoded) =>
-          error === null ? resolve(decoded as T) : reject(error),
+          error === null ? resolve(decoded as DecodedPayload) : reject(error),
         ),
       ),
     (reason) => {
@@ -26,11 +35,11 @@ const verifyJwt: Verify.Fn = <T extends PayloadToSign>({ secret, token }: Verify
       } else if (reason instanceof jwt.JsonWebTokenError) {
         const jwtReason = REASONS_BY_MESSAGE[reason.message];
         if (!jwtReason) {
-          throw reason;
+          return new UnexpectedError(reason);
         }
         return new VerificationError(jwtReason);
       }
-      throw reason;
+      return new UnexpectedError(reason);
     },
   );
 };

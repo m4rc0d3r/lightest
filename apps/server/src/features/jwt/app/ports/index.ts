@@ -1,2 +1,2 @@
-export type * as Generate from "./generate";
-export type * as Verify from "./verify";
+export type * as GenerateToken from "./generate";
+export type * as VerifyToken from "./verify";

@@ -1,15 +1,19 @@
+import type { UnexpectedError } from "@lightest/core";
 import type { taskEither } from "fp-ts";
 
 import type { ExpirationError, VerificationError } from "../errors";
-import type { PayloadToSign } from "../types";
+import type { PayloadToSign, SignedPayload } from "../types";
 
 type In = {
   secret: string;
   token: string;
 };
 
-type Fn = <T extends PayloadToSign>(
-  params: In,
-) => taskEither.TaskEither<VerificationError | ExpirationError, T>;
+type Out<T extends PayloadToSign> = taskEither.TaskEither<
+  UnexpectedError | VerificationError | ExpirationError,
+  SignedPayload<T>
+>;
 
-export type { Fn, In };
+type Fn<T extends PayloadToSign = PayloadToSign> = (params: In) => Out<T>;
+
+export type { Fn, In, Out };

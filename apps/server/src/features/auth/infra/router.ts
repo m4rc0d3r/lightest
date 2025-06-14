@@ -1,7 +1,8 @@
-import type { User } from "@lightest/core";
 import { auth2Contract, ImpossibleError, Time } from "@lightest/core";
 import type { CookieOptions, Response } from "express";
 import { either } from "fp-ts";
+
+import type { AuthTokenPayload } from "./types";
 
 import type { JwtSignedPayload } from "~/features/jwt";
 import { tsRestNoBody, tsRestServer } from "~/infra";
@@ -28,7 +29,10 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         };
 
       const { passwordHash, updatedAt, ...me } = resultOfCreation.right;
-      const { token: authToken, payload } = await authTokenService.generate({ userId: me.id });
+      const generationResult = await authTokenService.generate({ userId: me.id })();
+      if (either.isLeft(generationResult)) return tsRestNoBody(500);
+
+      const { token: authToken, payload } = generationResult.right;
 
       setAuthenticationCookie(
         res,
@@ -61,7 +65,10 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         };
 
       const { passwordHash, updatedAt, ...me } = searchResult.right;
-      const { token: authToken, payload } = await authTokenService.generate({ userId: me.id });
+      const generationResult = await authTokenService.generate({ userId: me.id })();
+      if (either.isLeft(generationResult)) return tsRestNoBody(500);
+
+      const { token: authToken, payload } = generationResult.right;
 
       setAuthenticationCookie(
         res,
@@ -99,10 +106,6 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
   },
 );
 
-type RefreshTokenPayload = {
-  userId: User["id"];
-};
-
 function setAuthenticationCookie(
   res: Response,
   cookie: {
@@ -111,7 +114,7 @@ function setAuthenticationCookie(
   },
   token: {
     encoded: string;
-    payload: JwtSignedPayload<RefreshTokenPayload>;
+    payload: JwtSignedPayload<AuthTokenPayload>;
   },
 ) {
   const { exp, iat } = token.payload;

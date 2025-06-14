@@ -1,25 +1,39 @@
+import { FpTs, UnexpectedError } from "@lightest/core";
+import type { either } from "fp-ts";
+import { function as function_, taskEither } from "fp-ts";
 import jwt from "jsonwebtoken";
 
-import type { Generate, PayloadToSign } from "../app";
+import type { GenerateToken } from "../app";
 
-const generateJwt: Generate.Fn = async <T extends PayloadToSign, U extends T>({
-  secret,
-  payload,
-  lifetime,
-}: Generate.In<T>) => {
+import type { AuthTokenPayload } from "~/features/auth";
+
+const generateJwt: GenerateToken.Fn<AuthTokenPayload> = ({ secret, payload, lifetime }) => {
   const clonedPayload = globalThis.structuredClone(payload);
-  const token = await new Promise<string>((resolve, reject) =>
-    jwt.sign(
-      clonedPayload,
-      secret,
-      {
-        expiresIn: lifetime,
-        mutatePayload: true,
-      },
-      (error, encoded) => (error === null ? resolve(encoded!) : reject(error)),
+  return function_.pipe(
+    taskEither.tryCatch(
+      FpTs.Task.fromPromise(
+        new Promise<string>((resolve, reject) =>
+          jwt.sign(
+            clonedPayload,
+            secret,
+            {
+              expiresIn: lifetime,
+              mutatePayload: true,
+            },
+            (error, encoded) => (error === null ? resolve(encoded!) : reject(error)),
+          ),
+        ),
+      ),
+      (reason) => new UnexpectedError(reason),
     ),
+    taskEither.map((token) => ({
+      token,
+      payload: clonedPayload as Extract<
+        Awaited<ReturnType<GenerateToken.Out<AuthTokenPayload>>>,
+        either.Right<unknown>
+      >["right"]["payload"],
+    })),
   );
-  return { token, payload: clonedPayload as unknown as U };
 };
 
 export { generateJwt };

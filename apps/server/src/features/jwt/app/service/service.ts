@@ -1,31 +1,27 @@
-import type { taskEither } from "fp-ts";
-
-import type { ExpirationError, VerificationError } from "../errors";
-import type { Generate, Verify } from "../ports";
+import type { GenerateToken, VerifyToken } from "../ports";
 import type { PayloadToSign, SignedPayload } from "../types";
 
-class Service {
+class Service<
+  T extends PayloadToSign = PayloadToSign,
+  U extends SignedPayload<T> = SignedPayload<T>,
+> {
   constructor(
     private readonly secret: string,
     private readonly lifetime: string,
-    private readonly generateJwt: Generate.Fn,
-    private readonly verifyJwt: Verify.Fn,
+    private readonly generateToken: GenerateToken.Fn<T, U>,
+    private readonly verifyToken: VerifyToken.Fn<T>,
   ) {}
 
-  generate<T extends PayloadToSign, U extends SignedPayload<T>>(
-    payload: Generate.In<T>["payload"],
-  ): Generate.Out<U> {
-    return this.generateJwt({
+  generate(payload: GenerateToken.In<T>["payload"]): ReturnType<GenerateToken.Fn<T, U>> {
+    return this.generateToken({
       secret: this.secret,
       payload,
       lifetime: this.lifetime,
     });
   }
 
-  verify<T extends PayloadToSign>(
-    token: Verify.In["token"],
-  ): taskEither.TaskEither<VerificationError | ExpirationError, T> {
-    return this.verifyJwt({
+  verify(token: VerifyToken.In["token"]): ReturnType<VerifyToken.Fn> {
+    return this.verifyToken({
       secret: this.secret,
       token,
     });
