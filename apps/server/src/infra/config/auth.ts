@@ -8,6 +8,7 @@ const zAuthConfig = z
     AUTH_REFRESH_TOKEN_SECRET: z.string().nonempty(),
     AUTH_REFRESH_TOKEN_LIFETIME: z.string().nonempty(),
     AUTH_REFRESH_TOKEN_COOKIE_NAME: z.string().nonempty(),
+    AUTH_TOKEN_COOKIE_NAME: z.string().nonempty(),
   })
   .superRefine((value, ctx) => {
     const { AUTH_ACCESS_TOKEN_LIFETIME, AUTH_REFRESH_TOKEN_LIFETIME } = value;
@@ -21,6 +22,7 @@ const zAuthConfig = z
       AUTH_REFRESH_TOKEN_SECRET,
       AUTH_REFRESH_TOKEN_LIFETIME,
       AUTH_REFRESH_TOKEN_COOKIE_NAME,
+      AUTH_TOKEN_COOKIE_NAME,
     }) => ({
       jwt: {
         access: {
@@ -33,6 +35,7 @@ const zAuthConfig = z
         },
       },
       refreshTokenCookieName: AUTH_REFRESH_TOKEN_COOKIE_NAME,
+      tokenCookieName: AUTH_TOKEN_COOKIE_NAME,
     }),
   );
 type AuthConfig = z.infer<typeof zAuthConfig>;

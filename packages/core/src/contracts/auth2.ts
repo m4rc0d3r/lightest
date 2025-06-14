@@ -31,7 +31,6 @@ const zMe = zUser.pick({
 });
 
 const zRegisterSuccessfulRes = z.object({
-  accessToken: z.string().jwt(),
   me: zMe,
 });
 

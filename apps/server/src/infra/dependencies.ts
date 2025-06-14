@@ -14,7 +14,6 @@ import type { Config } from "./config";
 
 import type { DAO } from "~/daos/app/dao";
 import { PostgresDAO } from "~/daos/postgres/dao";
-import { JwtFeature } from "~/features";
 import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
 import { CryptoService, generateSafeUid } from "~/features/crypto";
 import { EmailTemplateService, PugTemplateEngine } from "~/features/email-template";
@@ -55,8 +54,7 @@ type Dependencies = {
   userService: UserService;
   userService2: UserService2;
   userRepository: UserRepository;
-  accessTokenService: JwtService;
-  refreshTokenService: JwtService;
+  authTokenService: JwtService;
   passwordHashingService: HashingService;
   blobService: BlobService;
   mailService2: MailService2;
@@ -94,7 +92,7 @@ function configureDependencies(config: Config) {
       signed: true,
     }),
     db: asValue(db),
-    accessTokenService: asFunction(() => {
+    authTokenService: asFunction(() => {
       const {
         auth: {
           jwt: {
@@ -102,17 +100,6 @@ function configureDependencies(config: Config) {
           },
         },
       } = config;
-      return new JwtService(secret, lifetime, generateJwt, verifyJwt);
-    }),
-    refreshTokenService: asFunction(() => {
-      const {
-        auth: {
-          jwt: {
-            refresh: { secret, lifetime },
-          },
-        },
-      } = config;
-      const { generateJwt, verifyJwt } = JwtFeature;
       return new JwtService(secret, lifetime, generateJwt, verifyJwt);
     }),
     passwordHashingService: asValue(

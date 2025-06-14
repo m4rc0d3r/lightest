@@ -12,12 +12,11 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
     register: async ({ req, res, body }) => {
       const {
         config: {
-          auth: { refreshTokenCookieName },
+          auth: { tokenCookieName },
         },
         defaultCookieOptions,
         userService2,
-        accessTokenService,
-        refreshTokenService,
+        authTokenService,
       } = req.container.cradle;
       const resultOfCreation = await userService2.create(body);
 
@@ -28,21 +27,17 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         };
 
       const { passwordHash, updatedAt, ...me } = resultOfCreation.right;
-      const payload = { userId: me.id };
-      const { token: accessToken } = await accessTokenService.generate(payload);
-      const { token: refreshToken, payload: signedPayload } =
-        await refreshTokenService.generate(payload);
+      const { token: authToken, payload } = await authTokenService.generate({ userId: me.id });
 
       setAuthenticationCookie(
         res,
-        { name: refreshTokenCookieName, options: defaultCookieOptions },
-        { encoded: refreshToken, payload: signedPayload },
+        { name: tokenCookieName, options: defaultCookieOptions },
+        { encoded: authToken, payload },
       );
 
       return {
         status: 201,
         body: {
-          accessToken,
           me,
         },
       };
@@ -50,12 +45,11 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
     login: async ({ req, res, body }) => {
       const {
         config: {
-          auth: { refreshTokenCookieName },
+          auth: { tokenCookieName },
         },
         defaultCookieOptions,
         userService2,
-        accessTokenService,
-        refreshTokenService,
+        authTokenService,
       } = req.container.cradle;
       const searchResult = await userService2.get(body)();
 
@@ -66,21 +60,17 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         };
 
       const { passwordHash, updatedAt, ...me } = searchResult.right;
-      const payload = { userId: me.id };
-      const { token: accessToken } = await accessTokenService.generate(payload);
-      const { token: refreshToken, payload: signedPayload } =
-        await refreshTokenService.generate(payload);
+      const { token: authToken, payload } = await authTokenService.generate({ userId: me.id });
 
       setAuthenticationCookie(
         res,
-        { name: refreshTokenCookieName, options: defaultCookieOptions },
-        { encoded: refreshToken, payload: signedPayload },
+        { name: tokenCookieName, options: defaultCookieOptions },
+        { encoded: authToken, payload },
       );
 
       return {
         status: 200,
         body: {
-          accessToken,
           me,
         },
       };
