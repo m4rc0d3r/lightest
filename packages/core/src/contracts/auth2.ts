@@ -1,7 +1,11 @@
 import { initContract } from "@ts-rest/core";
 import { z } from "zod";
 
-import { getErrorWithHttpStatusCode, zUniqueKeyViolationError } from "./error-schemas";
+import {
+  getErrorWithHttpStatusCode,
+  zNotFoundError,
+  zUniqueKeyViolationError,
+} from "./error-schemas";
 
 import { zAvatarAsFile, zUser } from "~/domain";
 
@@ -31,6 +35,13 @@ const zRegisterSuccessfulRes = z.object({
   me: zMe,
 });
 
+const zLoginReq = zUser.pick({
+  email: true,
+  password: true,
+});
+
+const zLoginSuccessfulRes = zRegisterSuccessfulRes;
+
 const c = initContract();
 const auth2Contract = c.router(
   {
@@ -42,6 +53,15 @@ const auth2Contract = c.router(
       responses: {
         201: zRegisterSuccessfulRes,
         ...getErrorWithHttpStatusCode(zUniqueKeyViolationError),
+      },
+    },
+    login: {
+      method: "POST",
+      path: "/login",
+      body: zLoginReq,
+      responses: {
+        200: zLoginSuccessfulRes,
+        ...getErrorWithHttpStatusCode(zNotFoundError),
       },
     },
   },

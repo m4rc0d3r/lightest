@@ -1,11 +1,12 @@
 import type { taskEither } from "fp-ts";
 
-import type { Create } from "./ios";
+import type { Common, Create, Get } from "./ios";
 
-import type { UniqueKeyViolationError } from "~/app";
+import type { NotFoundError, UniqueKeyViolationError } from "~/app";
 
 abstract class Repository {
-  abstract create(params: Create.In): taskEither.TaskEither<UniqueKeyViolationError, Create.Out>;
+  abstract create(params: Create.In): taskEither.TaskEither<UniqueKeyViolationError, Common.Out>;
+  abstract get(params: Get.In): taskEither.TaskEither<NotFoundError, Common.Out>;
 }
 
 export { Repository };

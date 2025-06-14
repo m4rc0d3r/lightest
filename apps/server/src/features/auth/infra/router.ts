@@ -49,6 +49,48 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         },
       };
     },
+    login: async ({ req, res, body }) => {
+      const {
+        config: {
+          auth: { refreshTokenCookieName },
+        },
+        defaultCookieOptions,
+        userService2,
+        accessTokenService,
+        refreshTokenService,
+      } = req.container.cradle;
+      const searchResult = await userService2.get(body)();
+
+      if (either.isLeft(searchResult))
+        return {
+          status: 404,
+          body: searchResult.left,
+        };
+
+      const { passwordHash, updatedAt, ...me } = searchResult.right;
+      const payload = { userId: me.id };
+      const { token: accessToken } = await accessTokenService.generate(payload);
+      const {
+        token: refreshToken,
+        payload: { exp: refreshTokenExpirationDate },
+      } = await refreshTokenService.generate(payload);
+
+      setAuthenticationCookie(
+        res,
+        refreshToken,
+        refreshTokenCookieName,
+        defaultCookieOptions,
+        new Date(refreshTokenExpirationDate),
+      );
+
+      return {
+        status: 200,
+        body: {
+          accessToken,
+          me,
+        },
+      };
+    },
   },
 );
 

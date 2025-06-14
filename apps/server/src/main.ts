@@ -54,7 +54,10 @@ createExpressEndpoints(testContract, testRouter, app, {
 });
 
 createExpressEndpoints(auth2Contract, authRouter2, app, {
-  globalMiddleware: [tsRestContentTypeMiddleware],
+  globalMiddleware: [
+    (...args) =>
+      tsRestContentTypeMiddleware(...(args as Parameters<typeof tsRestContentTypeMiddleware>)),
+  ],
 });
 
 app.use(errorMiddleware);

@@ -2,12 +2,8 @@ import { zUser } from "@lightest/core";
 import type { z } from "zod";
 
 const zIn = zUser.pick({
-  firstName: true,
-  lastName: true,
-  avatar: true,
   email: true,
-  passwordHash: true,
-  verificationCode: true,
+  password: true,
 });
 type In = z.infer<typeof zIn>;
 

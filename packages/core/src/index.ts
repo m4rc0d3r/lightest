@@ -1,3 +1,4 @@
+export * as Bool from "./bool";
 export * as ClientApp from "./client-app";
 export * from "./contracts";
 export * from "./domain";

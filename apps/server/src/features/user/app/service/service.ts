@@ -1,11 +1,12 @@
-import { ClientApp, Http, ImpossibleError, Str } from "@lightest/core";
-import { either } from "fp-ts";
+import { Bool, ClientApp, Http, ImpossibleError, Str } from "@lightest/core";
+import { either, function as function_, taskEither } from "fp-ts";
 
 import type { Repository, RepositoryIos } from "../ports";
 
-import type { Create } from "./ios";
+import type { Create, Get } from "./ios";
 
 import type { UniqueKeyViolationError } from "~/app";
+import { NotFoundError } from "~/app";
 import type { BlobService } from "~/features/blob";
 import type { CryptoService } from "~/features/crypto";
 import type { EmailTemplateService } from "~/features/email-template";
@@ -36,7 +37,7 @@ class Service {
     avatar,
     password,
     ...rest
-  }: Create.In): Promise<either.Either<UniqueKeyViolationError, RepositoryIos.Create.Out>> {
+  }: Create.In): Promise<either.Either<UniqueKeyViolationError, RepositoryIos.Common.Out>> {
     const resultOfCreation = await this.userRepository.create({
       avatar: avatar instanceof File ? await this.blobService.upload(avatar) : avatar,
       passwordHash: await this.passwordHashingService.hash(password),
@@ -67,6 +68,32 @@ class Service {
     }
 
     return resultOfCreation;
+  }
+
+  get({
+    password,
+    ...params
+  }: Get.In): taskEither.TaskEither<NotFoundError, RepositoryIos.Common.Out> {
+    return function_.pipe(
+      this.userRepository.get(params),
+      taskEither.flatMap((user) =>
+        function_.pipe(
+          user,
+          ({ passwordHash }) =>
+            () =>
+              this.passwordHashingService.compare(password, passwordHash),
+          taskEither.fromTask,
+          taskEither.flatMap((arePasswordsEqual) =>
+            function_.pipe(
+              arePasswordsEqual,
+              either.fromPredicate(Bool.isTruthy, () => new NotFoundError()),
+              either.map(() => user),
+              taskEither.fromEither,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
