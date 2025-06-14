@@ -1,4 +1,4 @@
-import type { AppRoute, AppRouter } from "@ts-rest/core";
+import type { AppRoute, AppRouter, HTTPStatusCode } from "@ts-rest/core";
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import type { RequestHandler } from "express";
 
@@ -23,4 +23,8 @@ const tsRestContentTypeMiddleware: RequestHandler = (req, _res, next) => {
   next();
 };
 
-export { tsRestContentTypeMiddleware, tsRestServer };
+function tsRestNoBody<T extends HTTPStatusCode>(status: T) {
+  return { status, body: undefined };
+}
+
+export { tsRestContentTypeMiddleware, tsRestNoBody, tsRestServer };

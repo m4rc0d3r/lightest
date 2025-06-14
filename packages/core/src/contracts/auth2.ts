@@ -1,4 +1,4 @@
-import { initContract } from "@ts-rest/core";
+import { ContractNoBody, initContract } from "@ts-rest/core";
 import { z } from "zod";
 
 import {
@@ -61,6 +61,15 @@ const auth2Contract = c.router(
       responses: {
         200: zLoginSuccessfulRes,
         ...getErrorWithHttpStatusCode(zNotFoundError),
+      },
+    },
+    logout: {
+      method: "POST",
+      path: "/logout",
+      body: ContractNoBody,
+      responses: {
+        200: ContractNoBody,
+        401: ContractNoBody,
       },
     },
   },

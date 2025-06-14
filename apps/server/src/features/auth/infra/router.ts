@@ -1,10 +1,11 @@
 import type { User } from "@lightest/core";
-import { auth2Contract, Time } from "@lightest/core";
+import { auth2Contract, ImpossibleError, Time } from "@lightest/core";
 import type { CookieOptions, Response } from "express";
 import { either } from "fp-ts";
 
 import type { JwtSignedPayload } from "~/features/jwt";
-import { tsRestServer } from "~/infra";
+import { tsRestNoBody, tsRestServer } from "~/infra";
+import { isObject } from "~/shared";
 
 const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsRestServer.router(
   auth2Contract,
@@ -75,6 +76,26 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         },
       };
     },
+    logout: async ({ req, res }) => {
+      const {
+        config: {
+          auth: { tokenCookieName },
+        },
+        authTokenService,
+      } = req.container.cradle;
+
+      if (!isObject(req.cookies)) throw new ImpossibleError("Cookies must be of type object.");
+
+      const token = (req.cookies as Record<string, unknown>)[tokenCookieName];
+      if (typeof token !== "string") return tsRestNoBody(401);
+
+      const verificationResult = await authTokenService.verify(token)();
+      if (either.isLeft(verificationResult)) return tsRestNoBody(401);
+
+      clearAuthenticationCookies(res, tokenCookieName);
+
+      return tsRestNoBody(200);
+    },
   },
 );
 
@@ -103,6 +124,10 @@ function setAuthenticationCookie(
     maxAge,
     signed: false,
   });
+}
+
+function clearAuthenticationCookies(res: Response, cookieName: string) {
+  res.clearCookie(cookieName);
 }
 
 export { router };
