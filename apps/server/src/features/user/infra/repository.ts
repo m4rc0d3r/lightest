@@ -1,4 +1,4 @@
-import { ImpossibleError } from "@lightest/core";
+import { FpTs, ImpossibleError, UnexpectedError } from "@lightest/core";
 import { eq } from "drizzle-orm";
 import { array, function as function_, option, taskEither } from "fp-ts";
 
@@ -19,18 +19,21 @@ class DrizzleRepository extends Repository {
 
   override create(
     params: RepositoryIos.Create.In,
-  ): taskEither.TaskEither<UniqueKeyViolationError, RepositoryIos.Common.Out> {
+  ): taskEither.TaskEither<
+    UnexpectedError | ImpossibleError | UniqueKeyViolationError,
+    RepositoryIos.Common.Out
+  > {
     return function_.pipe(
       taskEither.tryCatch(
-        () => this.db.insert(TABLE.users).values(params).returning(),
+        FpTs.Task.fromPromise(this.db.insert(TABLE.users).values(params).returning()),
         (reason) => {
           if (isUniqueKeyViolation(reason)) {
             const constraintName = CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT[reason.constraint];
-            if (!constraintName) throw reason;
+            if (!constraintName) return new UnexpectedError(reason);
 
             return new UniqueKeyViolationError(constraintName);
           }
-          throw reason;
+          return new UnexpectedError(reason);
         },
       ),
       taskEither.map(([user]) => user),
@@ -38,7 +41,7 @@ class DrizzleRepository extends Repository {
         taskEither.fromPredicate(
           (user) => !!user,
           () => {
-            throw new ImpossibleError(MESSAGE_ABOUT_INCORRECT_INSERTION_RESULT);
+            return new ImpossibleError(MESSAGE_ABOUT_INCORRECT_INSERTION_RESULT);
           },
         ),
       ),
@@ -47,10 +50,17 @@ class DrizzleRepository extends Repository {
 
   override get({
     email,
-  }: RepositoryIos.Get.In): taskEither.TaskEither<NotFoundError, RepositoryIos.Common.Out> {
+  }: RepositoryIos.Get.In): taskEither.TaskEither<
+    UnexpectedError | NotFoundError,
+    RepositoryIos.Common.Out
+  > {
     return function_.pipe(
-      () => this.db.select().from(TABLE.users).where(eq(TABLE.users.email, email)),
-      taskEither.fromTask,
+      taskEither.tryCatch(
+        FpTs.Task.fromPromise(
+          this.db.select().from(TABLE.users).where(eq(TABLE.users.email, email)),
+        ),
+        (reason) => new UnexpectedError(reason),
+      ),
       taskEither.chain((rows) =>
         function_.pipe(
           rows,

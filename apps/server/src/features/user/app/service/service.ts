@@ -1,11 +1,10 @@
-import { Bool, ClientApp, Http, Str, UnexpectedError } from "@lightest/core";
-import { either, function as function_, taskEither } from "fp-ts";
+import { ClientApp, Http, ImpossibleError, Str, UnexpectedError } from "@lightest/core";
+import { apply, either, function as function_, taskEither } from "fp-ts";
 
-import type { Repository, RepositoryIos } from "../ports";
+import type { Repository } from "../ports";
 
 import type { Create, Get } from "./ios";
 
-import type { UniqueKeyViolationError } from "~/app";
 import { NotFoundError } from "~/app";
 import type { BlobService } from "~/features/blob";
 import type { CryptoService } from "~/features/crypto";
@@ -33,73 +32,77 @@ class Service {
     this.clientApp = config.clientApp;
   }
 
-  async create({
-    avatar,
-    password,
-    ...rest
-  }: Create.In): Promise<
-    either.Either<UnexpectedError | UniqueKeyViolationError, RepositoryIos.Common.Out>
-  > {
-    const eitherAvatar =
-      avatar instanceof File ? await this.blobService.upload(avatar)() : either.right(avatar);
-    if (either.isLeft(eitherAvatar)) return eitherAvatar;
-
-    const hashResult = await this.passwordHashingService.hash(password)();
-    if (either.isLeft(hashResult)) return hashResult;
-
-    const generationResult = await this.cryptoService.generateUid(
-      Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
-    )();
-    if (either.isLeft(generationResult)) return generationResult;
-
-    const verificationCode = generationResult.right;
-    const resultOfCreation = await this.userRepository.create({
-      avatar: eitherAvatar.right,
-      passwordHash: hashResult.right,
-      verificationCode,
-      ...rest,
-    })();
-
-    if (either.isRight(resultOfCreation)) {
-      const { email } = resultOfCreation.right;
-
-      const clientAppUrl = Http.createUrl(this.clientApp);
-      const renderingResult = await this.emailTemplateService.emailVerification({
-        appName: this.appName,
-        clientAppUrl,
-        linkToConfirmEmailAddress: ClientApp.getRouterPathToVerifyEmail(
-          clientAppUrl,
-          verificationCode,
+  create({ avatar, password, ...rest }: Create.In): ReturnType<Repository["create"]> {
+    return function_.pipe(
+      apply.sequenceS(taskEither.ApplyPar)({
+        avatar: function_.pipe(
+          avatar,
+          taskEither.fromPredicate(
+            (avatar): avatar is string => typeof avatar === "string",
+            (avatar) => avatar,
+          ),
+          taskEither.orElse((avatar) =>
+            avatar instanceof File
+              ? this.blobService.upload(avatar)
+              : taskEither.left(
+                  new UnexpectedError(
+                    new ImpossibleError("Avatar must be an instance of the file."),
+                  ),
+                ),
+          ),
         ),
-      })();
-      if (either.isLeft(renderingResult))
-        return either.left(new UnexpectedError(renderingResult.left));
-
-      await this.mailService2.send({
-        to: email,
-        subject: `Welcome to ${this.appName}, please confirm your email address`,
-        html: renderingResult.right,
-      })();
-    }
-
-    return resultOfCreation;
+        passwordHash: this.passwordHashingService.hash(password),
+        verificationCode: this.cryptoService.generateUid(
+          Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
+        ),
+      }),
+      taskEither.flatMap(({ avatar, passwordHash, verificationCode }) =>
+        function_.pipe(
+          this.userRepository.create({
+            avatar,
+            passwordHash,
+            verificationCode,
+            ...rest,
+          }),
+          taskEither.tap(({ email }) => {
+            const clientAppUrl = Http.createUrl(this.clientApp);
+            return function_.pipe(
+              this.emailTemplateService.emailVerification({
+                appName: this.appName,
+                clientAppUrl,
+                linkToConfirmEmailAddress: ClientApp.getRouterPathToVerifyEmail(
+                  clientAppUrl,
+                  verificationCode,
+                ),
+              }),
+              taskEither.tap((html) =>
+                this.mailService2.send({
+                  to: email,
+                  subject: `Welcome to ${this.appName}, please confirm your email address`,
+                  html,
+                }),
+              ),
+            );
+          }),
+        ),
+      ),
+    );
   }
 
-  get({
-    password,
-    ...params
-  }: Get.In): taskEither.TaskEither<NotFoundError, RepositoryIos.Common.Out> {
+  get({ password, ...params }: Get.In): ReturnType<Repository["get"]> {
     return function_.pipe(
       this.userRepository.get(params),
       taskEither.flatMap((user) =>
         function_.pipe(
           user,
           ({ passwordHash }) => this.passwordHashingService.compare(password, passwordHash),
-          taskEither.fromTask,
           taskEither.flatMap((arePasswordsEqual) =>
             function_.pipe(
               arePasswordsEqual,
-              either.fromPredicate(Bool.isTruthy, () => new NotFoundError()),
+              either.fromPredicate(
+                () => arePasswordsEqual,
+                () => new NotFoundError(),
+              ),
               either.map(() => user),
               taskEither.fromEither,
             ),

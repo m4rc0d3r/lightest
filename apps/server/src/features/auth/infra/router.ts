@@ -21,7 +21,7 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         userService2,
         authTokenService,
       } = req.container.cradle;
-      const resultOfCreation = await userService2.create(body);
+      const resultOfCreation = await userService2.create(body)();
 
       if (either.isLeft(resultOfCreation)) {
         const error = resultOfCreation.left;
