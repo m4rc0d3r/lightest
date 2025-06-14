@@ -15,6 +15,13 @@
       "when": 1749478508987,
       "tag": "0001_sudden_captain_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749928000346,
+      "tag": "0002_tired_chat",
+      "breakpoints": true
     }
   ]
 }
