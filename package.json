@@ -8,6 +8,7 @@
     "@lightest/eslint-config": "workspace:*",
     "@lightest/lint-staged-config": "workspace:*",
     "@lightest/prettier-config": "workspace:*",
+    "depcheck": "^1.4.7",
     "husky": "^9.1.7",
     "lint-staged": "^16.0.0",
     "prettier": "^3.5.3",
