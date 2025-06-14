@@ -1,3 +1,5 @@
-type HashFn = (data: string) => Promise<string>;
+import type { task } from "fp-ts";
 
-export type { HashFn };
+type HashData = (data: string) => task.Task<string>;
+
+export type { HashData };

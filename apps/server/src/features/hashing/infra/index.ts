@@ -1,2 +1,1 @@
-export * from "./compare";
-export * from "./hash";
+export * as Bcrypt from "./bcrypt";

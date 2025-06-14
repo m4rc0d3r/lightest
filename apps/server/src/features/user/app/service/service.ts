@@ -40,7 +40,7 @@ class Service {
   }: Create.In): Promise<either.Either<UniqueKeyViolationError, RepositoryIos.Common.Out>> {
     const resultOfCreation = await this.userRepository.create({
       avatar: avatar instanceof File ? await this.blobService.upload(avatar) : avatar,
-      passwordHash: await this.passwordHashingService.hash(password),
+      passwordHash: await this.passwordHashingService.hash(password)(),
       verificationCode: await this.cryptoService.generateUid(
         Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
       ),
@@ -79,9 +79,7 @@ class Service {
       taskEither.flatMap((user) =>
         function_.pipe(
           user,
-          ({ passwordHash }) =>
-            () =>
-              this.passwordHashingService.compare(password, passwordHash),
+          ({ passwordHash }) => this.passwordHashingService.compare(password, passwordHash),
           taskEither.fromTask,
           taskEither.flatMap((arePasswordsEqual) =>
             function_.pipe(

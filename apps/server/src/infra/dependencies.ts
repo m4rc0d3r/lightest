@@ -15,7 +15,7 @@ import type { Config } from "./config";
 import { BlobService, VercelBlobStorageProvider } from "~/features/blob";
 import { CryptoService, generateSafeUid } from "~/features/crypto";
 import { EmailTemplateService, PugTemplateEngine } from "~/features/email-template";
-import { bcryptCompareFn, createBcryptHashFn, HashingService } from "~/features/hashing";
+import { BcryptHashProvider, HashingService } from "~/features/hashing";
 import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
 import { MailService as MailService2, NodemailerApi } from "~/features/mail";
 import type { UserRepository } from "~/features/user";
@@ -92,7 +92,10 @@ function configureDependencies(config: Config) {
         const {
           bcrypt: { roundsForPasswordHash },
         } = config;
-        return new HashingService(createBcryptHashFn(roundsForPasswordHash), bcryptCompareFn);
+        return new HashingService(
+          BcryptHashProvider.createDataHasher(roundsForPasswordHash),
+          BcryptHashProvider.compareHashData,
+        );
       })(),
     ),
     blobService: asValue(

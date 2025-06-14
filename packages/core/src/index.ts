@@ -4,6 +4,7 @@ export * from "./contracts";
 export * from "./domain";
 export * from "./errors";
 export * as File from "./file";
+export * from "./fp-ts";
 export * as Http from "./http";
 export * as Str from "./string";
 export * as Time from "./time";

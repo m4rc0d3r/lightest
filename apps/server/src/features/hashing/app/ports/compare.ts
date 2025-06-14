@@ -1,3 +1,5 @@
-type CompareFn = (data: string, hash: string) => Promise<boolean>;
+import type { task } from "fp-ts";
 
-export type { CompareFn };
+type CompareDataHash = (data: string, hash: string) => task.Task<boolean>;
+
+export type { CompareDataHash };

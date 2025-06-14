@@ -1,16 +1,16 @@
-import type { CompareFn, HashFn } from "../ports";
+import type { CompareDataHash, HashData } from "../ports";
 
 class Service {
   constructor(
-    private readonly hashData: HashFn,
-    private readonly compareHashWithData: CompareFn,
+    private readonly hashData: HashData,
+    private readonly compareHashWithData: CompareDataHash,
   ) {}
 
-  hash(data: string): ReturnType<HashFn> {
+  hash(data: string): ReturnType<HashData> {
     return this.hashData(data);
   }
 
-  compare(data: string, hash: string): ReturnType<CompareFn> {
+  compare(data: string, hash: string): ReturnType<CompareDataHash> {
     return this.compareHashWithData(data, hash);
   }
 }
