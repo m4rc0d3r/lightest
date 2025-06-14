@@ -6,6 +6,7 @@ export * from "./errors";
 export * as File from "./file";
 export * as Http from "./http";
 export * as Str from "./string";
+export * as Time from "./time";
 export * from "./type-guards";
 export * from "./utilities";
 export * from "./zod";

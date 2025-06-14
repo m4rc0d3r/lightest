@@ -1,7 +1,9 @@
-import { auth2Contract } from "@lightest/core";
+import type { User } from "@lightest/core";
+import { auth2Contract, Time } from "@lightest/core";
 import type { CookieOptions, Response } from "express";
 import { either } from "fp-ts";
 
+import type { JwtSignedPayload } from "~/features/jwt";
 import { tsRestServer } from "~/infra";
 
 const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsRestServer.router(
@@ -28,17 +30,13 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
       const { passwordHash, updatedAt, ...me } = resultOfCreation.right;
       const payload = { userId: me.id };
       const { token: accessToken } = await accessTokenService.generate(payload);
-      const {
-        token: refreshToken,
-        payload: { exp: refreshTokenExpirationDate },
-      } = await refreshTokenService.generate(payload);
+      const { token: refreshToken, payload: signedPayload } =
+        await refreshTokenService.generate(payload);
 
       setAuthenticationCookie(
         res,
-        refreshToken,
-        refreshTokenCookieName,
-        defaultCookieOptions,
-        new Date(refreshTokenExpirationDate),
+        { name: refreshTokenCookieName, options: defaultCookieOptions },
+        { encoded: refreshToken, payload: signedPayload },
       );
 
       return {
@@ -70,17 +68,13 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
       const { passwordHash, updatedAt, ...me } = searchResult.right;
       const payload = { userId: me.id };
       const { token: accessToken } = await accessTokenService.generate(payload);
-      const {
-        token: refreshToken,
-        payload: { exp: refreshTokenExpirationDate },
-      } = await refreshTokenService.generate(payload);
+      const { token: refreshToken, payload: signedPayload } =
+        await refreshTokenService.generate(payload);
 
       setAuthenticationCookie(
         res,
-        refreshToken,
-        refreshTokenCookieName,
-        defaultCookieOptions,
-        new Date(refreshTokenExpirationDate),
+        { name: refreshTokenCookieName, options: defaultCookieOptions },
+        { encoded: refreshToken, payload: signedPayload },
       );
 
       return {
@@ -94,16 +88,29 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
   },
 );
 
+type RefreshTokenPayload = {
+  userId: User["id"];
+};
+
 function setAuthenticationCookie(
   res: Response,
-  refreshToken: string,
-  cookieName: string,
-  cookieOptions: CookieOptions,
-  refreshTokenExpirationDate: Date,
+  cookie: {
+    name: string;
+    options: CookieOptions;
+  },
+  token: {
+    encoded: string;
+    payload: JwtSignedPayload<RefreshTokenPayload>;
+  },
 ) {
-  res.cookie(cookieName, refreshToken, {
-    ...cookieOptions,
-    expires: refreshTokenExpirationDate,
+  const { exp, iat } = token.payload;
+  const maxAge = (exp - iat) * Time.MILLISECONDS_PER_SECOND;
+  const expires = new Date(exp * Time.MILLISECONDS_PER_SECOND);
+
+  res.cookie(cookie.name, token.encoded, {
+    ...cookie.options,
+    expires,
+    maxAge,
     signed: false,
   });
 }
