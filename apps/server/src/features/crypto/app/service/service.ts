@@ -1,9 +1,9 @@
-import type { GenerateUidFn } from "../ports";
+import type { GenerateUid } from "../ports";
 
 class Service {
-  constructor(private readonly generateUid_: GenerateUidFn) {}
+  constructor(private readonly generateUid_: GenerateUid) {}
 
-  generateUid(lengthInBytes: number): ReturnType<GenerateUidFn> {
+  generateUid(lengthInBytes: number): ReturnType<GenerateUid> {
     return this.generateUid_(lengthInBytes);
   }
 }

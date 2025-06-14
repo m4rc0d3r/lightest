@@ -1,4 +1,4 @@
-import { Bool, ClientApp, Http, ImpossibleError, Str, UnexpectedError } from "@lightest/core";
+import { Bool, ClientApp, Http, Str, UnexpectedError } from "@lightest/core";
 import { either, function as function_, taskEither } from "fp-ts";
 
 import type { Repository, RepositoryIos } from "../ports";
@@ -40,19 +40,21 @@ class Service {
   }: Create.In): Promise<
     either.Either<UnexpectedError | UniqueKeyViolationError, RepositoryIos.Common.Out>
   > {
+    const generationResult = await this.cryptoService.generateUid(
+      Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
+    )();
+    if (either.isLeft(generationResult)) return generationResult;
+
+    const verificationCode = generationResult.right;
     const resultOfCreation = await this.userRepository.create({
       avatar: avatar instanceof File ? await this.blobService.upload(avatar) : avatar,
       passwordHash: await this.passwordHashingService.hash(password)(),
-      verificationCode: await this.cryptoService.generateUid(
-        Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
-      ),
+      verificationCode,
       ...rest,
     })();
 
     if (either.isRight(resultOfCreation)) {
-      const { email, verificationCode } = resultOfCreation.right;
-      if (verificationCode === null)
-        throw new ImpossibleError("verificationCode is null but must be a string.");
+      const { email } = resultOfCreation.right;
 
       const clientAppUrl = Http.createUrl(this.clientApp);
       const renderingResult = await this.emailTemplateService.emailVerification({
