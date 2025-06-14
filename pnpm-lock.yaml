@@ -374,6 +374,9 @@ importers:
       concurrently:
         specifier: ^9.1.2
         version: 9.1.2
+      type-fest:
+        specifier: ^4.41.0
+        version: 4.41.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -9061,7 +9064,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 22.15.21
+      '@types/node': 24.0.1
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
