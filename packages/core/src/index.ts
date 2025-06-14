@@ -2,6 +2,7 @@ export * as ClientApp from "./client-app";
 export * from "./contracts";
 export * from "./domain";
 export * from "./errors";
+export * as File from "./file";
 export * as Http from "./http";
 export * as Str from "./string";
 export * from "./type-guards";
