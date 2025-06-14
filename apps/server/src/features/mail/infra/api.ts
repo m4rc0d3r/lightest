@@ -1,4 +1,5 @@
-import { Str } from "@lightest/core";
+import { FpTs, ImpossibleError, Str, UnexpectedError } from "@lightest/core";
+import { function as function_, taskEither } from "fp-ts";
 import type { TestAccount, Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -54,28 +55,43 @@ class NodemailerApi extends Api implements AsyncInit {
     this.from = options.auth.user ?? "";
   }
 
-  override async send({ from, to, subject, text, html }: ApiIos.Send.In): Promise<boolean> {
+  override send({
+    from,
+    to,
+    subject,
+    text,
+    html,
+  }: ApiIos.Send.In): taskEither.TaskEither<UnexpectedError | ImpossibleError, boolean> {
     if (!this.transporter)
-      throw new Error(
-        `This method should only be called after the ${NodemailerApi.name} has been initialized.`,
+      return taskEither.left(
+        new ImpossibleError(
+          `This method should only be called after the ${NodemailerApi.name} has been initialized.`,
+        ),
       );
 
-    const sendingResult = await this.transporter.sendMail({
-      from: from ?? this.from,
-      to,
-      subject,
-      text,
-      html,
-    });
+    return function_.pipe(
+      taskEither.tryCatch(
+        FpTs.Task.fromPromise(
+          this.transporter.sendMail({
+            from: from ?? this.from,
+            to,
+            subject,
+            text,
+            html,
+          }),
+        ),
+        (reason) => new UnexpectedError(reason),
+      ),
+      taskEither.tapIO((sendingResult) => () => {
+        const logMessage = [`Message with ID ${sendingResult.messageId} has been sent.`];
+        if (!this.mailConfig.useRealSending) {
+          logMessage.push(`Preview URL: ${nodemailer.getTestMessageUrl(sendingResult)}`);
+        }
 
-    const logMessage = [`Message with ID ${sendingResult.messageId} has been sent.`];
-    if (!this.mailConfig.useRealSending) {
-      logMessage.push(`Preview URL: ${nodemailer.getTestMessageUrl(sendingResult)}`);
-    }
-
-    console.log(logMessage.join(Str.SPACE));
-
-    return sendingResult.accepted.includes(to);
+        console.log(logMessage.join(Str.SPACE));
+      }),
+      taskEither.map((sendingResult) => sendingResult.accepted.includes(to)),
+    );
   }
 }
 

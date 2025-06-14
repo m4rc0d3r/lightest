@@ -70,7 +70,7 @@ class Service {
         to: email,
         subject: `Welcome to ${this.appName}, please confirm your email address`,
         html: renderingResult.right,
-      });
+      })();
     }
 
     return resultOfCreation;
