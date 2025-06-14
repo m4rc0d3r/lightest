@@ -40,6 +40,10 @@ class Service {
   }: Create.In): Promise<
     either.Either<UnexpectedError | UniqueKeyViolationError, RepositoryIos.Common.Out>
   > {
+    const eitherAvatar =
+      avatar instanceof File ? await this.blobService.upload(avatar)() : either.right(avatar);
+    if (either.isLeft(eitherAvatar)) return eitherAvatar;
+
     const generationResult = await this.cryptoService.generateUid(
       Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
     )();
@@ -47,7 +51,7 @@ class Service {
 
     const verificationCode = generationResult.right;
     const resultOfCreation = await this.userRepository.create({
-      avatar: avatar instanceof File ? await this.blobService.upload(avatar) : avatar,
+      avatar: eitherAvatar.right,
       passwordHash: await this.passwordHashingService.hash(password)(),
       verificationCode,
       ...rest,
