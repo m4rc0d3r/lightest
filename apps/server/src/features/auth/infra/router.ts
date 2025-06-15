@@ -1,10 +1,10 @@
-import { auth2Contract, ImpossibleError, Time } from "@lightest/core";
+import { auth2Contract, Time } from "@lightest/core";
 import type { CookieOptions, Response } from "express";
-import { either } from "fp-ts";
+import { either, function as function_, taskEither } from "fp-ts";
 
 import type { AuthTokenPayload } from "./types";
 
-import { UniqueKeyViolationError } from "~/app";
+import { NotFoundError, UniqueKeyViolationError } from "~/app";
 import type { JwtSignedPayload } from "~/features/jwt";
 import { tsRestNoBody, tsRestServer } from "~/infra";
 import { isObject } from "~/shared";
@@ -21,36 +21,39 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         userService2,
         authTokenService,
       } = req.container.cradle;
-      const resultOfCreation = await userService2.create(body)();
 
-      if (either.isLeft(resultOfCreation)) {
-        const error = resultOfCreation.left;
+      const resultOfCreation = await function_.pipe(
+        userService2.create(body),
+        taskEither.flatMap((user) =>
+          function_.pipe(
+            authTokenService.generate({ userId: user.id }),
+            taskEither.tapIO(
+              ({ token: authToken, payload }) =>
+                () =>
+                  setAuthenticationCookie(
+                    res,
+                    { name: tokenCookieName, options: defaultCookieOptions },
+                    { encoded: authToken, payload },
+                  ),
+            ),
+            taskEither.map(() => user),
+            taskEither.map(({ passwordHash, verificationCode, updatedAt, ...me }) => me),
+          ),
+        ),
+        taskEither.toUnion,
+      )();
 
-        if (error instanceof UniqueKeyViolationError)
-          return {
-            status: 409,
-            body: resultOfCreation.left,
-          };
+      if (resultOfCreation instanceof Error) {
+        if (resultOfCreation instanceof UniqueKeyViolationError)
+          return { status: 409, body: resultOfCreation };
 
         return tsRestNoBody(500);
       }
 
-      const { passwordHash, updatedAt, ...me } = resultOfCreation.right;
-      const generationResult = await authTokenService.generate({ userId: me.id })();
-      if (either.isLeft(generationResult)) return tsRestNoBody(500);
-
-      const { token: authToken, payload } = generationResult.right;
-
-      setAuthenticationCookie(
-        res,
-        { name: tokenCookieName, options: defaultCookieOptions },
-        { encoded: authToken, payload },
-      );
-
       return {
         status: 201,
         body: {
-          me,
+          me: resultOfCreation,
         },
       };
     },
@@ -63,30 +66,38 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         userService2,
         authTokenService,
       } = req.container.cradle;
-      const searchResult = await userService2.get(body)();
 
-      if (either.isLeft(searchResult))
-        return {
-          status: 404,
-          body: searchResult.left,
-        };
+      const searchResult = await function_.pipe(
+        userService2.get(body),
+        taskEither.flatMap((user) =>
+          function_.pipe(
+            authTokenService.generate({ userId: user.id }),
+            taskEither.tapIO(
+              ({ token: authToken, payload }) =>
+                () =>
+                  setAuthenticationCookie(
+                    res,
+                    { name: tokenCookieName, options: defaultCookieOptions },
+                    { encoded: authToken, payload },
+                  ),
+            ),
+            taskEither.map(() => user),
+            taskEither.map(({ passwordHash, verificationCode, updatedAt, ...me }) => me),
+          ),
+        ),
+        taskEither.toUnion,
+      )();
 
-      const { passwordHash, updatedAt, ...me } = searchResult.right;
-      const generationResult = await authTokenService.generate({ userId: me.id })();
-      if (either.isLeft(generationResult)) return tsRestNoBody(500);
+      if (searchResult instanceof Error) {
+        if (searchResult instanceof NotFoundError) return { status: 404, body: searchResult };
 
-      const { token: authToken, payload } = generationResult.right;
-
-      setAuthenticationCookie(
-        res,
-        { name: tokenCookieName, options: defaultCookieOptions },
-        { encoded: authToken, payload },
-      );
+        return tsRestNoBody(500);
+      }
 
       return {
         status: 200,
         body: {
-          me,
+          me: searchResult,
         },
       };
     },
@@ -98,17 +109,30 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         authTokenService,
       } = req.container.cradle;
 
-      if (!isObject(req.cookies)) throw new ImpossibleError("Cookies must be of type object.");
-
-      const token = (req.cookies as Record<string, unknown>)[tokenCookieName];
-      if (typeof token !== "string") return tsRestNoBody(401);
-
-      const verificationResult = await authTokenService.verify(token)();
-      if (either.isLeft(verificationResult)) return tsRestNoBody(401);
-
-      clearAuthenticationCookies(res, tokenCookieName);
-
-      return tsRestNoBody(200);
+      return function_.pipe(
+        req.cookies,
+        either.fromPredicate(isObject, () => tsRestNoBody(401)),
+        either.map((cookies) => (cookies as Record<string, unknown>)[tokenCookieName]),
+        either.flatMap((token) =>
+          function_.pipe(
+            token,
+            either.fromPredicate(
+              (token) => typeof token === "string",
+              () => tsRestNoBody(401),
+            ),
+          ),
+        ),
+        taskEither.fromEither,
+        taskEither.flatMap((token) =>
+          function_.pipe(
+            authTokenService.verify(token),
+            taskEither.tapIO(() => () => clearAuthenticationCookies(res, tokenCookieName)),
+            taskEither.mapLeft(() => tsRestNoBody(401)),
+            taskEither.map(() => tsRestNoBody(200)),
+          ),
+        ),
+        taskEither.toUnion,
+      )();
     },
   },
 );
