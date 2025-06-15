@@ -1,5 +1,5 @@
 export * from "./bool";
-export * as ClientApp from "./client-app";
+export * from "./client-app";
 export * from "./contracts";
 export * from "./domain";
 export * from "./errors";

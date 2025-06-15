@@ -1,4 +1,4 @@
-import { Str } from "./str";
+import { Str } from "~/str";
 
 const VERIFY_EMAIL = "verify-email";
 
