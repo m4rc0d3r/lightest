@@ -1,12 +1,9 @@
-import { Zod } from "@lightest/core";
 import { z } from "zod";
-
-const { zTrimmedStr } = Zod;
 
 const zAppConfig = z
 
   .object({
-    APP_NAME: zTrimmedStr.nonempty(),
+    APP_NAME: z.string().trim().nonempty(),
   })
   .transform(({ APP_NAME }) => ({
     name: APP_NAME,

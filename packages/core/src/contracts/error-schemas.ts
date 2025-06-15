@@ -1,9 +1,5 @@
 import { z } from "zod";
 
-import { Zod } from "~/zod";
-
-const { zTrimmedStr } = Zod;
-
 const zErrorArea = z.enum(["KEY_VIOLATION", "NOT_FOUND"]);
 const ERROR_AREA = zErrorArea.Values;
 type ErrorArea = z.infer<typeof zErrorArea>;
@@ -15,7 +11,7 @@ const zNotFoundError = z.object({
 const zUniqueKeyViolationError = z.object({
   area: z.literal(ERROR_AREA.KEY_VIOLATION),
   type: z.enum(["foreign", "unique"]),
-  constraintName: zTrimmedStr,
+  constraintName: z.string().trim(),
 });
 
 const HTTP_STATUS_CODES_BY_ERROR_AREA = {

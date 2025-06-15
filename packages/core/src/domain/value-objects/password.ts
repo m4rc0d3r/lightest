@@ -1,13 +1,15 @@
-import { Zod } from "~/zod";
+import z from "zod";
 
-const { Regex, zTrimmedStr } = Zod;
+import { Regex } from "~/zod/pub-api";
 
 const PASSWORD_LENGTH = {
   minimum: 6,
   maximum: 32,
 };
 
-const zPassword = zTrimmedStr
+const zPassword = z
+  .string()
+  .trim()
   .min(PASSWORD_LENGTH.minimum)
   .max(PASSWORD_LENGTH.maximum)
   .superRefine(Regex.REFINEMENTS.containsDigits)

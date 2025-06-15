@@ -1,7 +1,5 @@
-import { Zod } from "~/zod";
+import z from "zod";
 
-const { zTrimmedStr } = Zod;
-
-const zPasswordHash = zTrimmedStr.nonempty();
+const zPasswordHash = z.string().trim().nonempty();
 
 export { zPasswordHash };

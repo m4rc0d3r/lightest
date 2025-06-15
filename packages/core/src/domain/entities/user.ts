@@ -2,19 +2,15 @@ import { z } from "zod";
 
 import { zAvatar, zPassword, zPasswordHash } from "../value-objects";
 
-import { Zod } from "~/zod";
-
-const { zEmail, zInt, zTrimmedStr } = Zod;
-
 const zUser = z.object({
-  id: zInt,
-  firstName: zTrimmedStr,
-  lastName: zTrimmedStr,
+  id: z.number().int(),
+  firstName: z.string().trim(),
+  lastName: z.string().trim(),
   avatar: zAvatar,
-  email: zEmail,
+  email: z.string().email(),
   password: zPassword,
   passwordHash: zPasswordHash,
-  verificationCode: zTrimmedStr.nonempty().nullable(),
+  verificationCode: z.string().trim().nonempty().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
