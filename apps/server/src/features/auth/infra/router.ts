@@ -1,4 +1,4 @@
-import { Contract, Time } from "@lightest/core";
+import { Contract, Time, TypeGuard } from "@lightest/core";
 import type { CookieOptions, Response } from "express";
 import { either, function as function_, taskEither } from "fp-ts";
 
@@ -7,7 +7,6 @@ import type { AuthTokenPayload } from "./types";
 import { NotFoundError, UniqueKeyViolationError } from "~/app";
 import type { JwtSignedPayload } from "~/features/jwt";
 import { tsRestNoBody, tsRestServer, tsRestUnexpectedErrorBody } from "~/infra";
-import { isObject } from "~/shared";
 
 const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.auth>> =
   tsRestServer.router(Contract.contract.auth, {
@@ -111,7 +110,7 @@ const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.aut
 
       return function_.pipe(
         req.cookies,
-        either.fromPredicate(isObject, () => tsRestNoBody(401)),
+        either.fromPredicate(TypeGuard.isObject, () => tsRestNoBody(401)),
         either.map((cookies) => (cookies as Record<string, unknown>)[tokenCookieName]),
         either.flatMap((token) =>
           function_.pipe(

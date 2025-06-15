@@ -1,7 +1,6 @@
+import { TypeGuard } from "@lightest/core";
 import type { Request, RequestHandler } from "express";
 import multer from "multer";
-
-import { isObject } from "~/shared";
 
 function multipartMiddleware() {
   return [
@@ -10,7 +9,7 @@ function multipartMiddleware() {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const { body, files } = req;
 
-      if (!(isObject(body) && Array.isArray(files))) return next();
+      if (!(TypeGuard.isObject(body) && Array.isArray(files))) return next();
 
       const groupedFiles = Object.groupBy(files, ({ fieldname }) => fieldname);
 

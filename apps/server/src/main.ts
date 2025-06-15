@@ -1,4 +1,4 @@
-import { Contract } from "@lightest/core";
+import { Contract, Http } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -12,7 +12,6 @@ import { tsRestContentTypeMiddleware } from "./infra";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { multipartMiddleware } from "./middlewares";
-import { createUrl } from "./shared";
 
 import { authRouter as authRouter2 } from "~/features/auth";
 
@@ -40,10 +39,10 @@ createExpressEndpoints(Contract.contract.auth, authRouter2, app, {
 });
 
 try {
-  const { protocol, address, port } = config.server;
+  const { address, port } = config.server;
   const server = app.listen(port, address, () => {
     void awilixManager.executeInit().then(() => {
-      console.log(`Server started on ${createUrl(protocol, address, port)}.`);
+      console.log(`Server started on ${Http.Url.create(config.server)}.`);
     });
   });
   server.on("close", () => {

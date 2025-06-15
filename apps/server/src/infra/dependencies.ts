@@ -1,3 +1,5 @@
+import type { Fn } from "@lightest/core";
+import { TypeGuard } from "@lightest/core";
 import type {
   AwilixContainer,
   BuildResolver,
@@ -21,8 +23,6 @@ import { generateJwt, JwtService, verifyJwt } from "~/features/jwt";
 import { MailService as MailService2, NodemailerApi } from "~/features/mail";
 import type { UserRepository } from "~/features/user";
 import { DrizzleUserRepository, UserService as UserService2 } from "~/features/user";
-import { hasMethod } from "~/shared";
-import type { AnyFn } from "~/types/utility";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 interface AsyncInit {
@@ -183,23 +183,23 @@ function asClass2<T = object>(
             await asyncInitWrapper(
               instance,
               diContainer,
-              hasMethod(instance, "asyncInit")
+              TypeGuard.hasMethod(instance, "asyncInit")
                 ? async () => (instance as AsyncInit).asyncInit(diContainer)
                 : undefined,
             );
-          }) satisfies Extract<BuildResolverOptions<T>["asyncInit"], AnyFn>)
-        : hasMethod(Type.prototype, "asyncInit"),
+          }) satisfies Extract<BuildResolverOptions<T>["asyncInit"], Fn>)
+        : TypeGuard.hasMethod(Type.prototype, "asyncInit"),
     asyncDispose:
       typeof asyncDisposeWrapper === "function"
         ? ((async (instance) => {
             await asyncDisposeWrapper(
               instance,
-              hasMethod(instance, "asyncDispose")
+              TypeGuard.hasMethod(instance, "asyncDispose")
                 ? async () => (instance as AsyncDispose).asyncDispose()
                 : undefined,
             );
-          }) satisfies Extract<BuildResolverOptions<T>["asyncDispose"], AnyFn>)
-        : hasMethod(Type.prototype, "asyncDispose"),
+          }) satisfies Extract<BuildResolverOptions<T>["asyncDispose"], Fn>)
+        : TypeGuard.hasMethod(Type.prototype, "asyncDispose"),
     ...opts_,
   });
 }
