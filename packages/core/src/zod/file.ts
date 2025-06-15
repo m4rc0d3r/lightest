@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { isObject } from "~/type-guards";
+import { TypeGuard } from "~/type-guard";
 
 const INVALID_MIME_TYPE = "invalid_mime_type";
 const CUSTOM_CODE = "customCode";
@@ -15,7 +15,7 @@ type MimeTypeIssue = Omit<z.ZodCustomIssue, "params"> & {
 function isMimeTypeIssue(value: z.ZodIssueOptionalMessage): value is MimeTypeIssue {
   return (
     value.code === z.ZodIssueCode.custom &&
-    isObject(value.params) &&
+    TypeGuard.isObject(value.params) &&
     value.params[CUSTOM_CODE] === INVALID_MIME_TYPE
   );
 }

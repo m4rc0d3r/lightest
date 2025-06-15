@@ -7,5 +7,5 @@ export * from "./file";
 export * from "./http";
 export * from "./str";
 export * from "./time";
-export * from "./type-guards";
+export * from "./type-guard";
 export * from "./zod";

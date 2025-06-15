@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { isObject } from "~/type-guards";
+import { TypeGuard } from "~/type-guard";
 
 const DOES_NOT_MATCH_REGEX = "does_not_match_regex";
 const CUSTOM_CODE = "customCode";
@@ -15,7 +15,7 @@ type RegexIssue = Omit<z.ZodCustomIssue, "params"> & {
 function isRegexIssue(value: z.ZodIssueOptionalMessage): value is RegexIssue {
   return (
     value.code === z.ZodIssueCode.custom &&
-    isObject(value.params) &&
+    TypeGuard.isObject(value.params) &&
     value.params[CUSTOM_CODE] === DOES_NOT_MATCH_REGEX
   );
 }
