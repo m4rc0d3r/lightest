@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { FpTs, UnexpectedError } from "@lightest/core";
+import { UnexpectedError } from "@lightest/core";
 import { taskEither } from "fp-ts";
 import pug from "pug";
 
@@ -20,7 +20,7 @@ class PugTemplateEngine extends TemplateEngine {
     params: TemplateEngineIos.EmailVerification.In,
   ): taskEither.TaskEither<UnexpectedError, string> {
     return taskEither.tryCatch(
-      FpTs.Task.fromPromise(
+      () =>
         new Promise<string>((resolve, reject) =>
           pug.renderFile(
             getPathToTemplate(TEMPLATE_FILE_NAMES.emailVerification),
@@ -28,7 +28,6 @@ class PugTemplateEngine extends TemplateEngine {
             (err, html) => (err === null ? resolve(html) : reject(err)),
           ),
         ),
-      ),
       (reason) => new UnexpectedError(reason),
     );
   }

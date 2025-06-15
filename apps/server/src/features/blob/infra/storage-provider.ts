@@ -1,4 +1,4 @@
-import { FpTs, UnexpectedError } from "@lightest/core";
+import { UnexpectedError } from "@lightest/core";
 import { BlobNotFoundError, del, put } from "@vercel/blob";
 import { function as function_, taskEither } from "fp-ts";
 
@@ -12,13 +12,12 @@ class VercelStorageProvider extends StorageProvider {
   override upload(file: File): taskEither.TaskEither<UnexpectedError, string> {
     return function_.pipe(
       taskEither.tryCatch(
-        FpTs.Task.fromPromise(
+        () =>
           put(file.name, file, {
             access: "public",
             addRandomSuffix: true,
             token: this.readWriteToken,
           }),
-        ),
         (reason) => new UnexpectedError(reason),
       ),
       taskEither.map(({ url }) => url),
@@ -27,11 +26,10 @@ class VercelStorageProvider extends StorageProvider {
 
   override delete(url: string): taskEither.TaskEither<UnexpectedError | NotFoundError, void> {
     return taskEither.tryCatch(
-      FpTs.Task.fromPromise(
+      () =>
         del(url, {
           token: this.readWriteToken,
         }),
-      ),
       (reason) => {
         if (reason instanceof BlobNotFoundError) {
           return new NotFoundError(url);

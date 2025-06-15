@@ -1,4 +1,4 @@
-import { FpTs, UnexpectedError } from "@lightest/core";
+import { UnexpectedError } from "@lightest/core";
 import type { either } from "fp-ts";
 import { function as function_, taskEither } from "fp-ts";
 import jwt from "jsonwebtoken";
@@ -11,7 +11,7 @@ const generateJwt: GenerateToken.Fn<AuthTokenPayload> = ({ secret, payload, life
   const clonedPayload = globalThis.structuredClone(payload);
   return function_.pipe(
     taskEither.tryCatch(
-      FpTs.Task.fromPromise(
+      () =>
         new Promise<string>((resolve, reject) =>
           jwt.sign(
             clonedPayload,
@@ -23,7 +23,6 @@ const generateJwt: GenerateToken.Fn<AuthTokenPayload> = ({ secret, payload, life
             (error, encoded) => (error === null ? resolve(encoded!) : reject(error)),
           ),
         ),
-      ),
       (reason) => new UnexpectedError(reason),
     ),
     taskEither.map((token) => ({

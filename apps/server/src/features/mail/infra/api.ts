@@ -1,4 +1,4 @@
-import { FpTs, ImpossibleError, Str, UnexpectedError } from "@lightest/core";
+import { ImpossibleError, Str, UnexpectedError } from "@lightest/core";
 import { function as function_, taskEither } from "fp-ts";
 import type { TestAccount, Transporter } from "nodemailer";
 import nodemailer from "nodemailer";
@@ -62,7 +62,8 @@ class NodemailerApi extends Api implements AsyncInit {
     text,
     html,
   }: ApiIos.Send.In): taskEither.TaskEither<UnexpectedError | ImpossibleError, boolean> {
-    if (!this.transporter)
+    const { transporter } = this;
+    if (!transporter)
       return taskEither.left(
         new ImpossibleError(
           `This method should only be called after the ${NodemailerApi.name} has been initialized.`,
@@ -71,15 +72,14 @@ class NodemailerApi extends Api implements AsyncInit {
 
     return function_.pipe(
       taskEither.tryCatch(
-        FpTs.Task.fromPromise(
-          this.transporter.sendMail({
+        () =>
+          transporter.sendMail({
             from: from ?? this.from,
             to,
             subject,
             text,
             html,
           }),
-        ),
         (reason) => new UnexpectedError(reason),
       ),
       taskEither.tapIO((sendingResult) => () => {

@@ -1,4 +1,4 @@
-import { FpTs, ImpossibleError, UnexpectedError } from "@lightest/core";
+import { ImpossibleError, UnexpectedError } from "@lightest/core";
 import { eq } from "drizzle-orm";
 import { array, function as function_, option, taskEither } from "fp-ts";
 
@@ -25,7 +25,7 @@ class DrizzleRepository extends Repository {
   > {
     return function_.pipe(
       taskEither.tryCatch(
-        FpTs.Task.fromPromise(this.db.insert(TABLE.users).values(params).returning()),
+        () => this.db.insert(TABLE.users).values(params).returning(),
         (reason) => {
           if (isUniqueKeyViolation(reason)) {
             const constraintName = CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT[reason.constraint];
@@ -56,9 +56,7 @@ class DrizzleRepository extends Repository {
   > {
     return function_.pipe(
       taskEither.tryCatch(
-        FpTs.Task.fromPromise(
-          this.db.select().from(TABLE.users).where(eq(TABLE.users.email, email)),
-        ),
+        () => this.db.select().from(TABLE.users).where(eq(TABLE.users.email, email)),
         (reason) => new UnexpectedError(reason),
       ),
       taskEither.chain((rows) =>

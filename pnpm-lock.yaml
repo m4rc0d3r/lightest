@@ -186,9 +186,6 @@ importers:
       '@ts-rest/core':
         specifier: ^3.52.1
         version: 3.52.1(@types/node@24.0.1)(zod@3.25.36)
-      fp-ts:
-        specifier: ^2.16.10
-        version: 2.16.10
       zod:
         specifier: ^3.25.36
         version: 3.25.36
