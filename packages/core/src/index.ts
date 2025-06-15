@@ -8,5 +8,4 @@ export * from "./http";
 export * from "./str";
 export * from "./time";
 export * from "./type-guards";
-export * from "./utilities";
 export * from "./zod";
