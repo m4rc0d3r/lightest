@@ -1,7 +1,7 @@
-import { zAvatarAsFile, zUser } from "@lightest/core";
+import { Domain } from "@lightest/core";
 import { z } from "zod";
 
-const zIn = zUser
+const zIn = Domain.User.zSchema
   .pick({
     firstName: true,
     lastName: true,
@@ -9,7 +9,7 @@ const zIn = zUser
     password: true,
   })
   .extend({
-    avatar: z.union([zUser.shape.avatar, zAvatarAsFile]),
+    avatar: z.union([Domain.User.zSchema.shape.avatar, Domain.User.Attribute.Avatar.zFileSchema]),
   });
 type In = z.infer<typeof zIn>;
 

@@ -1,3 +1,1 @@
-export * from "./constraints";
-export * from "./entities";
-export * from "./value-objects";
+export * as Domain from "./pub-api";

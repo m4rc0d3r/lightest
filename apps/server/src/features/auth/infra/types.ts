@@ -1,7 +1,7 @@
-import type { User } from "@lightest/core";
+import type { Domain } from "@lightest/core";
 
 type AuthTokenPayload = {
-  userId: User["id"];
+  userId: Domain.User.Schema["id"];
 };
 
 export type { AuthTokenPayload };

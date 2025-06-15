@@ -1,7 +1,7 @@
-import { zUser } from "@lightest/core";
+import { Domain } from "@lightest/core";
 import type z from "zod";
 
-const zOut = zUser.omit({
+const zOut = Domain.User.zSchema.omit({
   password: true,
 });
 type Out = z.infer<typeof zOut>;

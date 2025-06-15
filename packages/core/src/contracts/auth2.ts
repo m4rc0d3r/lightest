@@ -7,9 +7,9 @@ import {
   zUniqueKeyViolationError,
 } from "./error-schemas";
 
-import { zAvatarAsFile, zUser } from "~/domain";
+import { Domain } from "~/domain";
 
-const zRegisterReq = zUser
+const zRegisterReq = Domain.User.zSchema
   .pick({
     firstName: true,
     lastName: true,
@@ -17,10 +17,10 @@ const zRegisterReq = zUser
     password: true,
   })
   .extend({
-    avatar: z.union([zUser.shape.avatar, zAvatarAsFile]),
+    avatar: z.union([Domain.User.zSchema.shape.avatar, Domain.User.Attribute.Avatar.zFileSchema]),
   });
 
-const zMe = zUser.pick({
+const zMe = Domain.User.zSchema.pick({
   id: true,
   firstName: true,
   lastName: true,
@@ -33,7 +33,7 @@ const zRegisterSuccessfulRes = z.object({
   me: zMe,
 });
 
-const zLoginReq = zUser.pick({
+const zLoginReq = Domain.User.zSchema.pick({
   email: true,
   password: true,
 });

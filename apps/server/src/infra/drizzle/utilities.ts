@@ -1,4 +1,4 @@
-import { USER_CONSTRAINT } from "@lightest/core";
+import { Domain } from "@lightest/core";
 import { DatabaseError } from "pg";
 
 import { CONSTRAINT } from "./schema";
@@ -21,11 +21,11 @@ function isUniqueKeyViolation(error: unknown): error is UniqueKeyViolationError 
 }
 
 const CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT: Record<string, string> = {
-  [CONSTRAINT.userEmail]: USER_CONSTRAINT.UNIQUE_USER_EMAIL,
-  [CONSTRAINT.userVerificationCode]: USER_CONSTRAINT.UNIQUE_USER_VERIFICATION_CODE,
+  [CONSTRAINT.userEmail]: Domain.User.Constraint.UNIQUE_USER_EMAIL,
+  [CONSTRAINT.userVerificationCode]: Domain.User.Constraint.UNIQUE_USER_VERIFICATION_CODE,
 } satisfies Record<
   (typeof CONSTRAINT)[keyof typeof CONSTRAINT],
-  (typeof USER_CONSTRAINT)[keyof typeof USER_CONSTRAINT]
+  (typeof Domain.User.Constraint)[keyof typeof Domain.User.Constraint]
 >;
 
 export { CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT, isUniqueKeyViolation };

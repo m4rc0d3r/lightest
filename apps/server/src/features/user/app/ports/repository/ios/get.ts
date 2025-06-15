@@ -1,7 +1,7 @@
-import { zUser } from "@lightest/core";
+import { Domain } from "@lightest/core";
 import type { z } from "zod";
 
-const zIn = zUser.pick({
+const zIn = Domain.User.zSchema.pick({
   email: true,
 });
 type In = z.infer<typeof zIn>;
