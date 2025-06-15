@@ -71,7 +71,7 @@ class Service {
             ...rest,
           }),
           taskEither.tap(({ email }) => {
-            const clientAppUrl = Http.createUrl(this.clientApp);
+            const clientAppUrl = Http.Url.create(this.clientApp);
             return function_.pipe(
               this.emailTemplateService.emailVerification({
                 appName: this.appName,
