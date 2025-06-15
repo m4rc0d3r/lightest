@@ -1,5 +1,8 @@
+import { Debug } from "@lightest/core";
+
 import type { StorageProvider } from "../ports";
 
+@Debug.ClassDisplayName.set("BlobService")
 class Service {
   private readonly provider: StorageProvider;
 

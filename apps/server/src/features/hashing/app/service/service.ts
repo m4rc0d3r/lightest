@@ -1,5 +1,8 @@
+import { Debug } from "@lightest/core";
+
 import type { CompareDataHash, HashData } from "../ports";
 
+@Debug.ClassDisplayName.set("HashingService")
 class Service {
   constructor(
     private readonly hashData: HashData,

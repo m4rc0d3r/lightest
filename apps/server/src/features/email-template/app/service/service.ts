@@ -1,5 +1,8 @@
+import { Debug } from "@lightest/core";
+
 import type { TemplateEngine, TemplateEngineIos } from "../ports";
 
+@Debug.ClassDisplayName.set("EmailTemplateService")
 class Service {
   private readonly templateEngine: TemplateEngine;
 

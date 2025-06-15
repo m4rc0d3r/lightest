@@ -1,5 +1,8 @@
+import { Debug } from "@lightest/core";
+
 import type { Api, ApiIos } from "../ports";
 
+@Debug.ClassDisplayName.set("MailService")
 class Service {
   private readonly api: Api;
 

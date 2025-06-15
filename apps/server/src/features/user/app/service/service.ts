@@ -1,5 +1,6 @@
 import {
   ClientApp,
+  Debug,
   File as FileModule,
   Http,
   ImpossibleError,
@@ -19,6 +20,7 @@ import type { HashingService } from "~/features/hashing";
 import type { MailService } from "~/features/mail";
 import type { Config } from "~/infra";
 
+@Debug.ClassDisplayName.set("UserService")
 class Service {
   private readonly emailVerificationCodeLength: number;
   private readonly appName: string;

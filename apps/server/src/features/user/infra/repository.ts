@@ -1,4 +1,4 @@
-import { ImpossibleError, UnexpectedError } from "@lightest/core";
+import { Debug, ImpossibleError, UnexpectedError } from "@lightest/core";
 import { eq } from "drizzle-orm";
 import { array, function as function_, option, taskEither } from "fp-ts";
 
@@ -12,6 +12,7 @@ import { CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT, isUniqueKeyViolation, TABLE } f
 const MESSAGE_ABOUT_INCORRECT_INSERTION_RESULT =
   "The array of rows returned from the database must contain 1 element since no errors occurred during the insert.";
 
+@Debug.ClassDisplayName.set("DrizzleUserRepository")
 class DrizzleRepository extends Repository {
   constructor(private readonly db: Di.Container["db"]) {
     super();

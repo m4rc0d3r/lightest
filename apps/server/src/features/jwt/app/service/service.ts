@@ -1,6 +1,9 @@
+import { Debug } from "@lightest/core";
+
 import type { GenerateToken, VerifyToken } from "../ports";
 import type { PayloadToSign, SignedPayload } from "../types";
 
+@Debug.ClassDisplayName.set("JwtService")
 class Service<
   T extends PayloadToSign = PayloadToSign,
   U extends SignedPayload<T> = SignedPayload<T>,

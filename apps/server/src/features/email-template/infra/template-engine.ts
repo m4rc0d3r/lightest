@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import { UnexpectedError } from "@lightest/core";
+import { Debug, UnexpectedError } from "@lightest/core";
 import { taskEither } from "fp-ts";
 import pug from "pug";
 
@@ -11,6 +11,7 @@ const TEMPLATE_FILE_NAMES = {
   emailVerification: "email-verification.pug",
 };
 
+@Debug.ClassDisplayName.set("PugEmailTemplateEngine")
 class PugTemplateEngine extends TemplateEngine {
   constructor() {
     super();

@@ -1,4 +1,4 @@
-import { UnexpectedError } from "@lightest/core";
+import { Debug, UnexpectedError } from "@lightest/core";
 import { BlobNotFoundError, del, put } from "@vercel/blob";
 import { function as function_, taskEither } from "fp-ts";
 
@@ -6,6 +6,7 @@ import { NotFoundError, StorageProvider } from "../app";
 
 import type { Config } from "~/infra";
 
+@Debug.ClassDisplayName.set("VercelBlobStorageProvider")
 class VercelStorageProvider extends StorageProvider {
   private readonly readWriteToken: string;
 

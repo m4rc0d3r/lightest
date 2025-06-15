@@ -1,4 +1,4 @@
-import { Str } from "@lightest/core";
+import { Debug, iife, Str } from "@lightest/core";
 import type { Constructor } from "awilix";
 import { asValue, createContainer, InjectionMode, Lifetime } from "awilix";
 import { AwilixManager } from "awilix-manager";
@@ -142,7 +142,13 @@ function createLifecycleMessage(
   lifeStage: LifeStage,
   elapsedTime: number,
 ) {
-  return `An instance of '${typeof value === "string" ? value : value.name}' was ${lifeStage === LifeStage.INIT ? "initialized" : "disposed"} in ${Math.round(elapsedTime)}ms.`;
+  const instanceName = iife(() => {
+    if (typeof value === "string") return value;
+
+    return Debug.ClassDisplayName.get(value) ?? value.name;
+  });
+
+  return `An instance of '${instanceName}' was ${lifeStage === LifeStage.INIT ? "initialized" : "disposed"} in ${Math.round(elapsedTime)} ms.`;
 }
 
 export { configure };
