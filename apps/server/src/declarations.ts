@@ -4,7 +4,8 @@
 
 import type { Cradle } from "awilix";
 
-import type { Dependencies } from "./infra/dependencies";
+import type { AuthTokenPayload } from "./features/auth";
+import type { Di } from "./infra";
 
 declare global {
   namespace Express {
@@ -17,5 +18,5 @@ declare global {
 }
 
 declare module "awilix" {
-  interface Cradle extends Dependencies {}
+  interface Cradle extends Di.Container<AuthTokenPayload> {}
 }

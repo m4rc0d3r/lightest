@@ -4,9 +4,14 @@ import { function as function_, taskEither } from "fp-ts";
 
 import { NotFoundError, StorageProvider } from "../app";
 
+import type { Config } from "~/infra";
+
 class VercelStorageProvider extends StorageProvider {
-  constructor(private readonly readWriteToken: string) {
+  private readonly readWriteToken: string;
+
+  constructor(config: Config) {
     super();
+    this.readWriteToken = config.vercel.blobReadWriteToken;
   }
 
   override upload(file: File): taskEither.TaskEither<UnexpectedError, string> {

@@ -1,7 +1,11 @@
 import type { StorageProvider } from "../ports";
 
 class Service {
-  constructor(private readonly provider: StorageProvider) {}
+  private readonly provider: StorageProvider;
+
+  constructor(blobStorageProvider: StorageProvider) {
+    this.provider = blobStorageProvider;
+  }
 
   upload(file: File): ReturnType<StorageProvider["upload"]> {
     return this.provider.upload(file);

@@ -7,21 +7,23 @@ import type SMTPTransport from "nodemailer/lib/smtp-transport";
 import type { ApiIos } from "../app";
 import { Api } from "../app";
 
-import type { AsyncInit, Config } from "~/infra";
+import type { Config, Di } from "~/infra";
 
 const ETHEREAL_SERVER_OPTIONS = {
   host: "smtp.ethereal.email",
   port: 587,
 };
 
-class NodemailerApi extends Api implements AsyncInit {
+class NodemailerApi extends Api implements Di.AsyncInit {
   private transporter: Transporter<SMTPTransport.SentMessageInfo, SMTPTransport.Options> | null =
     null;
   private testAccount: TestAccount | null = null;
+  private readonly mailConfig: Config["mail"];
   private from = "";
 
-  constructor(private readonly mailConfig: Config["mail"]) {
+  constructor(config: Config) {
     super();
+    this.mailConfig = config.mail;
   }
 
   async asyncInit() {

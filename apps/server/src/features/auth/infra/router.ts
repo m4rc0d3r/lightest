@@ -15,13 +15,13 @@ const router: ReturnType<typeof TsRest.server.router<typeof Contract.contract.au
         config: {
           auth: { tokenCookieName },
         },
-        defaultCookieOptions,
-        userService2,
+        cookieOptions,
+        userService,
         authTokenService,
       } = req.container.cradle;
 
       const resultOfCreation = await function_.pipe(
-        userService2.create(body),
+        userService.create(body),
         taskEither.flatMap((user) =>
           function_.pipe(
             authTokenService.generate({ userId: user.id }),
@@ -30,7 +30,7 @@ const router: ReturnType<typeof TsRest.server.router<typeof Contract.contract.au
                 () =>
                   setAuthenticationCookie(
                     res,
-                    { name: tokenCookieName, options: defaultCookieOptions },
+                    { name: tokenCookieName, options: cookieOptions },
                     { encoded: authToken, payload },
                   ),
             ),
@@ -60,13 +60,13 @@ const router: ReturnType<typeof TsRest.server.router<typeof Contract.contract.au
         config: {
           auth: { tokenCookieName },
         },
-        defaultCookieOptions,
-        userService2,
+        cookieOptions,
+        userService,
         authTokenService,
       } = req.container.cradle;
 
       const searchResult = await function_.pipe(
-        userService2.get(body),
+        userService.get(body),
         taskEither.flatMap((user) =>
           function_.pipe(
             authTokenService.generate({ userId: user.id }),
@@ -75,7 +75,7 @@ const router: ReturnType<typeof TsRest.server.router<typeof Contract.contract.au
                 () =>
                   setAuthenticationCookie(
                     res,
-                    { name: tokenCookieName, options: defaultCookieOptions },
+                    { name: tokenCookieName, options: cookieOptions },
                     { encoded: authToken, payload },
                   ),
             ),

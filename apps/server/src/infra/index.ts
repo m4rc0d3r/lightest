@@ -1,4 +1,4 @@
 export * from "./config";
-export * from "./dependencies";
+export * as Di from "./di";
 export * from "./drizzle";
 export * as TsRest from "./ts-rest";

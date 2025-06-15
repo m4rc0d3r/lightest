@@ -1,7 +1,11 @@
 import type { TemplateEngine, TemplateEngineIos } from "../ports";
 
 class Service {
-  constructor(private readonly templateEngine: TemplateEngine) {}
+  private readonly templateEngine: TemplateEngine;
+
+  constructor(emailTemplateEngine: TemplateEngine) {
+    this.templateEngine = emailTemplateEngine;
+  }
 
   emailVerification(
     params: TemplateEngineIos.EmailVerification.In,

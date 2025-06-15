@@ -6,14 +6,14 @@ import type { RepositoryIos } from "../app";
 import { Repository } from "../app";
 
 import { NotFoundError, UniqueKeyViolationError } from "~/app";
-import type { Dependencies } from "~/infra";
+import type { Di } from "~/infra";
 import { CONSTRAINT_NAMES_BY_DRIZZLE_CONSTRAINT, isUniqueKeyViolation, TABLE } from "~/infra";
 
 const MESSAGE_ABOUT_INCORRECT_INSERTION_RESULT =
   "The array of rows returned from the database must contain 1 element since no errors occurred during the insert.";
 
 class DrizzleRepository extends Repository {
-  constructor(private readonly db: Dependencies["db"]) {
+  constructor(private readonly db: Di.Container["db"]) {
     super();
   }
 

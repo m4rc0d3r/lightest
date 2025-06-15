@@ -8,9 +8,8 @@ import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
 
-import { TsRest } from "./infra";
+import { Di, TsRest } from "./infra";
 import { createConfig } from "./infra/config/config.js";
-import { configureDependencies } from "./infra/dependencies.js";
 import { multipartMiddleware } from "./middlewares";
 
 import { authRouter as authRouter2 } from "~/features/auth";
@@ -20,7 +19,7 @@ expand(dotenvConfig());
 const eitherConfig = createConfig(process.env);
 if (e.isLeft(eitherConfig)) throw eitherConfig.left;
 const config = eitherConfig.right;
-const { awilixManager, diContainer } = configureDependencies(config);
+const { awilixManager, diContainer } = Di.configure(config);
 
 const app = express();
 

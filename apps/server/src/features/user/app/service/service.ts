@@ -28,7 +28,7 @@ class Service {
     private readonly userRepository: Repository,
     private readonly passwordHashingService: HashingService,
     private readonly blobService: BlobService,
-    private readonly mailService2: MailService,
+    private readonly mailService: MailService,
     private readonly cryptoService: CryptoService,
     private readonly emailTemplateService: EmailTemplateService,
     config: Config,
@@ -82,7 +82,7 @@ class Service {
                 ),
               }),
               taskEither.tap((html) =>
-                this.mailService2.send({
+                this.mailService.send({
                   to: email,
                   subject: `Welcome to ${this.appName}, please confirm your email address`,
                   html,
