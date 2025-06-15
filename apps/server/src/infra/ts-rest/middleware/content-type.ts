@@ -1,10 +1,8 @@
-import type { AppRoute, AppRouter, HTTPStatusCode } from "@ts-rest/core";
-import { createExpressEndpoints, initServer } from "@ts-rest/express";
+import type { AppRoute, AppRouter } from "@ts-rest/core";
+import { createExpressEndpoints } from "@ts-rest/express";
 import type { RequestHandler } from "express";
 
-const tsRestServer: ReturnType<typeof initServer> = initServer();
-
-const tsRestContentTypeMiddleware: RequestHandler = (req, _res, next) => {
+const contentTypeCheck: RequestHandler = (req, _res, next) => {
   const CONTENT_TYPE = "contentType";
   const TS_REST_ROUTE = "tsRestRoute";
 
@@ -23,18 +21,4 @@ const tsRestContentTypeMiddleware: RequestHandler = (req, _res, next) => {
   next();
 };
 
-function tsRestNoBody<T extends HTTPStatusCode>(status: T) {
-  return { status, body: undefined };
-}
-
-function tsRestUnexpectedErrorBody() {
-  return {
-    status: 500,
-    body: {
-      area: "UNEXPECTED",
-      message: "Something went wrong.",
-    },
-  } as const;
-}
-
-export { tsRestContentTypeMiddleware, tsRestNoBody, tsRestServer, tsRestUnexpectedErrorBody };
+export { contentTypeCheck };

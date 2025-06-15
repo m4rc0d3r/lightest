@@ -6,10 +6,10 @@ import type { AuthTokenPayload } from "./types";
 
 import { NotFoundError, UniqueKeyViolationError } from "~/app";
 import type { JwtSignedPayload } from "~/features/jwt";
-import { tsRestNoBody, tsRestServer, tsRestUnexpectedErrorBody } from "~/infra";
+import { TsRest } from "~/infra";
 
-const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.auth>> =
-  tsRestServer.router(Contract.contract.auth, {
+const router: ReturnType<typeof TsRest.server.router<typeof Contract.contract.auth>> =
+  TsRest.server.router(Contract.contract.auth, {
     register: async ({ req, res, body }) => {
       const {
         config: {
@@ -45,7 +45,7 @@ const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.aut
         if (resultOfCreation instanceof UniqueKeyViolationError)
           return { status: 409, body: { area: "KEY_VIOLATION", ...resultOfCreation } };
 
-        return tsRestUnexpectedErrorBody();
+        return TsRest.unexpectedError();
       }
 
       return {
@@ -90,7 +90,7 @@ const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.aut
         if (searchResult instanceof NotFoundError)
           return { status: 404, body: { area: "NOT_FOUND", ...searchResult } };
 
-        return tsRestUnexpectedErrorBody();
+        return TsRest.unexpectedError();
       }
 
       return {
@@ -110,14 +110,14 @@ const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.aut
 
       return function_.pipe(
         req.cookies,
-        either.fromPredicate(TypeGuard.isObject, () => tsRestNoBody(401)),
+        either.fromPredicate(TypeGuard.isObject, () => TsRest.noBody(401)),
         either.map((cookies) => (cookies as Record<string, unknown>)[tokenCookieName]),
         either.flatMap((token) =>
           function_.pipe(
             token,
             either.fromPredicate(
               (token) => typeof token === "string",
-              () => tsRestNoBody(401),
+              () => TsRest.noBody(401),
             ),
           ),
         ),
@@ -126,8 +126,8 @@ const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.aut
           function_.pipe(
             authTokenService.verify(token),
             taskEither.tapIO(() => () => clearAuthenticationCookies(res, tokenCookieName)),
-            taskEither.mapLeft(() => tsRestNoBody(401)),
-            taskEither.map(() => tsRestNoBody(200)),
+            taskEither.mapLeft(() => TsRest.noBody(401)),
+            taskEither.map(() => TsRest.noBody(200)),
           ),
         ),
         taskEither.toUnion,

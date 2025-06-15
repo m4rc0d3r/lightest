@@ -8,7 +8,7 @@ import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
 
-import { tsRestContentTypeMiddleware } from "./infra";
+import { TsRest } from "./infra";
 import { createConfig } from "./infra/config/config.js";
 import { configureDependencies } from "./infra/dependencies.js";
 import { multipartMiddleware } from "./middlewares";
@@ -34,7 +34,9 @@ app.use(scopePerRequest(diContainer));
 createExpressEndpoints(Contract.contract.auth, authRouter2, app, {
   globalMiddleware: [
     (...args) =>
-      tsRestContentTypeMiddleware(...(args as Parameters<typeof tsRestContentTypeMiddleware>)),
+      TsRest.Middleware.contentTypeCheck(
+        ...(args as Parameters<typeof TsRest.Middleware.contentTypeCheck>),
+      ),
   ],
 });
 
