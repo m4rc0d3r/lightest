@@ -1,7 +1,10 @@
 import { z } from "zod";
 
-import { MimeType } from "~/file";
-import { File as ZodFile, zUrlOrEmptyStr } from "~/zod";
+import { File as FileModule } from "~/file";
+import { Zod } from "~/zod";
+
+const { MimeType } = FileModule;
+const { File: ZodFile, zUrlOrEmptyStr } = Zod;
 
 const zAvatarAsFile = z
   .instanceof(File)

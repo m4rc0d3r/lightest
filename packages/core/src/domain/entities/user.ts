@@ -2,7 +2,9 @@ import { z } from "zod";
 
 import { zAvatar, zPassword, zPasswordHash } from "../value-objects";
 
-import { zEmail, zInt, zTrimmedStr } from "~/zod";
+import { Zod } from "~/zod";
+
+const { zEmail, zInt, zTrimmedStr } = Zod;
 
 const zUser = z.object({
   id: zInt,

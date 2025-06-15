@@ -1,6 +1,8 @@
 import { z } from "zod";
 
-import { zTrimmedStr } from "~/zod";
+import { Zod } from "~/zod";
+
+const { zTrimmedStr } = Zod;
 
 const zErrorArea = z.enum(["KEY_VIOLATION", "NOT_FOUND"]);
 const ERROR_AREA = zErrorArea.Values;

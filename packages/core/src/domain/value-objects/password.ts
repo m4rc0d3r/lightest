@@ -1,4 +1,6 @@
-import { Regex, zTrimmedStr } from "~/zod";
+import { Zod } from "~/zod";
+
+const { Regex, zTrimmedStr } = Zod;
 
 const PASSWORD_LENGTH = {
   minimum: 6,

@@ -1,5 +1,7 @@
-import { zEmail } from "@lightest/core";
+import { Zod } from "@lightest/core";
 import { z } from "zod";
+
+const { zEmail } = Zod;
 
 const zIn = z.object({
   from: zEmail.optional(),

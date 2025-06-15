@@ -1,7 +1,10 @@
-import { zTrimmedStr } from "@lightest/core";
+import { Zod } from "@lightest/core";
 import { z } from "zod";
 
+const { zTrimmedStr } = Zod;
+
 const zAppConfig = z
+
   .object({
     APP_NAME: zTrimmedStr.nonempty(),
   })

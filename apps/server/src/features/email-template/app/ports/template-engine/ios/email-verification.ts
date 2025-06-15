@@ -1,5 +1,7 @@
-import { zTrimmedStr, zUrl } from "@lightest/core";
+import { Zod } from "@lightest/core";
 import { z } from "zod";
+
+const { zTrimmedStr, zUrl } = Zod;
 
 const zIn = z.object({
   appName: zTrimmedStr.nonempty(),

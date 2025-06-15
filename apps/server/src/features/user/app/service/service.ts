@@ -1,4 +1,10 @@
-import { ClientApp, Http, ImpossibleError, Str, UnexpectedError } from "@lightest/core";
+import {
+  ClientApp,
+  File as FileModule,
+  Http,
+  ImpossibleError,
+  UnexpectedError,
+} from "@lightest/core";
 import { apply, either, function as function_, taskEither } from "fp-ts";
 
 import type { Repository } from "../ports";
@@ -53,7 +59,7 @@ class Service {
         ),
         passwordHash: this.passwordHashingService.hash(password),
         verificationCode: this.cryptoService.generateUid(
-          Str.getNumberOfBytesToStoreBase64(this.emailVerificationCodeLength),
+          FileModule.Base64.getNumberOfBytesToStore(this.emailVerificationCodeLength),
         ),
       }),
       taskEither.flatMap(({ avatar, passwordHash, verificationCode }) =>
