@@ -1,6 +1,7 @@
 export * from "./bool";
 export * from "./client-app";
 export * from "./contracts";
+export * from "./debug";
 export * from "./domain";
 export * from "./errors";
 export * from "./file";
