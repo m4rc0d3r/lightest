@@ -1,4 +1,4 @@
-import { auth2Contract } from "@lightest/core";
+import { Contract } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -32,7 +32,7 @@ app.use(multipartMiddleware());
 
 app.use(scopePerRequest(diContainer));
 
-createExpressEndpoints(auth2Contract, authRouter2, app, {
+createExpressEndpoints(Contract.contract.auth, authRouter2, app, {
   globalMiddleware: [
     (...args) =>
       tsRestContentTypeMiddleware(...(args as Parameters<typeof tsRestContentTypeMiddleware>)),

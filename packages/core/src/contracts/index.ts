@@ -1,1 +1,1 @@
-export * from "./auth2";
+export * as Contract from "./pub-api";

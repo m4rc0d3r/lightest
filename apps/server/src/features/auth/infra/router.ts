@@ -1,4 +1,4 @@
-import { auth2Contract, Time } from "@lightest/core";
+import { Contract, Time } from "@lightest/core";
 import type { CookieOptions, Response } from "express";
 import { either, function as function_, taskEither } from "fp-ts";
 
@@ -6,12 +6,11 @@ import type { AuthTokenPayload } from "./types";
 
 import { NotFoundError, UniqueKeyViolationError } from "~/app";
 import type { JwtSignedPayload } from "~/features/jwt";
-import { tsRestNoBody, tsRestServer } from "~/infra";
+import { tsRestNoBody, tsRestServer, tsRestUnexpectedErrorBody } from "~/infra";
 import { isObject } from "~/shared";
 
-const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsRestServer.router(
-  auth2Contract,
-  {
+const router: ReturnType<typeof tsRestServer.router<typeof Contract.contract.auth>> =
+  tsRestServer.router(Contract.contract.auth, {
     register: async ({ req, res, body }) => {
       const {
         config: {
@@ -45,9 +44,9 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
 
       if (resultOfCreation instanceof Error) {
         if (resultOfCreation instanceof UniqueKeyViolationError)
-          return { status: 409, body: resultOfCreation };
+          return { status: 409, body: { area: "KEY_VIOLATION", ...resultOfCreation } };
 
-        return tsRestNoBody(500);
+        return tsRestUnexpectedErrorBody();
       }
 
       return {
@@ -89,9 +88,10 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
       )();
 
       if (searchResult instanceof Error) {
-        if (searchResult instanceof NotFoundError) return { status: 404, body: searchResult };
+        if (searchResult instanceof NotFoundError)
+          return { status: 404, body: { area: "NOT_FOUND", ...searchResult } };
 
-        return tsRestNoBody(500);
+        return tsRestUnexpectedErrorBody();
       }
 
       return {
@@ -134,8 +134,7 @@ const router: ReturnType<typeof tsRestServer.router<typeof auth2Contract>> = tsR
         taskEither.toUnion,
       )();
     },
-  },
-);
+  });
 
 function setAuthenticationCookie(
   res: Response,

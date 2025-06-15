@@ -27,4 +27,14 @@ function tsRestNoBody<T extends HTTPStatusCode>(status: T) {
   return { status, body: undefined };
 }
 
-export { tsRestContentTypeMiddleware, tsRestNoBody, tsRestServer };
+function tsRestUnexpectedErrorBody() {
+  return {
+    status: 500,
+    body: {
+      area: "UNEXPECTED",
+      message: "Something went wrong.",
+    },
+  } as const;
+}
+
+export { tsRestContentTypeMiddleware, tsRestNoBody, tsRestServer, tsRestUnexpectedErrorBody };
