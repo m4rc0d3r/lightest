@@ -1,15 +1,10 @@
 {
-  "extends": "@lightest/typescript-config/base.json",
+  "files": [],
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "paths": {
       "~/*": ["./src/*"]
-    },
-
-    "emitDeclarationOnly": true,
-    "outDir": "dist"
-  },
-  "include": ["src/**/*.ts"]
+    }
+  }
 }

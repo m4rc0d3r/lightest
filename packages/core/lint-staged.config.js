@@ -5,8 +5,12 @@ export default {
   ...base,
   ...setUpTasksForTypescriptFiles([
     {
-      glob: "src/**/*.{ts,mts,cts,tsx}",
-      pathToConfigFile: "tsconfig.json",
+      glob: "src/**/*.{ts,mts,cts}",
+      pathToConfigFile: "tsconfig.app.json",
+    },
+    {
+      glob: "*.config.ts",
+      pathToConfigFile: "tsconfig.node.json",
     },
   ]),
 };
