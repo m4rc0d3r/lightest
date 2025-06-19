@@ -48,7 +48,6 @@ const REGEX_MAP: Record<RegexCode, RegexMapEntryValue> = {
     errorMessage: "Must contain digits",
   },
   [RegexCode.MUST_CONTAIN_SPECIAL_CHARACTERS]: {
-    // eslint-disable-next-line no-useless-escape
     regex: /[~!@#$%^&*()\-=_+[\]{}\/|\\:;'"<>?.,]/gm,
     errorMessage: "Must contain special characters",
   },
