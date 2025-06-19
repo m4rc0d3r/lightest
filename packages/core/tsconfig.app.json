@@ -1,14 +1,11 @@
 {
-  "extends": "@lightest/typescript-config/base.json",
+  "extends": "@lightest/typescript-config/combined.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "module": "ESNext",
-    "moduleResolution": "bundler",
     "paths": {
       "~/*": ["./src/*"]
     },
 
-    "emitDeclarationOnly": true,
     "outDir": "dist"
   },
   "include": ["src/**/*.ts"]

@@ -1,19 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "ESNext",
-    "moduleDetection": "force",
-
-    "module": "NodeNext",
-
-    "declaration": true,
-    "declarationMap": true,
-    "noEmitOnError": true,
-    "sourceMap": true,
-
-    "esModuleInterop": true,
-    "isolatedModules": true,
-
     "strict": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
@@ -22,8 +9,6 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": false,
-    "allowUnreachableCode": false,
-
-    "skipLibCheck": true
+    "allowUnreachableCode": false
   }
 }

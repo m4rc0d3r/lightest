@@ -1,0 +1,8 @@
+{
+  "extends": "./combined.json",
+  "compilerOptions": {
+    "noUncheckedSideEffectImports": true,
+
+    "noEmit": true
+  }
+}
