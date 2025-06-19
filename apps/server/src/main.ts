@@ -8,9 +8,8 @@ import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
 
-import { Di, TsRest } from "./infra";
+import { Di, Middleware, TsRest } from "./infra";
 import { createConfig } from "./infra/config/config.js";
-import { multipartMiddleware } from "./middlewares";
 
 import { authRouter as authRouter2 } from "~/features/auth";
 
@@ -26,7 +25,7 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser(config.cookie.secret));
 app.use(cors(config.cors));
-app.use(multipartMiddleware());
+app.use(Middleware.multipart());
 
 app.use(scopePerRequest(diContainer));
 

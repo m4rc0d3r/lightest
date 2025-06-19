@@ -2,7 +2,7 @@ import { TypeGuard } from "@lightest/core";
 import type { Request, RequestHandler } from "express";
 import multer from "multer";
 
-function multipartMiddleware() {
+function multipart() {
   return [
     multer().any(),
     (req, _res, next) => {
@@ -43,4 +43,4 @@ function createFileFromMulterFile({
   });
 }
 
-export { multipartMiddleware };
+export { multipart };
