@@ -7,6 +7,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@feature-sliced/steiger-plugin": "^0.5.6",
     "@lightest/eslint-config": "workspace:*",
     "@lightest/lint-staged-config": "workspace:*",
     "@lightest/prettier-config": "workspace:*",
@@ -24,6 +25,7 @@
     "jiti": "^2.4.2",
     "npm-run-all2": "^8.0.4",
     "prettier": "3.5.3",
+    "steiger": "^0.5.7",
     "stylelint": "^16.21.0",
     "stylelint-config-clean-order": "^7.0.0",
     "stylelint-config-recommended-vue": "^1.6.1",
