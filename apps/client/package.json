@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@lightest/eslint-config": "workspace:*",
+    "@lightest/lint-staged-config": "workspace:*",
     "@lightest/prettier-config": "workspace:*",
     "@lightest/typescript-config": "workspace:*",
     "@prettier/plugin-xml": "^3.4.1",

@@ -66,6 +66,9 @@ importers:
       '@lightest/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@lightest/lint-staged-config':
+        specifier: workspace:*
+        version: link:../../packages/lint-staged-config
       '@lightest/prettier-config':
         specifier: workspace:*
         version: link:../../packages/prettier-config
