@@ -26,8 +26,8 @@
     "dev": "pnpm build && pnpm --parallel --filter './**' dev",
     "format:check": "prettier --check . '!{apps,packages/core}'; pnpm --filter './apps/**' --filter './packages/core' format:check",
     "format:fix": "prettier --write . '!{apps,packages/core}'; pnpm --filter './apps/**' --filter './packages/core' format:fix",
-    "lint:check": "eslint --flag unstable_config_lookup_from_file --ignore-pattern 'apps' --ignore-pattern 'packages/core' '.'; pnpm --filter './apps/**' --filter './packages/core' lint:check",
-    "lint:fix": "eslint --fix --flag unstable_config_lookup_from_file --ignore-pattern 'apps' --ignore-pattern 'packages/core' '.'; pnpm --filter './apps/**' --filter './packages/core' lint:fix",
+    "lint:check": "eslint --flag v10_config_lookup_from_file --ignore-pattern 'apps' --ignore-pattern 'packages/core' '.'; pnpm --filter './apps/**' --filter './packages/core' lint:check",
+    "lint:fix": "eslint --fix --flag v10_config_lookup_from_file --ignore-pattern 'apps' --ignore-pattern 'packages/core' '.'; pnpm --filter './apps/**' --filter './packages/core' lint:fix",
     "prepare": "husky",
     "type-check": "pnpm --parallel --filter './**' type-check"
   },

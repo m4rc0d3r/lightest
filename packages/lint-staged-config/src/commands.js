@@ -6,7 +6,7 @@ const LINT_STAGED_CONFIG_FILE_NAMES = ["lint-staged.config.js"];
 
 const PRETTIER_COMMAND = "prettier --write";
 const STYLELINT_COMMAND = "stylelint --fix";
-const ESLINT_COMMAND = "eslint --fix --flag unstable_config_lookup_from_file";
+const ESLINT_COMMAND = "eslint --fix --flag v10_config_lookup_from_file";
 const SYNCPACK_FORMAT_COMMAND = "syncpack format --source";
 
 /**
