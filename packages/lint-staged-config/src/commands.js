@@ -5,9 +5,11 @@ import process from "node:process";
 const LINT_STAGED_CONFIG_FILE_NAMES = ["lint-staged.config.js"];
 
 const PRETTIER_COMMAND = "prettier --write";
-const STYLELINT_COMMAND = "stylelint --fix";
 const ESLINT_COMMAND = "eslint --fix --flag v10_config_lookup_from_file";
 const SYNCPACK_FORMAT_COMMAND = "syncpack format --source";
+
+const STYLELINT = "stylelint";
+const STYLELINT_COMMAND = [STYLELINT, "--fix"].join(" ");
 
 /**
  * @typedef {object} TscCommand
@@ -77,6 +79,7 @@ export {
   runStylelint,
   runSyncpackFormat,
   runTsc,
+  STYLELINT,
   STYLELINT_COMMAND,
   TSC,
   TSC_COMMAND,
