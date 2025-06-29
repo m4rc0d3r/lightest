@@ -66,6 +66,9 @@ importers:
       '@lightest/prettier-config':
         specifier: workspace:*
         version: link:../../packages/prettier-config
+      '@prettier/plugin-xml':
+        specifier: ^3.4.1
+        version: 3.4.1(prettier@3.5.3)
       '@tsconfig/node22':
         specifier: ^22.0.2
         version: 22.0.2
@@ -344,9 +347,6 @@ importers:
       '@prettier/plugin-pug':
         specifier: ^3.4.0
         version: 3.4.0(prettier@3.5.3)
-      '@prettier/plugin-xml':
-        specifier: ^3.4.1
-        version: 3.4.1(prettier@3.5.3)
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
