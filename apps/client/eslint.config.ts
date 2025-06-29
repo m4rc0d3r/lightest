@@ -1,7 +1,8 @@
-import { globalIgnores } from "eslint/config";
+import { Import, Javascript, Typescript } from "@lightest/eslint-config";
+import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
 import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
 import pluginVue from "eslint-plugin-vue";
-import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
+import { globalIgnores } from "eslint/config";
 
 // To allow more languages other than `ts` in `.vue` files, uncomment the following lines:
 // import { configureVueProject } from '@vue/eslint-config-typescript'
@@ -17,6 +18,8 @@ export default defineConfigWithVueTs(
   globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
 
   pluginVue.configs["flat/essential"],
-  vueTsConfigs.recommended,
+  ...([Javascript.config, Typescript.vue(vueTsConfigs), Import.config] as Parameters<
+    typeof defineConfigWithVueTs
+  >),
   skipFormatting,
 );
