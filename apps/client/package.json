@@ -9,6 +9,7 @@
   "devDependencies": {
     "@lightest/eslint-config": "workspace:*",
     "@lightest/prettier-config": "workspace:*",
+    "@lightest/typescript-config": "workspace:*",
     "@prettier/plugin-xml": "^3.4.1",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^22.15.32",
