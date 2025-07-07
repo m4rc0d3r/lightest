@@ -21,6 +21,15 @@ const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
   ...([Javascript.config, Typescript.vue(vueTsConfigs), Import.config] as Parameters<
     typeof defineConfigWithVueTs
   >),
+  {
+    settings: {
+      "import/resolver": {
+        alias: {
+          map: [["@", "./src"]],
+        },
+      },
+    },
+  },
   skipFormatting,
 );
 
