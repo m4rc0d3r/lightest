@@ -6,7 +6,7 @@ import { runEslint, runPrettier, runTsc } from "./commands.js";
  * @property {string} [program="tsc"] Default is `"tsc"`
  * @property {string} glob
  * @property {string} pathToConfigFile
- * @property {Record<TaskName, string | ((listOfFiles: string) => string)>} [additionalTasks]
+ * @property {Record<TaskName, string | ((files: string[]) => string)>} [additionalTasks]
  * @property {Partial<LaunchOptions<TaskName>>} [launchOptions]
  */
 
@@ -37,7 +37,7 @@ function setUpTasksForTypescriptFiles(options) {
         /** @type {[string, string][]} */
         const additionalTasks2 = Object.entries(additionalTasks ?? {}).map(([name, command]) => [
           name,
-          typeof command === "string" ? command : command(listOfFiles),
+          typeof command === "string" ? command : command(files),
         ]);
 
         return getTasksToRun(
