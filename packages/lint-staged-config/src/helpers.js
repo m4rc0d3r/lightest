@@ -1,3 +1,7 @@
+import path from "node:path";
+
+import micromatch from "micromatch";
+
 import { runEslint, runPrettier, runTsc } from "./commands.js";
 
 /**
@@ -5,9 +9,16 @@ import { runEslint, runPrettier, runTsc } from "./commands.js";
  * @typedef {object} Option
  * @property {string} [program="tsc"] Default is `"tsc"`
  * @property {string} glob
+ * @property {Ignore} [ignore]
  * @property {string} pathToConfigFile
  * @property {Record<TaskName, string | ((files: string[]) => string)>} [additionalTasks]
  * @property {Partial<LaunchOptions<TaskName>>} [launchOptions]
+ */
+
+/**
+ * @typedef {object} Ignore
+ * @property {string} baseUrl
+ * @property {string} glob
  */
 
 /** @typedef {"prettier" | "eslint" | "tsc"} DefaultTaskName */
@@ -22,32 +33,38 @@ import { runEslint, runPrettier, runTsc } from "./commands.js";
  * @param {Option<TaskName>[]} options
  */
 function setUpTasksForTypescriptFiles(options) {
-  return options.reduce(
-    (acc, { program, glob, pathToConfigFile, additionalTasks, launchOptions }) => {
-      /** @param {string[]} files */
-      acc[glob] = (files) => {
-        const listOfFiles = files.join(" ");
+  return Object.fromEntries(
+    options
+      .map(({ program, glob, ignore, pathToConfigFile, additionalTasks, launchOptions }) => [
+        glob,
+        /** @param {string[]} files */
+        (files) => {
+          const filteredFiles = ignore
+            ? micromatch.not(files, path.resolve(ignore.baseUrl, ignore.glob))
+            : files;
+          if (filteredFiles.length === 0) return [];
 
-        const defaultTasks = Object.entries({
-          tsc: runTsc(pathToConfigFile, program),
-          eslint: runEslint(listOfFiles),
-          prettier: runPrettier(listOfFiles),
-        });
+          const listOfFiles = filteredFiles.join(" ");
 
-        /** @type {[string, string][]} */
-        const additionalTasks2 = Object.entries(additionalTasks ?? {}).map(([name, command]) => [
-          name,
-          typeof command === "string" ? command : command(files),
-        ]);
+          const defaultTasks = Object.entries({
+            tsc: runTsc(pathToConfigFile, program),
+            eslint: runEslint(listOfFiles),
+            prettier: runPrettier(listOfFiles),
+          });
 
-        return getTasksToRun(
-          [...defaultTasks, ...additionalTasks2],
-          Object.entries(launchOptions ?? {}),
-        ).map(([, command]) => command);
-      };
-      return acc;
-    },
-    {},
+          /** @type {[string, string][]} */
+          const additionalTasks2 = Object.entries(additionalTasks ?? {}).map(([name, command]) => [
+            name,
+            typeof command === "string" ? command : command(filteredFiles),
+          ]);
+
+          return getTasksToRun(
+            [...defaultTasks, ...additionalTasks2],
+            Object.entries(launchOptions ?? {}),
+          ).map(([, command]) => command);
+        },
+      ])
+      .filter(([, commands]) => commands.length > 0),
   );
 }
 

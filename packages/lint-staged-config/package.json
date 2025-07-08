@@ -1,7 +1,11 @@
 {
   "name": "@lightest/lint-staged-config",
   "version": "0.0.0",
+  "dependencies": {
+    "micromatch": "^4.0.8"
+  },
   "devDependencies": {
+    "@types/micromatch": "^4.0.9",
     "lint-staged": "^16.0.0"
   },
   "exports": {
