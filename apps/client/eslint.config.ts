@@ -23,7 +23,7 @@ const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
       "vue/multi-word-component-names": [
         "error",
         {
-          ignores: ["Avatar", "Badge"],
+          ignores: ["Avatar", "Badge", "Button"],
         },
       ],
     },
