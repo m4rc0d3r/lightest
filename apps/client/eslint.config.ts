@@ -34,6 +34,7 @@ const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
             "Label",
             "Select",
             "Separator",
+            "Skeleton",
           ],
         },
       ],
