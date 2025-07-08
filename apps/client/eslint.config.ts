@@ -18,6 +18,16 @@ const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
   globalIgnores(["**/dist/**", "**/dist-ssr/**", "**/coverage/**"]),
 
   pluginVue.configs["flat/essential"],
+  {
+    rules: {
+      "vue/multi-word-component-names": [
+        "error",
+        {
+          ignores: ["Avatar"],
+        },
+      ],
+    },
+  },
   ...([Javascript.config, Typescript.vue(vueTsConfigs), Import.config] as Parameters<
     typeof defineConfigWithVueTs
   >),
