@@ -1,4 +1,5 @@
 import { Import, Javascript, Typescript } from "@lightest/eslint-config";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 import skipFormatting from "@vue/eslint-config-prettier/skip-formatting";
 import { defineConfigWithVueTs, vueTsConfigs } from "@vue/eslint-config-typescript";
 import pluginVue from "eslint-plugin-vue";
@@ -54,6 +55,7 @@ const config: ReturnType<typeof defineConfigWithVueTs> = defineConfigWithVueTs(
       },
     },
   },
+  ...pluginQuery.configs["flat/recommended"],
   skipFormatting,
 );
 

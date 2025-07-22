@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/vue-query": "^5.83.0",
     "@vueuse/core": "^13.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -26,6 +27,7 @@
     "@lightest/prettier-config": "workspace:*",
     "@lightest/typescript-config": "workspace:*",
     "@prettier/plugin-xml": "^3.4.1",
+    "@tanstack/eslint-plugin-query": "^5.81.2",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^24.0.1",
     "@vitejs/plugin-vue": "^6.0.0",

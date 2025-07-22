@@ -1,5 +1,6 @@
 import "./index.css";
 
+import { VueQueryPlugin } from "@tanstack/vue-query";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
@@ -21,5 +22,8 @@ const app = createApp(App);
 app.use(createPinia());
 app.use(router);
 app.use(i18n);
+app.use(VueQueryPlugin, {
+  enableDevtoolsV6Plugin: true,
+});
 
 app.mount("#app");
