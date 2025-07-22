@@ -5,6 +5,7 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
 
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "ES2022.Error"],
     "exactOptionalPropertyTypes": false,
 
     "paths": {

@@ -6,12 +6,13 @@ import { createI18n } from "vue-i18n";
 
 import App from "./App.vue";
 import router from "./router";
-import { AVAILABLE_LOCALES, Locale, MESSAGES } from "./shared/i18n";
+import { AVAILABLE_LOCALES, getPersistedLocale, Locale, MESSAGES } from "./shared/i18n";
 
 const i18n = createI18n({
   legacy: false,
   availableLocales: Object.keys(AVAILABLE_LOCALES),
   fallbackLocale: Locale.en,
+  locale: getPersistedLocale(),
   messages: MESSAGES,
 });
 
