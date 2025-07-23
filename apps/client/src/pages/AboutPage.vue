@@ -5,6 +5,6 @@ import { capitalize } from "@/shared/str";
 
 <template>
   <div class="flex grow items-center justify-center">
-    <p>{{ capitalize($t(Tk.main)) }}</p>
+    <p>{{ capitalize($t(Tk.about_us)) }}</p>
   </div>
 </template>

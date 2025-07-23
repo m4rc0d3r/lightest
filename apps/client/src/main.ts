@@ -5,8 +5,8 @@ import { createPinia } from "pinia";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 
-import App from "./App.vue";
-import router from "./router";
+import { App } from "./app";
+import router from "./app/router";
 import { AVAILABLE_LOCALES, getPersistedLocale, Locale, MESSAGES } from "./shared/i18n";
 
 const i18n = createI18n({
