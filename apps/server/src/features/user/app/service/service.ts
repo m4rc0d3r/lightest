@@ -8,7 +8,7 @@ import {
 } from "@lightest/core";
 import { apply, either, function as function_, taskEither } from "fp-ts";
 
-import type { Repository } from "../ports";
+import type { Repository, RepositoryIos } from "../ports";
 
 import type { Create, Get } from "./ios";
 
@@ -118,6 +118,10 @@ class Service {
         ),
       ),
     );
+  }
+
+  getById(params: RepositoryIos.GetById.In): ReturnType<Repository["getById"]> {
+    return this.userRepository.getById(params);
   }
 }
 

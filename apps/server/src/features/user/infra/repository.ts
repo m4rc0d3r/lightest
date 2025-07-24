@@ -70,6 +70,28 @@ class DrizzleRepository extends Repository {
       ),
     );
   }
+
+  override getById({
+    id,
+  }: RepositoryIos.GetById.In): taskEither.TaskEither<
+    UnexpectedError | NotFoundError,
+    RepositoryIos.Common.Out
+  > {
+    return function_.pipe(
+      taskEither.tryCatch(
+        () => this.db.select().from(TABLE.users).where(eq(TABLE.users.id, id)),
+        (reason) => new UnexpectedError(reason),
+      ),
+      taskEither.chain((rows) =>
+        function_.pipe(
+          rows,
+          array.head,
+          option.map(taskEither.right),
+          option.getOrElse(() => taskEither.left(new NotFoundError())),
+        ),
+      ),
+    );
+  }
 }
 
 export { DrizzleRepository };

@@ -12,6 +12,7 @@ import { Di, Middleware, TsRest } from "./infra";
 import { createConfig } from "./infra/config/config.js";
 
 import { authRouter as authRouter2 } from "~/features/auth";
+import { userRouter } from "~/features/user";
 
 expand(dotenvConfig());
 
@@ -36,6 +37,10 @@ createExpressEndpoints(Contract.contract.auth, authRouter2, app, {
         ...(args as Parameters<typeof TsRest.Middleware.contentTypeCheck>),
       ),
   ],
+});
+
+createExpressEndpoints(Contract.contract.user, userRouter, app, {
+  globalMiddleware: [TsRest.Middleware.contentTypeCheck, TsRest.Middleware.authentication],
 });
 
 try {

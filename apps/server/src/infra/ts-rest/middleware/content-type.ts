@@ -1,17 +1,10 @@
-import type { AppRoute, AppRouter } from "@ts-rest/core";
-import { createExpressEndpoints } from "@ts-rest/express";
 import type { RequestHandler } from "express";
 
+import { getTsRestRoute } from "./get-ts-rest-route";
+
 const contentTypeCheck: RequestHandler = (req, _res, next) => {
+  const tsRestRoute = getTsRestRoute(req);
   const CONTENT_TYPE = "contentType";
-  const TS_REST_ROUTE = "tsRestRoute";
-
-  if (!(TS_REST_ROUTE in req))
-    throw new Error(
-      `The content type validation middleware should only be used as part of the globalMiddleware when using ${createExpressEndpoints.name} provided by ts-rest.`,
-    );
-
-  const { tsRestRoute } = req as { [TS_REST_ROUTE]: AppRouter | AppRoute };
   const expectedContentType = CONTENT_TYPE in tsRestRoute ? tsRestRoute[CONTENT_TYPE] : null;
   if (typeof expectedContentType === "string" && !req.is(expectedContentType))
     throw new Error(

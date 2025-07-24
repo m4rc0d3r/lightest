@@ -1,2 +1,2 @@
 export * from "./authentication";
-export * from "./content-type";
+export * from "./define";
