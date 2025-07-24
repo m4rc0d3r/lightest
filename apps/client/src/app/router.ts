@@ -4,6 +4,7 @@ import { MainLayout } from "./main-layout";
 
 import AboutPage from "@/pages/AboutPage.vue";
 import HomePage from "@/pages/HomePage.vue";
+import RegistrationPage from "@/pages/RegistrationPage.vue";
 import { ROUTES } from "@/shared/routing";
 import { SLASH } from "@/shared/str";
 
@@ -25,6 +26,11 @@ const router = createRouter({
           component: AboutPage,
         },
       ],
+    },
+    {
+      path: ROUTES.register,
+      name: "registration",
+      component: RegistrationPage,
     },
   ],
 });

@@ -7,11 +7,14 @@ import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
 import { capitalize } from "@/shared/str";
 import { Button } from "@/shared/ui/button";
+import type { ComponentProps } from "@/shared/vue";
 
 type MenuItem = {
   path: string;
   label: Tk;
 };
+
+type AuthMenuItem = MenuItem & Pick<ComponentProps<typeof Button>, "variant">;
 
 const MENU_ITEMS: MenuItem[] = [
   {
@@ -23,14 +26,22 @@ const MENU_ITEMS: MenuItem[] = [
     label: Tk.about_us,
   },
 ];
+
+const AUTH_MENU_ITEMS: AuthMenuItem[] = [
+  {
+    path: ROUTES.register,
+    label: Tk.register,
+    variant: "outline",
+  },
+];
 </script>
 
 <template>
   <div class="flex h-full flex-col">
     <header class="bg-secondary px-4 py-2">
-      <ul class="flex justify-between">
-        <li>
-          <nav>
+      <nav>
+        <ul class="flex justify-between">
+          <li>
             <ul class="flex">
               <li v-for="{ label, path } in MENU_ITEMS" :key="path">
                 <Button as-child variant="link" class="font-bold">
@@ -38,12 +49,19 @@ const MENU_ITEMS: MenuItem[] = [
                 </Button>
               </li>
             </ul>
-          </nav>
-        </li>
-        <li>
-          <LanguageSwitcher />
-        </li>
-      </ul>
+          </li>
+          <li class="flex gap-2">
+            <LanguageSwitcher />
+            <ul class="flex">
+              <li v-for="{ label, path, variant } in AUTH_MENU_ITEMS" :key="path">
+                <Button as-child :variant>
+                  <RouterLink :to="path">{{ capitalize($t(label)) }}</RouterLink>
+                </Button>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
     </header>
     <main class="flex grow">
       <RouterView />

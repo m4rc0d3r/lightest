@@ -1,12 +1,13 @@
 import { Contract } from "@lightest/core";
-import { initClient } from "@ts-rest/core";
+
+import { initQueryClient } from "./tanstack-query";
 
 type Options = {
   baseUrl: string;
 };
 
 function createTsRestClient({ baseUrl }: Options) {
-  return initClient(Contract.contract, {
+  return initQueryClient(Contract.contract, {
     baseUrl,
   });
 }
