@@ -23,7 +23,7 @@ class Service<
     });
   }
 
-  verify(token: VerifyToken.In["token"]): ReturnType<VerifyToken.Fn> {
+  verify(token: VerifyToken.In["token"]): ReturnType<VerifyToken.Fn<T>> {
     return this.verifyToken({
       secret: this.secret,
       token,
