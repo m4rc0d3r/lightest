@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
+import { Str } from "@lightest/core";
 
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
-import { capitalize } from "@/shared/str";
 import { Button } from "@/shared/ui/button";
 import type { ComponentProps } from "@/shared/vue";
 
@@ -45,7 +45,7 @@ const AUTH_MENU_ITEMS: AuthMenuItem[] = [
             <ul class="flex">
               <li v-for="{ label, path } in MENU_ITEMS" :key="path">
                 <Button as-child variant="link" class="font-bold">
-                  <RouterLink :to="path">{{ capitalize($t(label)) }}</RouterLink>
+                  <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
                 </Button>
               </li>
             </ul>
@@ -55,7 +55,7 @@ const AUTH_MENU_ITEMS: AuthMenuItem[] = [
             <ul class="flex">
               <li v-for="{ label, path, variant } in AUTH_MENU_ITEMS" :key="path">
                 <Button as-child :variant>
-                  <RouterLink :to="path">{{ capitalize($t(label)) }}</RouterLink>
+                  <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
                 </Button>
               </li>
             </ul>

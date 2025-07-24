@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { Str, TypeGuard } from "@lightest/core";
+
 import { AVAILABLE_LOCALES } from "@/shared/i18n";
-import { capitalize } from "@/shared/str";
-import { isOneOf } from "@/shared/type-guard";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -27,9 +27,9 @@ import {
           :value="locale"
         >
           {{
-            capitalize(
+            Str.capitalize(
               $t(
-                isOneOf(
+                TypeGuard.isOneOf(
                   locale,
                   Object.keys(AVAILABLE_LOCALES) as (keyof typeof AVAILABLE_LOCALES)[],
                 )

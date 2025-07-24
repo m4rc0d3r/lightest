@@ -1,17 +1,16 @@
 <script setup lang="ts">
-import { Contract, Domain, File as FileModule } from "@lightest/core";
+import { Contract, Domain, File as FileModule, Str } from "@lightest/core";
 import { toTypedSchema } from "@vee-validate/zod";
 import { Trash, User } from "lucide-vue-next";
 import type { ComponentFieldBindingObject } from "vee-validate";
 import { useForm } from "vee-validate";
 import { useTemplateRef } from "vue";
+import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import type { z } from "zod";
-import { useI18n } from "vue-i18n";
 
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
-import { capitalize, COMMA_WITH_SPACE, EMPTY } from "@/shared/str";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import {
@@ -54,7 +53,9 @@ const validationSchema = toTypedSchema(zSchema);
 
 const form = useForm({
   validationSchema,
-  initialValues: Object.fromEntries(Object.keys(zSchema.keyof().Enum).map((key) => [key, EMPTY])),
+  initialValues: Object.fromEntries(
+    Object.keys(zSchema.keyof().Enum).map((key) => [key, Str.EMPTY]),
+  ),
 });
 
 const onSubmit = form.handleSubmit((values) => {
@@ -70,10 +71,10 @@ const onSubmit = form.handleSubmit((values) => {
     },
     {
       onSuccess: () => {
-        toast.success(capitalize(t(Tk.registration_successfully_completed)));
+        toast.success(Str.capitalize(t(Tk.registration_successfully_completed)));
       },
       onError: () => {
-        toast.error(capitalize(t(Tk.failed_to_register)));
+        toast.error(Str.capitalize(t(Tk.failed_to_register)));
       },
     },
   );
@@ -84,7 +85,7 @@ const AVATAR_KEY: Extract<keyof Schema, "avatar"> = "avatar";
 const avatarInput = useTemplateRef("avatar-input");
 const avatarInputAccept = Object.values(Domain.User.Attribute.Avatar.FILE_CONSTRAINTS.mimeType)
   .map((value) => FileModule.ExtensionByMimeType[value])
-  .join(COMMA_WITH_SPACE);
+  .join(Str.COMMA_WITH_SPACE);
 
 function getAvatarSource(componentField: ComponentFieldBindingObject) {
   return componentField.modelValue instanceof File
@@ -93,9 +94,9 @@ function getAvatarSource(componentField: ComponentFieldBindingObject) {
 }
 
 function clearAvatar() {
-  form.setFieldValue(AVATAR_KEY, EMPTY);
+  form.setFieldValue(AVATAR_KEY, Str.EMPTY);
   if (avatarInput.value) {
-    avatarInput.value.value = EMPTY;
+    avatarInput.value.value = Str.EMPTY;
   }
 }
 
@@ -111,16 +112,16 @@ function onAvatarInputChange(event: Event) {
   <div class="flex h-full">
     <Card class="m-auto min-w-1/2">
       <CardHeader class="text-center">
-        <CardTitle>{{ capitalize($t(Tk.registration)) }}</CardTitle>
+        <CardTitle>{{ Str.capitalize($t(Tk.registration)) }}</CardTitle>
         <CardDescription>{{
-          capitalize($t(Tk.create_an_account_to_be_able_to_create_and_manage_your_own_tests))
+          Str.capitalize($t(Tk.create_an_account_to_be_able_to_create_and_manage_your_own_tests))
         }}</CardDescription>
       </CardHeader>
       <CardContent>
         <form class="flex flex-col gap-4" @submit="onSubmit">
           <FormField v-slot="{ componentField }" :name="AVATAR_KEY">
             <FormItem>
-              <FormLabel class="justify-center">{{ capitalize($t(Tk.avatar)) }}</FormLabel>
+              <FormLabel class="justify-center">{{ Str.capitalize($t(Tk.avatar)) }}</FormLabel>
               <FormControl>
                 <div class="group relative place-self-center p-4">
                   <Button
@@ -134,7 +135,7 @@ function onAvatarInputChange(event: Event) {
                     <img
                       v-if="componentField.modelValue"
                       :src="getAvatarSource(componentField)"
-                      :alt="capitalize($t(Tk.avatar))"
+                      :alt="Str.capitalize($t(Tk.avatar))"
                       class="size-18 rounded-full object-cover"
                     />
                     <User v-else class="size-18" />
@@ -171,7 +172,7 @@ function onAvatarInputChange(event: Event) {
             :name
           >
             <FormItem>
-              <FormLabel>{{ capitalize($t(labelTk)) }}</FormLabel>
+              <FormLabel>{{ Str.capitalize($t(labelTk)) }}</FormLabel>
               <FormControl>
                 <Input :type="name === 'password' ? 'password' : 'text'" v-bind="componentField" />
               </FormControl>
@@ -179,7 +180,7 @@ function onAvatarInputChange(event: Event) {
             </FormItem>
           </FormField>
           <Button type="submit" :disabled="isRegisterPending">
-            {{ capitalize($t(Tk.register)) }}
+            {{ Str.capitalize($t(Tk.register)) }}
           </Button>
         </form>
       </CardContent>

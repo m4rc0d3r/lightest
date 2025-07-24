@@ -1,13 +1,13 @@
-import { EMPTY, SLASH } from "./str";
+import { Str } from "@lightest/core";
 
 const ROUTES = {
-  home: SLASH,
+  home: Str.SLASH,
   about: createPath(["about"]),
   register: createPath(["register"]),
 };
 
 function createPath(segments: string[]) {
-  return [EMPTY, ...segments].join(SLASH);
+  return [Str.EMPTY, ...segments].join(Str.SLASH);
 }
 
 export { ROUTES };

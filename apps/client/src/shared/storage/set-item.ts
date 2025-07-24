@@ -1,6 +1,5 @@
+import { UnexpectedError } from "@lightest/core";
 import { either, function as f, json } from "fp-ts";
-
-import { UnexpectedError } from "../error";
 
 function setItem(storage: Storage, key: Parameters<Storage["setItem"]>[0], value: unknown) {
   return f.pipe(

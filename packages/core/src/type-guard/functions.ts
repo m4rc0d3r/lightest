@@ -17,4 +17,8 @@ function hasMethod<T extends string>(
   );
 }
 
-export { hasMethod, isNullish, isObject };
+function isOneOf<T extends unknown[]>(value: unknown, values: T): value is T[number] {
+  return values.includes(value);
+}
+
+export { hasMethod, isNullish, isObject, isOneOf };
