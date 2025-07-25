@@ -6,14 +6,23 @@ import type { ComponentFieldBindingObject } from "vee-validate";
 import { useForm } from "vee-validate";
 import { useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
+import { RouterLink, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import type { z } from "zod";
 
 import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
+import { ROUTES } from "@/shared/routing";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/ui/card";
 import {
   FormControl,
   FormDescription,
@@ -43,6 +52,7 @@ const FIELD_META = {
   },
 } satisfies Partial<Record<keyof Schema, FieldMeta>>;
 
+const router = useRouter();
 const { t } = useI18n();
 
 const authStore = useAuthStore();
@@ -76,6 +86,7 @@ const onSubmit = form.handleSubmit((values) => {
       onSuccess: () => {
         authStore.isAuthenticated = true;
         toast.success(Str.capitalize(t(Tk.registration_successfully_completed)));
+        void router.push(ROUTES.home);
       },
       onError: () => {
         toast.error(Str.capitalize(t(Tk.failed_to_register)));
@@ -188,6 +199,14 @@ function onAvatarInputChange(event: Event) {
           </Button>
         </form>
       </CardContent>
+      <CardFooter class="justify-center">
+        <p class="text-center">
+          {{ [Str.capitalize($t(Tk.already_have_an_account)), Str.QUESTION_MARK].join(Str.EMPTY) }}
+          <Button as-child variant="link" size="auto">
+            <RouterLink :to="ROUTES.login">{{ Str.capitalize($t(Tk["login.verb"])) }}</RouterLink>
+          </Button>
+        </p>
+      </CardFooter>
     </Card>
   </div>
 </template>

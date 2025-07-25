@@ -24,6 +24,9 @@ const MESSAGES = {
     "log in to your account to access test management",
   failed_to_log_in: "failed to log in",
   login_completed_successfully: "login completed successfully",
+  already_have_an_account: "already have an account",
+  create: "create",
+  don_t_have_an_account: "don't have an account",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

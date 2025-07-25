@@ -5,12 +5,21 @@ import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import type { z } from "zod";
+import { RouterLink, useRouter } from "vue-router";
 
 import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
+import { ROUTES } from "@/shared/routing";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/shared/ui/card";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
 
@@ -27,6 +36,7 @@ const FIELD_META = {
   },
 } satisfies Partial<Record<keyof Schema, FieldMeta>>;
 
+const router = useRouter();
 const { t } = useI18n();
 
 const authStore = useAuthStore();
@@ -54,6 +64,7 @@ const onSubmit = form.handleSubmit((values) => {
       onSuccess: () => {
         authStore.isAuthenticated = true;
         toast.success(Str.capitalize(t(Tk.login_completed_successfully)));
+        void router.push(ROUTES.home);
       },
       onError: () => {
         toast.error(Str.capitalize(t(Tk.failed_to_log_in)));
@@ -93,6 +104,14 @@ const onSubmit = form.handleSubmit((values) => {
           </Button>
         </form>
       </CardContent>
+      <CardFooter class="justify-center">
+        <p class="text-center">
+          {{ [Str.capitalize($t(Tk.don_t_have_an_account)), Str.QUESTION_MARK].join(Str.EMPTY) }}
+          <Button as-child variant="link" size="auto">
+            <RouterLink :to="ROUTES.register">{{ Str.capitalize($t(Tk.create)) }}</RouterLink>
+          </Button>
+        </p>
+      </CardFooter>
     </Card>
   </div>
 </template>

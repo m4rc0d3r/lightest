@@ -22,6 +22,9 @@ const zTk = z.enum([
   "log_in_to_your_account_to_access_test_management",
   "failed_to_log_in",
   "login_completed_successfully",
+  "already_have_an_account",
+  "create",
+  "don_t_have_an_account",
 ]);
 const Tk = zTk.Values;
 type Tk = z.infer<typeof zTk>;

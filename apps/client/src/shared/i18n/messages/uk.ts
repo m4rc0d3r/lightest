@@ -24,6 +24,9 @@ const MESSAGES = {
     "увійдіть до свого облікового запису, щоб отримати доступ до керування тестами",
   failed_to_log_in: "не вдалося увійти",
   login_completed_successfully: "вхід успішно завершено",
+  already_have_an_account: "вже маєте обліковий запис",
+  create: "створити",
+  don_t_have_an_account: "немає облікового запису",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };
