@@ -6,8 +6,7 @@ import { createPinia } from "pinia";
 import { createApp } from "vue";
 import { createI18n } from "vue-i18n";
 
-import { App } from "./app";
-import router from "./app/router";
+import { App, router } from "./app";
 import { initDiContainer } from "./features/di";
 import { createConfig, NodeEnv, useConfigStore } from "./shared/config";
 import { AVAILABLE_LOCALES, getPersistedLocale, Locale, MESSAGES } from "./shared/i18n";

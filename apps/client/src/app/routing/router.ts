@@ -1,8 +1,11 @@
 import { Str } from "@lightest/core";
 import { createRouter, createWebHistory } from "vue-router";
 
-import { AuthLayout, MainLayout } from "./layouts";
+import { AuthLayout, MainLayout } from "../layouts";
 
+import { defineMeta, getOnlyFor, OnlyFor, onlyFor } from "./meta";
+
+import { useAuthStore } from "@/entities/auth";
 import AboutPage from "@/pages/AboutPage.vue";
 import HomePage from "@/pages/HomePage.vue";
 import LoginPage from "@/pages/LoginPage.vue";
@@ -31,6 +34,7 @@ const router = createRouter({
     {
       path: Str.SLASH,
       component: AuthLayout,
+      meta: defineMeta(onlyFor(OnlyFor.UNAUTHENTICATED)),
       children: [
         {
           path: ROUTES.register,
@@ -47,4 +51,20 @@ const router = createRouter({
   ],
 });
 
-export default router;
+router.beforeEach((to) => {
+  const onlyFor = getOnlyFor(to);
+
+  if (onlyFor === undefined) return true;
+
+  const authenticationStatus: OnlyFor = useAuthStore().isAuthenticated
+    ? OnlyFor.AUTHENTICATED
+    : OnlyFor.UNAUTHENTICATED;
+
+  return (
+    onlyFor === authenticationStatus || {
+      path: ROUTES.home,
+    }
+  );
+});
+
+export { router };
