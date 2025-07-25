@@ -9,6 +9,7 @@ type Options = {
 function createTsRestClient({ baseUrl }: Options) {
   return initQueryClient(Contract.contract, {
     baseUrl,
+    credentials: "include",
   });
 }
 

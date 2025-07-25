@@ -27,6 +27,10 @@ const MESSAGES = {
   already_have_an_account: "вже маєте обліковий запис",
   create: "створити",
   don_t_have_an_account: "немає облікового запису",
+  name_not_specified: "ім'я не вказано",
+  logout: "вийти",
+  logout_completed_successfully: "вихід успішно завершено",
+  failed_to_log_out: "не вдалося вийти",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

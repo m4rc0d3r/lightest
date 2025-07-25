@@ -27,6 +27,10 @@ const MESSAGES = {
   already_have_an_account: "already have an account",
   create: "create",
   don_t_have_an_account: "don't have an account",
+  name_not_specified: "name not specified",
+  logout: "logout",
+  logout_completed_successfully: "logout completed successfully",
+  failed_to_log_out: "failed to log out",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

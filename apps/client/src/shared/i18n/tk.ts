@@ -25,6 +25,10 @@ const zTk = z.enum([
   "already_have_an_account",
   "create",
   "don_t_have_an_account",
+  "name_not_specified",
+  "logout",
+  "logout_completed_successfully",
+  "failed_to_log_out",
 ]);
 const Tk = zTk.Values;
 type Tk = z.infer<typeof zTk>;

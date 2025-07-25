@@ -3,7 +3,9 @@ import { Str } from "@lightest/core";
 import { RouterLink, RouterView } from "vue-router";
 
 import LanguageSwitcher from "./LanguageSwitcher.vue";
+import MeSection from "./MeSection.vue";
 
+import { useAuthStore } from "@/entities/auth";
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
 import { Button } from "@/shared/ui/button";
@@ -34,6 +36,8 @@ const AUTH_MENU_ITEMS: MenuItem[] = [
     label: Tk["login.verb"],
   },
 ];
+
+const authStore = useAuthStore();
 </script>
 
 <template>
@@ -50,9 +54,10 @@ const AUTH_MENU_ITEMS: MenuItem[] = [
               </li>
             </ul>
           </li>
-          <li class="flex gap-2">
+          <li class="flex items-center gap-2">
             <LanguageSwitcher />
-            <ul class="flex">
+            <MeSection v-if="authStore.isAuthenticated" />
+            <ul v-else class="flex">
               <li v-for="{ label, path } in AUTH_MENU_ITEMS" :key="path">
                 <Button as-child variant="ghost">
                   <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
