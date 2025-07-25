@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Str } from "@lightest/core";
-import { RouterLink, RouterView } from "vue-router";
 
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 import MeSection from "./MeSection.vue";

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowLeft } from "lucide-vue-next";
-import { RouterView, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 

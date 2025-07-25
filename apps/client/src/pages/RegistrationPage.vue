@@ -6,7 +6,7 @@ import type { ComponentFieldBindingObject } from "vee-validate";
 import { useForm } from "vee-validate";
 import { useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
-import { RouterLink, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import type { z } from "zod";
 

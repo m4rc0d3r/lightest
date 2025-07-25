@@ -3,9 +3,9 @@ import { Contract, Str } from "@lightest/core";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
 import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 import type { z } from "zod";
-import { RouterLink, useRouter } from "vue-router";
 
 import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
