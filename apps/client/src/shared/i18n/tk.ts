@@ -29,6 +29,7 @@ const zTk = z.enum([
   "logout",
   "logout_completed_successfully",
   "failed_to_log_out",
+  "user_avatar",
 ]);
 const Tk = zTk.Values;
 type Tk = z.infer<typeof zTk>;

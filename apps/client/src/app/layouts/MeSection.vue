@@ -2,13 +2,16 @@
 import { Str } from "@lightest/core";
 import { ref, watchEffect } from "vue";
 import { useI18n } from "vue-i18n";
-import { toast } from "vue-sonner";
 import { useRouter } from "vue-router";
+import { toast } from "vue-sonner";
+
+import UserAvatar from "./UserAvatar.vue";
 
 import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
+import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,8 +71,11 @@ function onLogout() {
     <p v-if="isMeError">Error</p>
     <Skeleton v-else-if="isMePending" class="h-6 w-32" />
     <DropdownMenu v-else>
-      <DropdownMenuTrigger>
-        {{ fullName }}
+      <DropdownMenuTrigger as-child>
+        <Button variant="ghost">
+          <UserAvatar :user="me?.body.me!" />
+          {{ fullName }}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem :disabled="isLogoutPending" @select="onLogout">{{

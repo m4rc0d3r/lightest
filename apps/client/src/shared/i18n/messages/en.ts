@@ -31,6 +31,7 @@ const MESSAGES = {
   logout: "logout",
   logout_completed_successfully: "logout completed successfully",
   failed_to_log_out: "failed to log out",
+  user_avatar: "user avatar",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };
