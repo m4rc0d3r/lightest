@@ -1,7 +1,7 @@
 import { Str } from "@lightest/core";
 import { createRouter, createWebHistory } from "vue-router";
 
-import { MainLayout } from "./main-layout";
+import { AuthLayout, MainLayout } from "./layouts";
 
 import AboutPage from "@/pages/AboutPage.vue";
 import HomePage from "@/pages/HomePage.vue";
@@ -28,9 +28,15 @@ const router = createRouter({
       ],
     },
     {
-      path: ROUTES.register,
-      name: "registration",
-      component: RegistrationPage,
+      path: Str.SLASH,
+      component: AuthLayout,
+      children: [
+        {
+          path: ROUTES.register,
+          name: "registration",
+          component: RegistrationPage,
+        },
+      ],
     },
   ],
 });

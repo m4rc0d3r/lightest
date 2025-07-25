@@ -109,7 +109,7 @@ function onAvatarInputChange(event: Event) {
 </script>
 
 <template>
-  <div class="flex h-full">
+  <div class="flex grow py-16">
     <Card class="m-auto min-w-1/2">
       <CardHeader class="text-center">
         <CardTitle>{{ Str.capitalize($t(Tk.registration)) }}</CardTitle>
