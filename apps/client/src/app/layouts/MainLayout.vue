@@ -2,6 +2,7 @@
 import { Str } from "@lightest/core";
 
 import LanguageSwitcher from "./LanguageSwitcher.vue";
+import LayoutTemplate from "./LayoutTemplate.vue";
 import MeSection from "./MeSection.vue";
 
 import { useAuthStore } from "@/entities/auth";
@@ -40,35 +41,30 @@ const authStore = useAuthStore();
 </script>
 
 <template>
-  <div class="flex h-full flex-col">
-    <header class="bg-secondary px-4 py-2">
-      <nav>
-        <ul class="flex justify-between">
-          <li>
-            <ul class="flex">
-              <li v-for="{ label, path } in MENU_ITEMS" :key="path">
-                <Button as-child variant="link" class="font-bold">
-                  <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
-                </Button>
-              </li>
-            </ul>
-          </li>
-          <li class="flex items-center gap-2">
-            <LanguageSwitcher />
-            <MeSection v-if="authStore.isAuthenticated" />
-            <ul v-else class="flex">
-              <li v-for="{ label, path } in AUTH_MENU_ITEMS" :key="path">
-                <Button as-child variant="ghost">
-                  <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
-                </Button>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-    </header>
-    <main class="flex grow">
-      <RouterView />
-    </main>
-  </div>
+  <LayoutTemplate>
+    <nav>
+      <ul class="flex justify-between">
+        <li>
+          <ul class="flex">
+            <li v-for="{ label, path } in MENU_ITEMS" :key="path">
+              <Button as-child variant="link" class="font-bold">
+                <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
+              </Button>
+            </li>
+          </ul>
+        </li>
+        <li class="flex items-center gap-2">
+          <LanguageSwitcher />
+          <MeSection v-if="authStore.isAuthenticated" />
+          <ul v-else class="flex">
+            <li v-for="{ label, path } in AUTH_MENU_ITEMS" :key="path">
+              <Button as-child variant="ghost">
+                <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
+              </Button>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </LayoutTemplate>
 </template>
