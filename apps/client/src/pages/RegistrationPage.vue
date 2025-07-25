@@ -9,6 +9,7 @@ import { useI18n } from "vue-i18n";
 import { toast } from "vue-sonner";
 import type { z } from "zod";
 
+import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
 import { Button } from "@/shared/ui/button";
@@ -44,6 +45,8 @@ const FIELD_META = {
 
 const { t } = useI18n();
 
+const authStore = useAuthStore();
+
 const { tsRestClient } = injectDiContainer();
 const { mutate: register, isPending: isRegisterPending } = tsRestClient.auth.register.useMutation();
 
@@ -71,6 +74,7 @@ const onSubmit = form.handleSubmit((values) => {
     },
     {
       onSuccess: () => {
+        authStore.isAuthenticated = true;
         toast.success(Str.capitalize(t(Tk.registration_successfully_completed)));
       },
       onError: () => {
