@@ -4,6 +4,7 @@ const ROUTES = {
   home: Str.SLASH,
   about: createPath(["about"]),
   register: createPath(["register"]),
+  login: createPath(["login"]),
 };
 
 function createPath(segments: string[]) {

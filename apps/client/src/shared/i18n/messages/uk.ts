@@ -18,6 +18,12 @@ const MESSAGES = {
   password: "пароль",
   registration_successfully_completed: "реєстрацію успішно завершено",
   failed_to_register: "не вдалося зареєструватися",
+  "login.noun": "вхід",
+  "login.verb": "увійти",
+  log_in_to_your_account_to_access_test_management:
+    "увійдіть до свого облікового запису, щоб отримати доступ до керування тестами",
+  failed_to_log_in: "не вдалося увійти",
+  login_completed_successfully: "вхід успішно завершено",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

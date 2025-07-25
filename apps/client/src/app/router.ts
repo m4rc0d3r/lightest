@@ -5,6 +5,7 @@ import { AuthLayout, MainLayout } from "./layouts";
 
 import AboutPage from "@/pages/AboutPage.vue";
 import HomePage from "@/pages/HomePage.vue";
+import LoginPage from "@/pages/LoginPage.vue";
 import RegistrationPage from "@/pages/RegistrationPage.vue";
 import { ROUTES } from "@/shared/routing";
 
@@ -35,6 +36,11 @@ const router = createRouter({
           path: ROUTES.register,
           name: "registration",
           component: RegistrationPage,
+        },
+        {
+          path: ROUTES.login,
+          name: "login",
+          component: LoginPage,
         },
       ],
     },

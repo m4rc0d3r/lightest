@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
 import { Str } from "@lightest/core";
+import { RouterLink, RouterView } from "vue-router";
 
 import LanguageSwitcher from "./LanguageSwitcher.vue";
 
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
 import { Button } from "@/shared/ui/button";
-import type { ComponentProps } from "@/shared/vue";
 
 type MenuItem = {
   path: string;
   label: Tk;
 };
-
-type AuthMenuItem = MenuItem & Pick<ComponentProps<typeof Button>, "variant">;
 
 const MENU_ITEMS: MenuItem[] = [
   {
@@ -27,11 +24,14 @@ const MENU_ITEMS: MenuItem[] = [
   },
 ];
 
-const AUTH_MENU_ITEMS: AuthMenuItem[] = [
+const AUTH_MENU_ITEMS: MenuItem[] = [
   {
     path: ROUTES.register,
     label: Tk.register,
-    variant: "outline",
+  },
+  {
+    path: ROUTES.login,
+    label: Tk["login.verb"],
   },
 ];
 </script>
@@ -53,8 +53,8 @@ const AUTH_MENU_ITEMS: AuthMenuItem[] = [
           <li class="flex gap-2">
             <LanguageSwitcher />
             <ul class="flex">
-              <li v-for="{ label, path, variant } in AUTH_MENU_ITEMS" :key="path">
-                <Button as-child :variant>
+              <li v-for="{ label, path } in AUTH_MENU_ITEMS" :key="path">
+                <Button as-child variant="ghost">
                   <RouterLink :to="path">{{ Str.capitalize($t(label)) }}</RouterLink>
                 </Button>
               </li>

@@ -17,6 +17,11 @@ const zTk = z.enum([
   "password",
   "registration_successfully_completed",
   "failed_to_register",
+  "login.noun",
+  "login.verb",
+  "log_in_to_your_account_to_access_test_management",
+  "failed_to_log_in",
+  "login_completed_successfully",
 ]);
 const Tk = zTk.Values;
 type Tk = z.infer<typeof zTk>;
