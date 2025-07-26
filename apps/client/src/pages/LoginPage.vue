@@ -11,6 +11,7 @@ import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
+import { handleErrorWithToast } from "@/shared/ts-rest";
 import { Button } from "@/shared/ui/button";
 import {
   Card,
@@ -66,8 +67,21 @@ const onSubmit = form.handleSubmit((values) => {
         toast.success(Str.capitalize(t(Tk.login_completed_successfully)));
         void router.push(ROUTES.home);
       },
-      onError: () => {
-        toast.error(Str.capitalize(t(Tk.failed_to_log_in)));
+      onError: (error) => {
+        toast.error(Str.capitalize(t(Tk.failed_to_log_in)), {
+          description: handleErrorWithToast(
+            error,
+            Contract.contract.auth.login,
+            (response) => {
+              const { status } = response;
+              if (status === 404) {
+                return Str.capitalize(t(Tk.incorrect_email_address_and_or_password));
+              }
+              throw new Error();
+            },
+            t,
+          ),
+        });
       },
     },
   );

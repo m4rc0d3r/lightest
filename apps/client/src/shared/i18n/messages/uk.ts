@@ -32,6 +32,12 @@ const MESSAGES = {
   logout_completed_successfully: "вихід успішно завершено",
   failed_to_log_out: "не вдалося вийти",
   user_avatar: "аватар користувача",
+  this_email_address_is_already_taken: "ця адреса електронної пошти вже зайнята",
+  incorrect_email_address_and_or_password: "неправильна адреса електронної пошти та/або пароль",
+  an_unexpected_situation_has_occurred_please_try_again:
+    "виникла непередбачена ситуація, спробуйте ще раз",
+  failed_to_send_request_possibly_a_connection_problem:
+    "не вдалося надіслати запит, можливо, проблема з підключенням",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

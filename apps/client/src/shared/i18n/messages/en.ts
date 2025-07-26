@@ -32,6 +32,12 @@ const MESSAGES = {
   logout_completed_successfully: "logout completed successfully",
   failed_to_log_out: "failed to log out",
   user_avatar: "user avatar",
+  this_email_address_is_already_taken: "this email address is already taken",
+  incorrect_email_address_and_or_password: "incorrect email address and/or password",
+  an_unexpected_situation_has_occurred_please_try_again:
+    "an unexpected situation has occurred, please try again",
+  failed_to_send_request_possibly_a_connection_problem:
+    "failed to send request, possibly a connection problem",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

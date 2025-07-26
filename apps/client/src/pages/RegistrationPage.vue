@@ -14,6 +14,7 @@ import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
+import { handleErrorWithToast } from "@/shared/ts-rest";
 import { Button } from "@/shared/ui/button";
 import {
   Card,
@@ -88,8 +89,23 @@ const onSubmit = form.handleSubmit((values) => {
         toast.success(Str.capitalize(t(Tk.registration_successfully_completed)));
         void router.push(ROUTES.home);
       },
-      onError: () => {
-        toast.error(Str.capitalize(t(Tk.failed_to_register)));
+      onError: (error) => {
+        toast.error(Str.capitalize(t(Tk.failed_to_register)), {
+          description: handleErrorWithToast(
+            error,
+            Contract.contract.auth.register,
+            (response) => {
+              const { status, body } = response;
+              if (status === 409) {
+                if (body.constraintName === Domain.User.Constraint.UNIQUE_USER_EMAIL) {
+                  return Str.capitalize(t(Tk.this_email_address_is_already_taken));
+                }
+              }
+              throw new Error();
+            },
+            t,
+          ),
+        });
       },
     },
   );

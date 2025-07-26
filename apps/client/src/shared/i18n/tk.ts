@@ -30,6 +30,10 @@ const zTk = z.enum([
   "logout_completed_successfully",
   "failed_to_log_out",
   "user_avatar",
+  "this_email_address_is_already_taken",
+  "incorrect_email_address_and_or_password",
+  "an_unexpected_situation_has_occurred_please_try_again",
+  "failed_to_send_request_possibly_a_connection_problem",
 ]);
 const Tk = zTk.Values;
 type Tk = z.infer<typeof zTk>;
