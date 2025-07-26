@@ -15,6 +15,7 @@ const MESSAGES = {
   last_name: "прізвище",
   avatar: "аватар",
   email: "електронна пошта",
+  "email.genitive": "електронної пошти",
   password: "пароль",
   registration_successfully_completed: "реєстрацію успішно завершено",
   failed_to_register: "не вдалося зареєструватися",
@@ -38,6 +39,14 @@ const MESSAGES = {
     "виникла непередбачена ситуація, спробуйте ще раз",
   failed_to_send_request_possibly_a_connection_problem:
     "не вдалося надіслати запит, можливо, проблема з підключенням",
+  does_not_match_the_format: "не відповідає формату {format}",
+  at_least_n_characters_required:
+    "потрібно щонайменше {n} символів | потрібен щонайменше {n} символ | потрібно щонайменше {n} символи | потрібно щонайменше {n} символів",
+  must_contain_lowercase_english_letters: "має містити малі англійські літери",
+  must_contain_uppercase_english_letters: "має містити великі англійські літери",
+  must_contain_digits: "має містити цифри",
+  must_contain_special_characters: "має містити спеціальні символи",
+  unsupported_file_extension: "непідтримуване розширення файлу",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

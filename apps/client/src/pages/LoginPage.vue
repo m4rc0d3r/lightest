@@ -23,6 +23,7 @@ import {
 } from "@/shared/ui/card";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
+import { errorMapForForms } from "@/shared/zod";
 
 type FieldMeta = {
   labelTk: Tk;
@@ -47,7 +48,9 @@ const { mutate: login, isPending: isLoginPending } = tsRestClient.auth.login.use
 
 const zSchema = Contract.contract.auth.login.body;
 type Schema = z.infer<typeof zSchema>;
-const validationSchema = toTypedSchema(zSchema);
+const validationSchema = toTypedSchema(zSchema, {
+  errorMap: errorMapForForms(t),
+});
 
 const form = useForm({
   validationSchema,

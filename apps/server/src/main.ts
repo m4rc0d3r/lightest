@@ -1,4 +1,4 @@
-import { Contract, Http } from "@lightest/core";
+import { Contract, Http, Zod } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -7,12 +7,15 @@ import { config as dotenvConfig } from "dotenv";
 import { expand } from "dotenv-expand";
 import express from "express";
 import { either as e } from "fp-ts";
+import { z } from "zod";
 
 import { Di, Middleware, TsRest } from "./infra";
 import { createConfig } from "./infra/config/config.js";
 
 import { authRouter as authRouter2 } from "~/features/auth";
 import { userRouter } from "~/features/user";
+
+z.setErrorMap(Zod.Regex.errorMap);
 
 expand(dotenvConfig());
 

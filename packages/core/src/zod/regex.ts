@@ -54,12 +54,11 @@ const REGEX_MAP: Record<RegexCode, RegexMapEntryValue> = {
 };
 
 function matchesRegex(regexCode: RegexCode) {
-  const { regex, errorMessage: message } = REGEX_MAP[regexCode];
+  const { regex } = REGEX_MAP[regexCode];
   return (value: string, ctx: z.RefinementCtx) => {
     if (!value.match(regex)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message,
         params: {
           customCode: DOES_NOT_MATCH_REGEX,
           regexCode,
@@ -76,5 +75,17 @@ const REFINEMENTS = {
   containsSpecialCharacters: matchesRegex(RegexCode.MUST_CONTAIN_SPECIAL_CHARACTERS),
 };
 
-export { isRegexIssue, REFINEMENTS, RegexCode };
+const errorMap: z.ZodErrorMap = (issue, ctx) => {
+  if (isRegexIssue(issue)) {
+    return {
+      message: REGEX_MAP[issue.params.regexCode].errorMessage,
+    };
+  }
+
+  return {
+    message: ctx.defaultError,
+  };
+};
+
+export { errorMap, isRegexIssue, REFINEMENTS, RegexCode };
 export type { RegexIssue };

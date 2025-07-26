@@ -14,6 +14,7 @@ const zTk = z.enum([
   "last_name",
   "avatar",
   "email",
+  "email.genitive",
   "password",
   "registration_successfully_completed",
   "failed_to_register",
@@ -34,6 +35,13 @@ const zTk = z.enum([
   "incorrect_email_address_and_or_password",
   "an_unexpected_situation_has_occurred_please_try_again",
   "failed_to_send_request_possibly_a_connection_problem",
+  "does_not_match_the_format",
+  "at_least_n_characters_required",
+  "must_contain_lowercase_english_letters",
+  "must_contain_uppercase_english_letters",
+  "must_contain_digits",
+  "must_contain_special_characters",
+  "unsupported_file_extension",
 ]);
 const Tk = zTk.Values;
 type Tk = z.infer<typeof zTk>;

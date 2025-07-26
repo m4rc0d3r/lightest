@@ -15,6 +15,7 @@ const MESSAGES = {
   last_name: "last name",
   avatar: "avatar",
   email: "email ",
+  "email.genitive": "email",
   password: "password",
   registration_successfully_completed: "registration successfully completed",
   failed_to_register: "failed to register",
@@ -38,6 +39,14 @@ const MESSAGES = {
     "an unexpected situation has occurred, please try again",
   failed_to_send_request_possibly_a_connection_problem:
     "failed to send request, possibly a connection problem",
+  does_not_match_the_format: "does not match {format} format",
+  at_least_n_characters_required:
+    "at least {n} characters required | at least {n} character required | at least {n} characters required",
+  must_contain_lowercase_english_letters: "must contain lowercase English letters",
+  must_contain_uppercase_english_letters: "must contain uppercase English letters",
+  must_contain_digits: "must contain digits",
+  must_contain_special_characters: "must contain special characters",
+  unsupported_file_extension: "unsupported file extension",
 } satisfies Record<Tk, string>;
 
 export { MESSAGES };

@@ -33,6 +33,7 @@ import {
   FormMessage,
 } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
+import { errorMapForForms } from "@/shared/zod";
 
 type FieldMeta = {
   labelTk: Tk;
@@ -63,7 +64,9 @@ const { mutate: register, isPending: isRegisterPending } = tsRestClient.auth.reg
 
 const zSchema = Contract.contract.auth.register.body;
 type Schema = z.infer<typeof zSchema>;
-const validationSchema = toTypedSchema(zSchema);
+const validationSchema = toTypedSchema(zSchema, {
+  errorMap: errorMapForForms(t),
+});
 
 const form = useForm({
   validationSchema,
@@ -114,9 +117,15 @@ const onSubmit = form.handleSubmit((values) => {
 const AVATAR_KEY: Extract<keyof Schema, "avatar"> = "avatar";
 
 const avatarInput = useTemplateRef("avatar-input");
-const avatarInputAccept = Object.values(Domain.User.Attribute.Avatar.FILE_CONSTRAINTS.mimeType)
+const avatarInputAccept = Object.values(
+  Domain.User.Attribute.Avatar.FILE_CONSTRAINTS.mimeType,
+).join(Str.COMMA);
+const ACCEPTABLE_AVATAR_EXTENSIONS = Object.values(
+  Domain.User.Attribute.Avatar.FILE_CONSTRAINTS.mimeType,
+)
   .map((value) => FileModule.ExtensionByMimeType[value])
-  .join(Str.COMMA_WITH_SPACE);
+  .join(Str.COMMA_WITH_SPACE)
+  .toLocaleUpperCase();
 
 function getAvatarSource(componentField: ComponentFieldBindingObject) {
   return componentField.modelValue instanceof File
@@ -191,9 +200,9 @@ function onAvatarInputChange(event: Event) {
                 </div>
               </FormControl>
               <FormDescription class="text-center">{{
-                avatarInputAccept.toLocaleUpperCase()
+                ACCEPTABLE_AVATAR_EXTENSIONS
               }}</FormDescription>
-              <FormMessage />
+              <FormMessage class="text-center" />
             </FormItem>
           </FormField>
           <FormField

@@ -9,7 +9,13 @@ import { createI18n } from "vue-i18n";
 import { App, router } from "./app";
 import { initDiContainer } from "./features/di";
 import { createConfig, NodeEnv, useConfigStore } from "./shared/config";
-import { AVAILABLE_LOCALES, getPersistedLocale, Locale, MESSAGES } from "./shared/i18n";
+import {
+  AVAILABLE_LOCALES,
+  getPersistedLocale,
+  Locale,
+  MESSAGES,
+  PLURALIZATION_RULES,
+} from "./shared/i18n";
 
 const i18n = createI18n({
   legacy: false,
@@ -17,6 +23,7 @@ const i18n = createI18n({
   fallbackLocale: Locale.en,
   locale: getPersistedLocale(),
   messages: MESSAGES,
+  pluralRules: PLURALIZATION_RULES,
 });
 
 const eitherConfig = createConfig({
