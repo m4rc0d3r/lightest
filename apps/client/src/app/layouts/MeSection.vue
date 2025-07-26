@@ -11,6 +11,7 @@ import { useAuthStore } from "@/entities/auth";
 import { injectDiContainer } from "@/features/di";
 import { Tk } from "@/shared/i18n";
 import { ROUTES } from "@/shared/routing";
+import { EMPTY_ARGS } from "@/shared/ts-rest";
 import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
@@ -30,7 +31,9 @@ const {
   data: me,
   isError: isMeError,
   isPending: isMePending,
-} = tsRestClient.user.getMe.useQuery([]);
+} = tsRestClient.user.getMe.useQuery(["user", "getMe"], EMPTY_ARGS, {
+  retry: false,
+});
 const { mutate: logout, isPending: isLogoutPending } = tsRestClient.auth.logout.useMutation();
 
 const fullName = ref(Str.EMPTY);

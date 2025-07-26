@@ -13,9 +13,12 @@ import type {
   ClientInferRequest,
   PartialClientInferRequest,
 } from "@ts-rest/core";
+import type { ComputedRef, MaybeRef, Ref } from "vue";
 
 import type { DataResponse, ErrorResponse } from "./common";
 import { queryFn } from "./common";
+
+type OmitQueryKey<T> = MaybeRef<Omit<Exclude<T, Ref | ComputedRef>, "queryKey">>;
 
 // Used on X.useQuery
 type DataReturnQuery<
@@ -27,12 +30,16 @@ type DataReturnQuery<
     ? <TData = DataResponse<TAppRoute>>(
         queryKey: QueryKey,
         args?: (context: QueryFunctionContext<QueryKey>) => TArgs,
-        options?: UseQueryOptions<DataResponse<TAppRoute>, ErrorResponse<TAppRoute>, TData>,
+        options?: OmitQueryKey<
+          UseQueryOptions<DataResponse<TAppRoute>, ErrorResponse<TAppRoute>, TData>
+        >,
       ) => UseQueryReturnType<TData, ErrorResponse<TAppRoute>>
     : <TData = DataResponse<TAppRoute>>(
         queryKey: QueryKey,
         args: (context: QueryFunctionContext<QueryKey>) => TArgs,
-        options?: UseQueryOptions<DataResponse<TAppRoute>, ErrorResponse<TAppRoute>, TData>,
+        options?: OmitQueryKey<
+          UseQueryOptions<DataResponse<TAppRoute>, ErrorResponse<TAppRoute>, TData>
+        >,
       ) => UseQueryReturnType<TData, ErrorResponse<TAppRoute>>;
 
 const getRouteUseQuery = <TAppRoute extends AppRoute, TClientArgs extends ClientArgs>(
