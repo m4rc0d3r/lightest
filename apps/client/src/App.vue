@@ -2,15 +2,14 @@
 import { onMounted } from "vue";
 import { RouterView, useRoute, useRouter } from "vue-router";
 
-import SimpleNotification from "@/components/SimpleNotification.vue";
+import { Toaster } from "@/components/ui/sonner";
 import { useAuthStore } from "@/stores/auth";
-import { useNotificationStore } from "@/stores/notification";
+import "vue-sonner/style.css"; // vue-sonner v2 requires this import
 
 const router = useRouter();
 const route = useRoute();
 
 const authStore = useAuthStore();
-const notificationStore = useNotificationStore();
 
 onMounted(async () => {
   await authStore.refresh();
@@ -24,15 +23,5 @@ onMounted(async () => {
 
 <template>
   <RouterView />
-  <div
-    class="fixed top-0 left-2/4 flex -translate-x-2/4 flex-col items-center"
-    v-if="notificationStore.notifications.length > 0"
-  >
-    <SimpleNotification
-      v-for="notification in notificationStore.notifications"
-      :key="notification.id"
-      :notification="notification"
-      @delete="notificationStore.remove(notification.id)"
-    />
-  </div>
+  <Toaster />
 </template>

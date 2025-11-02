@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from "vue";
 import { RouterLink } from "vue-router";
+import { toast } from "vue-sonner";
 
 import { TEST_MODE } from "@/components/tests-view/shared";
 import TestList from "@/components/tests-view/TestList.vue";
@@ -16,10 +17,8 @@ import {
 import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
 import type { APIError } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
-import { Notification, STATUS } from "@/models/notification";
 import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
-import { useNotificationStore } from "@/stores/notification";
 
 const DISPLAYED_TEST = {
   CREATED: "CREATED",
@@ -40,7 +39,6 @@ class DisplayedTestForSelect {
 }
 
 const tests = reactive<BriefTest[] | BriefPassedTest[]>([]);
-const notificationStore = useNotificationStore();
 const displayedTests = ref<DisplayedTest>(DISPLAYED_TEST.CREATED);
 
 onMounted(async () => {
@@ -88,12 +86,12 @@ async function loadTests() {
   }
 
   if (result instanceof Report) {
-    notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+    toast.success(result.message);
     if (result.payload) {
       return result.payload;
     }
   } else {
-    notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+    toast.error(result.message);
   }
   return undefined;
 }

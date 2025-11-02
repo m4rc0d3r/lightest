@@ -1,18 +1,15 @@
 <script setup lang="ts">
 import { RouterLink, RouterView, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 
-import SimpleNotification from "@/components/SimpleNotification.vue";
 import { Button } from "@/components/ui/button";
 import { APIError } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
-import { Notification, STATUS } from "@/models/notification";
 import { useAuthStore } from "@/stores/auth";
-import { useNotificationStore } from "@/stores/notification";
 
 const router = useRouter();
 
 const authStore = useAuthStore();
-const notificationStore = useNotificationStore();
 
 const mainRoutes = [
   {
@@ -43,9 +40,9 @@ async function logout() {
   if (authStore.isLoggedIn) {
     const result = await authStore.logout();
     if (result instanceof Report) {
-      notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+      toast.success(result.message);
     } else if (result instanceof APIError) {
-      notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+      toast.error(result.message);
     }
     void router.push("/home");
   }
@@ -80,16 +77,5 @@ async function logout() {
     <main className="flex flex-grow overflow-hidden">
       <RouterView />
     </main>
-    <div
-      class="fixed top-0 left-2/4 flex -translate-x-2/4 flex-col items-center"
-      v-if="notificationStore.notifications.length > 0"
-    >
-      <SimpleNotification
-        v-for="notification in notificationStore.notifications"
-        :key="notification.id"
-        :notification="notification"
-        @delete="notificationStore.remove(notification.id)"
-      />
-    </div>
   </div>
 </template>

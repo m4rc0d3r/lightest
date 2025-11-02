@@ -9,11 +9,11 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { toast } from "vue-sonner";
 
 import PassableQuestionBlock from "./PassableQuestionBlock.vue";
 
 import { Report } from "@/http/dtos/report";
-import { Notification, STATUS } from "@/models/notification";
 import { QUESTION_TYPE } from "@/models/test/base";
 import {
   AnswerOptionToPass,
@@ -23,7 +23,6 @@ import {
 } from "@/models/test/to-pass";
 import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
-import { useNotificationStore } from "@/stores/notification";
 
 export default defineComponent({
   components: {
@@ -33,7 +32,6 @@ export default defineComponent({
   data() {
     return {
       test: new TestToPass(),
-      notificationStore: useNotificationStore(),
     };
   },
 
@@ -46,7 +44,7 @@ export default defineComponent({
       const result = extractData(await TestService.getTestToPass(Number(this.$route.params["id"])));
 
       if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+        toast.success(result.message);
         if (result.payload) {
           const test = result.payload;
           this.test = new TestToPass(
@@ -87,7 +85,7 @@ export default defineComponent({
           );
         }
       } else {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        toast.error(result.message);
       }
     },
 
@@ -95,12 +93,12 @@ export default defineComponent({
       const result = extractData(await TestService.submitTestForReview(this.test));
 
       if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+        toast.success(result.message);
         if (result.payload) {
           void this.$router.push(`/passed-test/${result.payload}`);
         }
       } else {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        toast.error(result.message);
       }
     },
   },

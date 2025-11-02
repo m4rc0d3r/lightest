@@ -4,6 +4,7 @@ import { useForm } from "vee-validate";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { z } from "zod";
+import { toast } from "vue-sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
@@ -14,7 +15,6 @@ import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
 import { Notification, STATUS } from "@/models/notification";
 import { useAuthStore } from "@/stores/auth";
-import { useNotificationStore } from "@/stores/notification";
 
 const router = useRouter();
 
@@ -29,17 +29,16 @@ const form = useForm({
 });
 const errors = reactive<Notification[]>([]);
 const authStore = useAuthStore();
-const notificationStore = useNotificationStore();
 
 async function onSubmit(e?: Event) {
   await form.handleSubmit(async ({ email, password }) => {
     const result = await authStore.register(email, password);
     if (result instanceof Report) {
-      notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+      toast.success(result.message);
       void router.push("/");
     } else if (result instanceof APIError) {
       if (result.code === API_ERROR_CODE.ERR_NETWORK) {
-        notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        toast.error(result.message);
       } else {
         errors.splice(
           0,

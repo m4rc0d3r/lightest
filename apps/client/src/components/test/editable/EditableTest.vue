@@ -20,12 +20,12 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import { toast } from "vue-sonner";
 
 import EditableQuestionBlock from "./EditableQuestionBlock.vue";
 
 import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
 import { Report } from "@/http/dtos/report";
-import { Notification, STATUS } from "@/models/notification";
 import { QUESTION_TYPE } from "@/models/test/base";
 import {
   AnswerOptionToEdit,
@@ -35,7 +35,6 @@ import {
 } from "@/models/test/to-edit";
 import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
-import { useNotificationStore } from "@/stores/notification";
 
 const MODE = {
   CREATION: "CREATION",
@@ -51,7 +50,6 @@ export default defineComponent({
   data() {
     return {
       test: new TestToEdit(),
-      notificationStore: useNotificationStore(),
       mode: MODE.CREATION as Mode,
     };
   },
@@ -86,9 +84,9 @@ export default defineComponent({
       console.log(`Test creation took ${end - start} ms.`);
 
       if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+        toast.success(result.message);
       } else if (result instanceof APIError) {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        toast.error(result.message);
         if (result.code !== API_ERROR_CODE.ERR_NETWORK) {
           void this.$router.push("/");
         }
@@ -99,7 +97,7 @@ export default defineComponent({
       const result = extractData(await TestService.getTestToEdit(Number(this.$route.params["id"])));
 
       if (result instanceof Report) {
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+        toast.success(result.message);
         if (result.payload) {
           const test = result.payload;
           this.test = new TestToEdit(
@@ -140,7 +138,7 @@ export default defineComponent({
           );
         }
       } else {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        toast.error(result.message);
       }
     },
 
@@ -191,9 +189,9 @@ export default defineComponent({
           );
         }
 
-        this.notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+        toast.success(result.message);
       } else if (result instanceof APIError) {
-        this.notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+        toast.error(result.message);
         if (result.code !== API_ERROR_CODE.ERR_NETWORK) {
           void this.$router.push("/");
         }

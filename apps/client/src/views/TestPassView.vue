@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { toast } from "vue-sonner";
 
 import type { Test } from "@/components/test/pass";
 import {
@@ -14,14 +15,11 @@ import type {
   QuestionWithExtendedAnswerToPass,
 } from "@/dtos/test/to-pass";
 import { Report } from "@/http/dtos/report";
-import { Notification, STATUS } from "@/models/notification";
 import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
-import { useNotificationStore } from "@/stores/notification";
 
 const router = useRouter();
 const route = useRoute();
-const notificationStore = useNotificationStore();
 
 const test = ref<Test | null>(null);
 
@@ -32,7 +30,7 @@ onMounted(() => {
 async function loadTest() {
   const result = extractData(await TestService.getTestToPass(Number(route.params["id"])));
   if (result instanceof Report) {
-    notificationStore.add(new Notification(STATUS.SUCCESS, result.message));
+    toast.success(result.message);
     if (result.payload) {
       const { id, title, questions } = result.payload;
       test.value = {
@@ -79,7 +77,7 @@ async function loadTest() {
       };
     }
   } else {
-    notificationStore.add(new Notification(STATUS.FAILURE, result.message));
+    toast.error(result.message);
   }
 }
 </script>
