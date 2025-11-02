@@ -1,7 +1,7 @@
 <template>
   <form class="test" @submit.prevent>
     <span class="title">{{ test.title }}</span>
-    <span class="worth">Grade: {{ test.maximumScore }}</span>
+    <span class="worth">Points: {{ test.maximumScore }}</span>
     <PassableQuestionBlock :questions="test.questions" />
     <button class="submit-for-review-button" @click="submitTestForReview">Submit for review</button>
   </form>

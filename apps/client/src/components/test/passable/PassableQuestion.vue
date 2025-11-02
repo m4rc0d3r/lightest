@@ -1,7 +1,7 @@
 <template>
   <li class="question">
     <span class="content">{{ question.content }}</span>
-    <span class="worth">Grade: {{ question.worth }}</span>
+    <span class="worth">Points: {{ question.worth }}</span>
     <!-- <div>{{ enteredOrChosenAnswer }}</div> -->
     <div class="extended-answer" v-if="question.type === extendedQuestionType">
       <label for="">Answer</label>

@@ -26,9 +26,9 @@ defineProps<Props>();
       <p
         v-if="testMode === TEST_MODE.PASSED && typeof (test as BriefPassedTest).score === 'number'"
       >
-        Grade: {{ (test as BriefPassedTest).score.toFixed(1) }} out of {{ test.grade }}
+        Points: {{ (test as BriefPassedTest).score.toFixed(1) }} out of {{ test.grade }}
       </p>
-      <p class="grade" v-else>Grade: {{ test.grade }}</p>
+      <p class="grade" v-else>Points: {{ test.grade }}</p>
     </CardContent>
     <CardFooter class="justify-end">
       <Button as-child>
