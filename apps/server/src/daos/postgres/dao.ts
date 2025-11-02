@@ -1060,8 +1060,8 @@ class PostgresDAO implements DAO {
               WHEN 1 THEN ${questionTable.worth}
               ELSE 0
             END
-            WHEN 'WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS' THEN (
-              cast(
+            WHEN 'WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS' THEN CASE
+              WHEN (
                 (
                   SELECT
                     count(*)
@@ -1071,20 +1071,36 @@ class PostgresDAO implements DAO {
                     INNER JOIN ${passedQuestionTable} AS pq ON pao.passed_question_id = pq.id
                   WHERE
                     pq.id = ${passedQuestionTable.id}
-                    AND pao.is_chosen = ao.is_correct
+                    AND pao.is_chosen = TRUE
+                    AND ao.is_correct = FALSE
+                )
+              ) > 0 THEN 0
+              ELSE (
+                cast(
+                  (
+                    SELECT
+                      count(*)
+                    FROM
+                      ${passedAnswerOptionTable} AS pao
+                      INNER JOIN ${answerOptionTable} AS ao ON pao.answer_option_id = ao.id
+                      INNER JOIN ${passedQuestionTable} AS pq ON pao.passed_question_id = pq.id
+                    WHERE
+                      pq.id = ${passedQuestionTable.id}
+                      AND pao.is_chosen = ao.is_correct
+                      AND ao.is_correct = TRUE
+                  ) AS REAL
+                ) / (
+                  SELECT
+                    count(*)
+                  FROM
+                    ${passedAnswerOptionTable} AS pao
+                    INNER JOIN ${answerOptionTable} AS ao ON pao.answer_option_id = ao.id
+                  WHERE
+                    pao.passed_question_id = ${passedQuestionTable.id}
                     AND ao.is_correct = TRUE
-                ) AS REAL
-              ) / (
-                SELECT
-                  count(*)
-                FROM
-                  ${passedAnswerOptionTable} AS pao
-                  INNER JOIN ${answerOptionTable} AS ao ON pao.answer_option_id = ao.id
-                WHERE
-                  pao.passed_question_id = ${passedQuestionTable.id}
-                  AND ao.is_correct = TRUE
-              )
-            ) * ${questionTable.worth}
+                )
+              ) * ${questionTable.worth}
+            END
           END
         ) AS "score"
       FROM
