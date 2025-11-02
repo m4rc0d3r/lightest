@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import {
-  FormForEditingTest,
-  MULTIPLE_CHOICE_QUESTION_TYPE,
-  QUESTION_TYPE,
-  type Test,
-} from "@/components/test/create";
+import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
+import type { Test } from "@/components/test/create";
+import {
+  EditingForm,
+  MULTIPLE_CHOICE_QUESTION_TYPE,
+  QUESTION_TYPE,
+} from "@/components/test/create";
 import { QUESTION_TYPE as OLD_QUESTION_TYPE } from "@/dtos/test/base";
 import type {
   QuestionWithAnswerOptionsToEdit,
@@ -17,7 +18,6 @@ import { Notification, STATUS } from "@/models/notification";
 import { extractData } from "@/services/helpers";
 import { TestService } from "@/services/test-service";
 import { useNotificationStore } from "@/stores/notification";
-import { onMounted, ref } from "vue";
 
 const router = useRouter();
 const route = useRoute();
@@ -26,7 +26,7 @@ const notificationStore = useNotificationStore();
 const test = ref<Test | null>(null);
 
 onMounted(() => {
-  loadTest();
+  void loadTest();
 });
 
 async function loadTest() {
@@ -44,7 +44,7 @@ async function loadTest() {
             id,
             text: content,
             points: worth,
-            ...(question.type === OLD_QUESTION_TYPE.EXTENDED
+            ...(type === OLD_QUESTION_TYPE.EXTENDED
               ? {
                   type: QUESTION_TYPE.SHORT_ANSWER,
                   answer: (question as QuestionWithExtendedAnswerToEdit).correctAnswer,
@@ -89,7 +89,7 @@ async function loadTest() {
 
 <template>
   <div class="flex-grow p-4">
-    <FormForEditingTest
+    <EditingForm
       submitButtonText="Save"
       :initial-values="test"
       @submit="
@@ -135,7 +135,7 @@ async function loadTest() {
           );
 
           if (result instanceof Report) {
-            void router.push('/');
+            void router.push('/my-tests');
           }
         }
       "

@@ -1,2 +1,2 @@
-export { default as FormForEditingTest } from "./FormForEditingTest.vue";
+export { default as EditingForm } from "./EditingForm.vue";
 export * from "./schemas";

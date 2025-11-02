@@ -3,6 +3,7 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { Plus, Trash } from "lucide-vue-next";
 import type { AcceptableValue } from "reka-ui";
 import { useForm } from "vee-validate";
+import { watch } from "vue";
 
 import type { MultipleChoiceQuestion, MultipleChoiceQuestionType, Test } from "./schemas";
 import { MULTIPLE_CHOICE_QUESTION_TYPE, QUESTION_TYPE, zTest } from "./schemas";
@@ -35,7 +36,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { generatePhantomId } from "@/lib/utils";
-import { watch } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -50,9 +50,10 @@ const props = withDefaults(
   },
 );
 
-const emit = defineEmits<{
-  (e: "submit", ...args: Parameters<Parameters<typeof form.handleSubmit>[0]>): void;
-}>();
+const emit =
+  defineEmits<
+    (e: "submit", ...args: Parameters<Parameters<typeof form.handleSubmit>[0]>) => void
+  >();
 
 const formSchema = toTypedSchema(zTest);
 

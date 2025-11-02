@@ -71,6 +71,8 @@ const zServerErrorSchema = z.object({
   message: z.string(),
 });
 
+const zTestIdAsPathParam = z.coerce.number().pipe(zTest.shape.id);
+
 const c = initContract();
 const testContract = c.router(
   {
@@ -87,7 +89,7 @@ const testContract = c.router(
       method: "GET",
       path: "/test-to-edit/:id",
       pathParams: z.object({
-        id: z.coerce.number().pipe(zTest.shape.id),
+        id: zTestIdAsPathParam,
       }),
       responses: {
         200: zGetTestToEditResSuccessfulBody,
@@ -144,8 +146,8 @@ const testContract = c.router(
     getTestToPass: {
       method: "GET",
       path: "/test-to-pass/:id",
-      pathParams: zTest.pick({
-        id: true,
+      pathParams: z.object({
+        id: zTestIdAsPathParam,
       }),
       responses: {
         200: zGetTestToEditResSuccessfulBody,
