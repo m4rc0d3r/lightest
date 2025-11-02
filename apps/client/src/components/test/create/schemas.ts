@@ -7,6 +7,7 @@ const QUESTION_TYPE = zQuestionType.Values;
 type QuestionType = z.infer<typeof zQuestionType>;
 
 const zBasicQuestion = z.object({
+  id: z.number(),
   text: z.string().trim().nonempty(),
   points: z.coerce.number().int().positive(),
 });
@@ -19,11 +20,13 @@ const zShortAnswerQuestion = zBasicQuestion.extend({
 type ShortAnswerQuestion = z.infer<typeof zShortAnswerQuestion>;
 
 const zOneAnswerOption = z.object({
+  id: z.number(),
   text: z.string().trim().nonempty(),
 });
 type OneAnswerOption = z.infer<typeof zOneAnswerOption>;
 
 const zSeveralAnswerOption = zOneAnswerOption.extend({
+  id: z.number(),
   isCorrect: z.boolean(),
 });
 type SeveralAnswerOption = z.infer<typeof zSeveralAnswerOption>;
@@ -55,6 +58,7 @@ const zQuestion = z.discriminatedUnion(QUESTION_DISCRIMINATOR_KEY, [
 type Question = z.infer<typeof zQuestion>;
 
 const zTest = z.object({
+  id: z.number(),
   name: z.string().trim().nonempty(),
   questions: z.array(zQuestion),
 });

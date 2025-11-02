@@ -1,1 +1,2 @@
-export { default as TestCreationForm } from "./TestCreationForm.vue";
+export { default as FormForEditingTest } from "./FormForEditingTest.vue";
+export * from "./schemas";

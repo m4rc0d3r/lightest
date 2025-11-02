@@ -3,10 +3,8 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { Plus, Trash } from "lucide-vue-next";
 import type { AcceptableValue } from "reka-ui";
 import { useForm } from "vee-validate";
-import { useRouter } from "vue-router";
 
-import { INITIAL_VALUES } from "./no-topic";
-import type { MultipleChoiceQuestion, MultipleChoiceQuestionType } from "./schemas";
+import type { MultipleChoiceQuestion, MultipleChoiceQuestionType, Test } from "./schemas";
 import { MULTIPLE_CHOICE_QUESTION_TYPE, QUESTION_TYPE, zTest } from "./schemas";
 import {
   createAnswerOption,
@@ -36,18 +34,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { QUESTION_TYPE as OLD_QUESTION_TYPE } from "@/dtos/test/base";
-import { Report } from "@/http/dtos/report";
-import { extractData } from "@/services/helpers";
-import { TestService } from "@/services/test-service";
+import { generatePhantomId } from "@/lib/utils";
+import { watch } from "vue";
 
-const router = useRouter();
+const props = withDefaults(
+  defineProps<{
+    submitButtonText: string;
+    resetButtonText?: string | undefined;
+    initialValues?:
+      | NonNullable<Parameters<typeof useForm<Partial<Test>, Test>>[0]>["initialValues"]
+      | undefined;
+  }>(),
+  {
+    resetButtonText: "Reset",
+  },
+);
+
+const emit = defineEmits<{
+  (e: "submit", ...args: Parameters<Parameters<typeof form.handleSubmit>[0]>): void;
+}>();
+
 const formSchema = toTypedSchema(zTest);
 
 const form = useForm({
   validationSchema: formSchema,
-  initialValues: INITIAL_VALUES,
+  initialValues: {
+    id: generatePhantomId(),
+    name: "",
+    questions: [],
+    ...props.initialValues,
+  },
 });
+
+watch(
+  () => props.initialValues,
+  (value, oldValue) => {
+    if (!oldValue && value) {
+      form.resetForm({ values: value });
+    }
+  },
+);
 
 function addQuestion() {
   form.setFieldValue("questions", [
@@ -125,12 +151,13 @@ function changeMultipleChoiceQuestionType(questionIndex: number, value: Acceptab
     form.setFieldValue(`questions.${questionIndex}.options`, {
       numberOfCorrect: type,
       indexOfCorrect: indexOfCorrect === -1 ? 0 : indexOfCorrect,
-      values: question.options.values.map(({ text }) => ({ text })),
+      values: question.options.values.map(({ id, text }) => ({ id, text })),
     } satisfies OptionsType<typeof type>);
   } else {
     form.setFieldValue(`questions.${questionIndex}.options`, {
       numberOfCorrect: type,
-      values: question.options.values.map(({ text }, index) => ({
+      values: question.options.values.map(({ id, text }, index) => ({
+        id,
         text,
         isCorrect:
           "indexOfCorrect" in question.options && index === question.options.indexOfCorrect,
@@ -139,55 +166,13 @@ function changeMultipleChoiceQuestionType(questionIndex: number, value: Acceptab
   }
 }
 
-const onSubmit = form.handleSubmit(async ({ name, questions }) => {
-  const result = extractData(
-    await TestService.create({
-      id: Date.now(),
-      title: name,
-      questions: questions.map((question) => {
-        const { text, points } = question;
-        return {
-          id: Date.now(),
-          ...(question.type === QUESTION_TYPE.SHORT_ANSWER
-            ? {
-                type: OLD_QUESTION_TYPE.EXTENDED,
-                correctAnswer: question.answer,
-              }
-            : question.options.numberOfCorrect === MULTIPLE_CHOICE_QUESTION_TYPE.ONE
-              ? (() => {
-                  const { indexOfCorrect } = question.options;
-                  return {
-                    type: OLD_QUESTION_TYPE.WITH_ONE_CORRECT_ANSWER_OPTION,
-                    answerOptions: question.options.values.map(({ text }, index) => ({
-                      id: Date.now(),
-                      content: text,
-                      isCorrect: index === indexOfCorrect,
-                    })),
-                  };
-                })()
-              : {
-                  type: OLD_QUESTION_TYPE.WITH_MULTIPLE_CORRECT_ANSWER_OPTIONS,
-                  answerOptions: question.options.values.map(({ text, isCorrect }) => ({
-                    id: Date.now(),
-                    content: text,
-                    isCorrect,
-                  })),
-                }),
-          content: text,
-          worth: points,
-        };
-      }),
-    }),
-  );
-
-  if (result instanceof Report) {
-    void router.push("/");
-  }
+const handleSubmit = form.handleSubmit((...args) => {
+  emit("submit", ...args);
 });
 </script>
 
 <template>
-  <form class="relative flex h-full flex-col space-y-4" @submit="onSubmit">
+  <form class="relative flex h-full flex-col space-y-4" @submit="handleSubmit">
     <FormField v-slot="{ componentField }" name="name">
       <FormItem>
         <FormLabel>Test name</FormLabel>
@@ -432,7 +417,10 @@ const onSubmit = form.handleSubmit(async ({ name, questions }) => {
           <Plus />
         </Button>
       </div>
-      <Button type="submit">Create</Button>
+      <div class="flex gap-2">
+        <Button type="button" @click="form.resetForm()">{{ resetButtonText }}</Button>
+        <Button type="submit">{{ submitButtonText }}</Button>
+      </div>
     </div>
   </form>
 </template>

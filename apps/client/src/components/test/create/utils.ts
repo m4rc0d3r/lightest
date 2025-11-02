@@ -1,3 +1,5 @@
+import { generatePhantomId } from "../../../lib/utils";
+
 import type {
   BasicQuestion,
   MultipleChoiceQuestion,
@@ -37,6 +39,7 @@ type CreateQuestionParams =
     };
 function createQuestion(params: CreateQuestionParams) {
   const basicQuestion: BasicQuestion = {
+    id: generatePhantomId(),
     text: "",
     points: 1,
   };
@@ -72,6 +75,7 @@ function createQuestion(params: CreateQuestionParams) {
 
 function createAnswerOption(type: MultipleChoiceQuestionType) {
   const basicAnswerOption: OneAnswerOption = {
+    id: generatePhantomId(),
     text: "",
   };
   switch (type) {

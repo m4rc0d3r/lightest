@@ -86,8 +86,8 @@ const testContract = c.router(
     getTestToEdit: {
       method: "GET",
       path: "/test-to-edit/:id",
-      pathParams: zTest.pick({
-        id: true,
+      pathParams: z.object({
+        id: z.coerce.number().pipe(zTest.shape.id),
       }),
       responses: {
         200: zGetTestToEditResSuccessfulBody,
