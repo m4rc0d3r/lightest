@@ -199,8 +199,8 @@ const testContract = c.router(
     getTestResult: {
       method: "GET",
       path: "/passed/:id",
-      pathParams: zTest.pick({
-        id: true,
+      pathParams: z.object({
+        id: zTestIdAsPathParam,
       }),
       responses: {
         200: zResSuccessfulBody.extend({
