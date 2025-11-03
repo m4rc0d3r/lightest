@@ -21,7 +21,12 @@ defaultAPI.interceptors.request.use((config) => {
       serverApp: { protocol, address, port, apiBaseUrl },
     },
   } = useConfigStore(pinia);
-  config.baseURL = createUrl(protocol, address, port, apiBaseUrl);
+  config.baseURL = createUrl({
+    protocol,
+    address,
+    port,
+    baseUrl: apiBaseUrl,
+  });
 
   return config;
 });

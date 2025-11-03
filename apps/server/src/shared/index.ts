@@ -1,7 +1,7 @@
 import type { UnknownFn } from "~/types/utility";
 
-function createUrl(protocol: string, address: string, port: number) {
-  return `${protocol}://${address}:${port}`;
+function createUrl(protocol: string, address: string, port?: number) {
+  return `${protocol}://${address}${typeof port === "number" ? `:${port}` : ""}`;
 }
 
 function isNullish(value: unknown) {

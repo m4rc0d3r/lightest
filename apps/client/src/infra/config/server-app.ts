@@ -4,7 +4,13 @@ const zServerAppConfig = z
   .object({
     VITE_SERVER_APP_PROTOCOL: z.string().nonempty(),
     VITE_SERVER_APP_ADDRESS: z.string().nonempty(),
-    VITE_SERVER_APP_PORT: z.coerce.number().positive(),
+    VITE_SERVER_APP_PORT: z.preprocess((value) => {
+      if (typeof value === "number") return value;
+
+      if (typeof value === "string") return value.length > 0 ? Number(value) : undefined;
+
+      return value;
+    }, z.number().positive().optional()),
     VITE_SERVER_APP_API_BASE_URL: z.string(),
   })
   .transform(
