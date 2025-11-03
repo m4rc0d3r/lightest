@@ -33,7 +33,10 @@ const router = createRouter({
           name: "my-tests",
           component: MyTestsView,
           beforeEnter(_to, _from) {
-            return useAuthStore().isLoggedIn;
+            if (useAuthStore().isLoggedIn) return true;
+            return {
+              name: "login",
+            };
           },
         },
         {
@@ -47,7 +50,10 @@ const router = createRouter({
           name: "test-creator",
           component: TestCreationView,
           beforeEnter(_to, _from) {
-            return useAuthStore().isLoggedIn;
+            if (useAuthStore().isLoggedIn) return true;
+            return {
+              name: "login",
+            };
           },
         },
         {
@@ -55,7 +61,10 @@ const router = createRouter({
           name: "test-editor",
           component: TestEditingView,
           beforeEnter(_to, _from) {
-            return useAuthStore().isLoggedIn;
+            if (useAuthStore().isLoggedIn) return true;
+            return {
+              name: "login",
+            };
           },
         },
         {
@@ -63,7 +72,10 @@ const router = createRouter({
           name: "test-passing",
           component: TestPassView,
           beforeEnter(_to, _from) {
-            return useAuthStore().isLoggedIn;
+            if (useAuthStore().isLoggedIn) return true;
+            return {
+              name: "login",
+            };
           },
         },
         {
@@ -71,7 +83,10 @@ const router = createRouter({
           name: "passed-test",
           component: PassedTestView,
           beforeEnter(_to, _from) {
-            return useAuthStore().isLoggedIn;
+            if (useAuthStore().isLoggedIn) return true;
+            return {
+              name: "login",
+            };
           },
         },
       ],
