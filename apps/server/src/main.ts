@@ -48,6 +48,10 @@ createExpressEndpoints(testContract, testRouter, app, {
   requestValidationErrorHandler: validationMiddleware(testContract),
 });
 
+app.get("/", (_req, res) => {
+  res.send("Hello World!");
+});
+
 app.use(errorMiddleware);
 
 try {
