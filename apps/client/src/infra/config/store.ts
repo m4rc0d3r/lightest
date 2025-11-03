@@ -10,6 +10,7 @@ const useConfigStore = defineStore("config", {
         address: "",
         port: 0,
         apiBaseUrl: "",
+        deploymentPlatform: "LOCAL",
       },
     };
     return {

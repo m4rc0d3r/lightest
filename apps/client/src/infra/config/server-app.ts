@@ -12,6 +12,7 @@ const zServerAppConfig = z
       return value;
     }, z.number().positive().optional()),
     VITE_SERVER_APP_API_BASE_URL: z.string(),
+    VITE_SERVER_DEPLOYMENT_PLATFORM: z.enum(["LOCAL", "RENDER"]),
   })
   .transform(
     ({
@@ -19,11 +20,13 @@ const zServerAppConfig = z
       VITE_SERVER_APP_ADDRESS,
       VITE_SERVER_APP_PORT,
       VITE_SERVER_APP_API_BASE_URL,
+      VITE_SERVER_DEPLOYMENT_PLATFORM,
     }) => ({
       protocol: VITE_SERVER_APP_PROTOCOL,
       address: VITE_SERVER_APP_ADDRESS,
       port: VITE_SERVER_APP_PORT,
       apiBaseUrl: VITE_SERVER_APP_API_BASE_URL,
+      deploymentPlatform: VITE_SERVER_DEPLOYMENT_PLATFORM,
     }),
   );
 type ServerAppConfig = z.infer<typeof zServerAppConfig>;
