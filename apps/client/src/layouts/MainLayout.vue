@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { iife, isObject } from "@lightest/core";
 import { RouterLink, RouterView, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
 
 import { Button } from "@/components/ui/button";
-import { APIError } from "@/http/dtos/api-error";
-import { Report } from "@/http/dtos/report";
+import { injectDiContainer } from "@/features/di";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
@@ -36,16 +36,34 @@ const authRoutes = [
   },
 ];
 
-async function logout() {
-  if (authStore.isLoggedIn) {
-    const result = await authStore.logout();
-    if (result instanceof Report) {
-      toast.success(result.message);
-    } else if (result instanceof APIError) {
-      toast.error(result.message);
-    }
-    void router.push("/home");
-  }
+const { tsRestClient } = injectDiContainer();
+const { mutate: logout, isPending: isLogoutPending } = tsRestClient.auth.logout.useMutation();
+
+function handleLogout() {
+  logout(
+    {},
+    {
+      onSuccess: () => {
+        authStore.logout();
+        toast.success("Successful logout");
+        void router.push("/");
+      },
+      onError: (error) => {
+        toast.error("Failed to log out", {
+          description: iife(() => {
+            const MESSAGE = "message";
+            const { body } = error;
+
+            if (isObject(body) && MESSAGE in body && typeof body[MESSAGE] === "string") {
+              return body[MESSAGE];
+            }
+
+            return "Something went wrong";
+          }),
+        });
+      },
+    },
+  );
 }
 </script>
 
@@ -69,7 +87,13 @@ async function logout() {
             </li>
           </template>
           <li v-else class="flex items-center">
-            <Button variant="outline" class="font-bold" @click="logout">Logout</Button>
+            <Button
+              variant="outline"
+              :disabled="isLogoutPending"
+              class="font-bold"
+              @click="handleLogout"
+              >Logout</Button
+            >
           </li>
         </ul>
       </nav>

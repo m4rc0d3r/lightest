@@ -1,3 +1,4 @@
+import { hasMethod } from "@lightest/core";
 import type {
   AwilixContainer,
   BuildResolver,
@@ -20,7 +21,6 @@ import { SessionService } from "~/services/session-service";
 import { TestService } from "~/services/test-service";
 import { TokenService } from "~/services/token-service";
 import { UserService } from "~/services/user-service";
-import { hasMethod } from "~/shared";
 import type { AnyFn } from "~/types/utility";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions

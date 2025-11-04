@@ -53,6 +53,8 @@ export default defineConfig([
             "Separator",
             "Switch",
             "Textarea",
+            "Skeleton",
+            "Spinner",
           ],
         },
       ],

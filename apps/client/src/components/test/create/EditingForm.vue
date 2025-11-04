@@ -39,7 +39,10 @@ import { generatePhantomId } from "@/lib/utils";
 
 const props = withDefaults(
   defineProps<{
-    submitButtonText: string;
+    submitButton: {
+      text: string;
+      disabled: boolean;
+    };
     resetButtonText?: string | undefined;
     initialValues?:
       | NonNullable<Parameters<typeof useForm<Partial<Test>, Test>>[0]>["initialValues"]
@@ -420,7 +423,7 @@ const handleSubmit = form.handleSubmit((...args) => {
       </div>
       <div class="flex gap-2">
         <Button type="button" @click="form.resetForm()">{{ resetButtonText }}</Button>
-        <Button type="submit">{{ submitButtonText }}</Button>
+        <Button type="submit" :disabled="submitButton.disabled">{{ submitButton.text }}</Button>
       </div>
     </div>
   </form>

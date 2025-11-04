@@ -1,4 +1,4 @@
-import { authContract } from "@lightest/core";
+import { contract } from "@lightest/core";
 import type { CookieOptions, Request, Response } from "express";
 
 import type { Tokens } from "../services/token-service.js";
@@ -6,9 +6,8 @@ import type { Report } from "../types/report.js";
 
 import { tsRestServer } from "~/infra/ts-rest.js";
 
-const authRouter: ReturnType<typeof tsRestServer.router<typeof authContract>> = tsRestServer.router(
-  authContract,
-  {
+const authRouter: ReturnType<typeof tsRestServer.router<typeof contract.auth>> =
+  tsRestServer.router(contract.auth, {
     register: async ({ req, res, body: { email, password } }) => {
       const {
         config: {
@@ -117,8 +116,7 @@ const authRouter: ReturnType<typeof tsRestServer.router<typeof authContract>> = 
         body: { message: "Account successfully activated." },
       };
     },
-  },
-);
+  });
 
 function getRefreshTokenFromCookies(req: Request, refreshTokenCookieName: string) {
   const { [refreshTokenCookieName]: refreshToken } = req.cookies;

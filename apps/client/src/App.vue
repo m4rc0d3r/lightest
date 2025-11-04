@@ -1,31 +1,45 @@
 <script setup lang="ts">
+import { createUrl } from "@lightest/core";
 import { useStorage } from "@vueuse/core";
 import { Info } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
-import { RouterView, useRoute, useRouter } from "vue-router";
+import { RouterView, useRouter } from "vue-router";
 
 import "vue-sonner/style.css"; // vue-sonner v2 requires this import
 import { Button } from "./components/ui/button";
-import { createUrl } from "./http/axios/shared";
-import { zConfig } from "./infra/config/config";
-import { useConfigStore } from "./infra/config/store";
+import type { DiContainer } from "./features/di";
+import { provideDiContainer } from "./features/di";
 import { cn } from "./lib/utils";
+import { zConfig } from "./shared/config/config";
+import { useConfigStore } from "./shared/config/store";
+import { useAuthStore } from "./stores/auth";
 
 import { Toaster } from "@/components/ui/sonner";
-import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
-const route = useRoute();
 
-const authStore = useAuthStore();
 const configStore = useConfigStore();
+const authStore = useAuthStore();
+
+type Props = {
+  diContainer: DiContainer;
+};
+
+const { diContainer } = defineProps<Props>();
+
+provideDiContainer(diContainer);
 
 onMounted(async () => {
-  await authStore.refresh();
-  if (route.name === undefined) {
-    if ((await router.push(location.pathname)) !== undefined) {
-      await router.push("/");
+  try {
+    const { body, status } = await diContainer.tsRestClient.auth.refresh.mutation();
+    if (status === 200) {
+      authStore.login(body.payload);
+    } else {
+      authStore.logout();
+      void router.push("/");
     }
+  } catch {
+    void router.push("/");
   }
 });
 

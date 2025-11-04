@@ -234,7 +234,7 @@ const testContract = c.router(
     },
   },
   {
-    pathPrefix: "/api/tests",
+    pathPrefix: "/tests",
   },
 );
 

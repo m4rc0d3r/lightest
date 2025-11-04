@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
-import { toast } from "vue-sonner";
+import { ref } from "vue";
 
+import { Spinner } from "@/components/ui/spinner";
 import { MULTIPLE_CHOICE_QUESTION_TYPE, QUESTION_TYPE } from "@/components/test/pass";
 import type { Test } from "@/components/test/passed";
 import { FormOfPassedTest } from "@/components/test/passed";
@@ -11,25 +11,31 @@ import type {
   PassedQuestionWithAnswerOptions,
   PassedQuestionWithExtendedAnswer,
 } from "@/dtos/test/passed";
-import { Report } from "@/http/dtos/report";
-import { extractData } from "@/services/helpers";
-import { TestService } from "@/services/test-service";
+import { injectDiContainer } from "@/features/di";
 
 const route = useRoute();
+const testId = ref(Number(route.params["id"]));
 
-const test = ref<Test | null>(null);
-
-onMounted(() => {
-  void loadTest();
-});
-
-async function loadTest() {
-  const result = extractData(await TestService.getPassedTest(Number(route.params["id"])));
-  if (result instanceof Report) {
-    toast.success(result.message);
-    if (result.payload) {
-      const { id, title, questions } = result.payload;
-      test.value = {
+const { tsRestClient } = injectDiContainer();
+const {
+  data: test,
+  isError: isTestError,
+  isPending: isTestPending,
+} = tsRestClient.test.getTestResult.useQuery(
+  ["test", "getTestResult", testId],
+  () => ({
+    params: {
+      id: testId.value,
+    },
+  }),
+  {
+    retry: false,
+    select({
+      body: {
+        payload: { id, title, questions },
+      },
+    }) {
+      return {
         id,
         name: title,
         questions: questions.map((question) => {
@@ -82,15 +88,15 @@ async function loadTest() {
           };
         }) satisfies Test["questions"],
       };
-    }
-  } else {
-    toast.error(result.message);
-  }
-}
+    },
+  },
+);
 </script>
 
 <template>
-  <div class="grow p-4">
-    <FormOfPassedTest v-if="test" :test="test" class="h-full" />
+  <div class="flex grow p-4">
+    <Spinner v-if="isTestPending" class="m-auto h-1/2 w-auto" />
+    <p v-else-if="isTestError" class="m-auto text-center text-4xl">Failed to load test</p>
+    <FormOfPassedTest v-else :test="test!" class="grow" />
   </div>
 </template>

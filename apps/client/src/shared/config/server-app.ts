@@ -11,7 +11,7 @@ const zServerAppConfig = z
 
       return value;
     }, z.number().positive().optional()),
-    VITE_SERVER_APP_API_BASE_URL: z.string(),
+    VITE_SERVER_APP_API_BASE_URL: z.string().optional(),
     VITE_SERVER_DEPLOYMENT_PLATFORM: z.enum(["LOCAL", "RENDER"]),
   })
   .transform(

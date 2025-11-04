@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { RouterLink } from "vue-router";
-import { toast } from "vue-sonner";
 
 import { TEST_MODE } from "@/components/tests-view/shared";
 import TestList from "@/components/tests-view/TestList.vue";
@@ -14,11 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { BriefPassedTest, BriefTest } from "@/dtos/test/brief";
-import type { APIError } from "@/http/dtos/api-error";
-import { Report } from "@/http/dtos/report";
-import { extractData } from "@/services/helpers";
-import { TestService } from "@/services/test-service";
+import { Spinner } from "@/components/ui/spinner";
+import { injectDiContainer } from "@/features/di";
+import { EMPTY_ARGS } from "@/shared/ts-rest";
 
 const DISPLAYED_TEST = {
   CREATED: "CREATED",
@@ -38,25 +35,7 @@ class DisplayedTestForSelect {
   }
 }
 
-const tests = reactive<BriefTest[] | BriefPassedTest[]>([]);
 const displayedTests = ref<DisplayedTest>(DISPLAYED_TEST.CREATED);
-
-onMounted(async () => {
-  await loadTests();
-});
-
-watch(
-  displayedTests,
-  async () => {
-    const loadedTests = await loadTests();
-    if (loadedTests !== undefined) {
-      tests.splice(0, tests.length, ...loadedTests);
-    }
-  },
-  {
-    immediate: true,
-  },
-);
 
 const allDisplayedTestsForSelect = computed(() => {
   const questionTypes = [
@@ -73,28 +52,21 @@ const allDisplayedTestsForSelect = computed(() => {
   return questionTypes;
 });
 
-async function loadTests() {
-  let result: APIError | Report<BriefTest[]> | Report<BriefPassedTest[]> | null = null;
-
-  switch (displayedTests.value) {
-    case DISPLAYED_TEST.CREATED:
-      result = extractData(await TestService.getBriefTestsCreatedByUser());
-      break;
-    case DISPLAYED_TEST.PASSED:
-      result = extractData(await TestService.getBriefTestsPassedByUser());
-      break;
-  }
-
-  if (result instanceof Report) {
-    toast.success(result.message);
-    if (result.payload) {
-      return result.payload;
-    }
-  } else {
-    toast.error(result.message);
-  }
-  return undefined;
-}
+const { tsRestClient } = injectDiContainer();
+const {
+  data: testsCreatedByMe,
+  isError: isTestsCreatedByMeError,
+  isPending: isTestsCreatedByMePending,
+} = tsRestClient.test.getUserCreatedTests.useQuery(["test", "getUserCreatedTests"], EMPTY_ARGS, {
+  retry: false,
+});
+const {
+  data: testsPassedByMe,
+  isError: isTestsPassedByMeError,
+  isPending: isTestsPassedByMePending,
+} = tsRestClient.test.getTestsPassedByUser.useQuery(["test", "getTestsPassedByUser"], EMPTY_ARGS, {
+  retry: false,
+});
 </script>
 
 <template>
@@ -127,17 +99,35 @@ async function loadTests() {
         >
       </Button>
     </div>
-    <TestList
-      v-if="tests.length > 0"
-      :tests="tests"
-      :test-mode="displayedTests === DISPLAYED_TEST.CREATED ? TEST_MODE.EDITABLE : TEST_MODE.PASSED"
-    />
-    <p v-else class="m-auto text-3xl">
-      {{
-        displayedTests === DISPLAYED_TEST.CREATED
-          ? "There are currently no tests created."
-          : "You haven't taken any tests yet."
-      }}
-    </p>
+    <template v-if="displayedTests === 'CREATED'">
+      <Spinner v-if="isTestsCreatedByMePending" class="m-auto h-1/2 w-auto" />
+      <p v-else-if="isTestsCreatedByMeError" class="m-auto text-center text-4xl">
+        Failed to load tests
+      </p>
+      <template v-else>
+        <TestList
+          v-if="(testsCreatedByMe?.body.payload.length ?? 0) > 0"
+          :tests="testsCreatedByMe?.body.payload ?? []"
+          :test-mode="TEST_MODE.EDITABLE"
+          class="w-full"
+        />
+        <p v-else class="m-auto text-3xl">There are currently no tests created.</p>
+      </template>
+    </template>
+    <template v-else>
+      <Spinner v-if="isTestsPassedByMePending" class="m-auto h-1/2 w-auto" />
+      <p v-else-if="isTestsPassedByMeError" class="m-auto text-center text-4xl">
+        Failed to load tests
+      </p>
+      <template v-else>
+        <TestList
+          v-if="(testsPassedByMe?.body.payload.length ?? 0) > 0"
+          :tests="testsPassedByMe?.body.payload ?? []"
+          :test-mode="TEST_MODE.PASSED"
+          class="w-full"
+        />
+        <p v-else class="m-auto text-3xl">You haven't taken any tests yet.</p>
+      </template>
+    </template>
   </div>
 </template>

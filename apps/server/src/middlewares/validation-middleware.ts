@@ -1,10 +1,9 @@
+import { isObject } from "@lightest/core";
 import type { AppRouter, FlattenAppRouter } from "@ts-rest/core";
 import type { RequestValidationError, TsRestRequest } from "@ts-rest/express";
 import type { NextFunction, Response } from "express";
 
 import { APIError, Code as APIErrorCode } from "../exceptions/api-error.js";
-
-import { isObject } from "~/shared/index.js";
 
 const validationMiddleware =
   <T extends AppRouter>(_schema: T) =>

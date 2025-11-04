@@ -1,19 +1,17 @@
 <script setup lang="ts">
+import { iife, isObject } from "@lightest/core";
 import { toTypedSchema } from "@vee-validate/zod";
 import { useForm } from "vee-validate";
-import { reactive } from "vue";
 import { useRouter } from "vue-router";
-import { z } from "zod";
 import { toast } from "vue-sonner";
+import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RouterLink2 } from "@/components/ui/router-link-2";
-import { APIError, API_ERROR_CODE } from "@/http/dtos/api-error";
-import { Report } from "@/http/dtos/report";
-import { Notification, STATUS } from "@/models/notification";
+import { injectDiContainer } from "@/features/di";
 import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
@@ -27,26 +25,39 @@ const schema = toTypedSchema(
 const form = useForm({
   validationSchema: schema,
 });
-const errors = reactive<Notification[]>([]);
 const authStore = useAuthStore();
 
+const { tsRestClient } = injectDiContainer();
+const { mutate: register, isPending: isRegisterPending } = tsRestClient.auth.register.useMutation();
+
 async function onSubmit(e?: Event) {
-  await form.handleSubmit(async ({ email, password }) => {
-    const result = await authStore.register(email, password);
-    if (result instanceof Report) {
-      toast.success(result.message);
-      void router.push("/");
-    } else if (result instanceof APIError) {
-      if (result.code === API_ERROR_CODE.ERR_NETWORK) {
-        toast.error(result.message);
-      } else {
-        errors.splice(
-          0,
-          errors.length,
-          ...result.message.split("\n").map((error) => new Notification(STATUS.FAILURE, error)),
-        );
-      }
-    }
+  await form.handleSubmit((values) => {
+    register(
+      {
+        body: values,
+      },
+      {
+        onSuccess: ({ body: { payload } }) => {
+          authStore.login(payload);
+          toast.success("Successful registration");
+          void router.push("/");
+        },
+        onError: (error) => {
+          toast.error("Failed to register", {
+            description: iife(() => {
+              const MESSAGE = "message";
+              const { body } = error;
+
+              if (isObject(body) && MESSAGE in body && typeof body[MESSAGE] === "string") {
+                return body[MESSAGE];
+              }
+
+              return "Something went wrong";
+            }),
+          });
+        },
+      },
+    );
   })(e);
 }
 </script>
@@ -73,17 +84,8 @@ async function onSubmit(e?: Event) {
             <FormMessage />
           </FormItem>
         </FormField>
-        <Button type="submit">Register</Button>
+        <Button type="submit" :disabled="isRegisterPending">Register</Button>
       </form>
-      <ul v-if="errors.length > 0">
-        <li
-          v-for="{ id, message } in errors"
-          :key="id"
-          class="text-destructive-foreground text-center text-sm"
-        >
-          <p>{{ message }}</p>
-        </li>
-      </ul>
     </CardContent>
     <CardFooter class="justify-center">
       <p><RouterLink2 to="/login">Log in</RouterLink2>&nbsp;to an existing account</p>

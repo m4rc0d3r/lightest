@@ -1,3 +1,4 @@
+import { createUrl } from "@lightest/core";
 import bcrypt from "bcrypt";
 import * as uuid from "uuid";
 
@@ -13,7 +14,6 @@ import type { TokenService } from "./token-service.js";
 import type { DAO } from "~/daos/app/dao.js";
 import type { ClientAppConfig } from "~/infra/config/client-app.js";
 import type { Config } from "~/infra/config/config.js";
-import { createUrl } from "~/shared/index.js";
 
 class AuthService {
   private readonly roundsForPasswordHash: number;
@@ -46,7 +46,11 @@ class AuthService {
       const { protocol, address, port } = this.clientApp;
       await this.mailService.sendActivationMail(
         email,
-        `${createUrl(protocol, address, port)}/activate/${user.activationLink}`,
+        `${createUrl({
+          protocol,
+          address,
+          port,
+        })}/activate/${user.activationLink}`,
       );
 
       return await this.sessionService.createSession(user);

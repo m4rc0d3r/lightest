@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "dependencies": {
     "@internationalized/date": "^3.8.1",
+    "@lightest/core": "workspace:*",
     "@tailwindcss/vite": "^4.1.8",
+    "@tanstack/vue-query": "^5.90.6",
+    "@ts-rest/core": "^3.52.1",
     "@vee-validate/zod": "^4.15.0",
     "@vueuse/core": "^13.3.0",
     "axios": "^0.27.2",

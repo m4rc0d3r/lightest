@@ -21,7 +21,10 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const props = withDefaults(
   defineProps<{
-    submitButtonText: string;
+    submitButton: {
+      text: string;
+      disabled: boolean;
+    };
     resetButtonText?: string | undefined;
     test: Test;
   }>(),
@@ -179,7 +182,7 @@ const handleSubmit = form.handleSubmit((...args) => {
         <div class="flex items-center gap-2"></div>
         <div class="flex gap-2">
           <Button type="button" @click="form.resetForm()">{{ resetButtonText }}</Button>
-          <Button type="submit">{{ submitButtonText }}</Button>
+          <Button type="submit" :disabled="submitButton.disabled">{{ submitButton.text }}</Button>
         </div>
       </div>
     </form>

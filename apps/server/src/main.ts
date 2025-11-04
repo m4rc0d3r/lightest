@@ -1,4 +1,4 @@
-import { authContract, testContract } from "@lightest/core";
+import { contract, createUrl } from "@lightest/core";
 import { createExpressEndpoints } from "@ts-rest/express";
 import { scopePerRequest } from "awilix-express";
 import cookieParser from "cookie-parser";
@@ -15,7 +15,6 @@ import { errorMiddleware } from "./middlewares/error-middleware.js";
 import { validationMiddleware } from "./middlewares/validation-middleware.js";
 import { authRouter } from "./routers/auth-router.js";
 import { testRouter } from "./routers/test-router.js";
-import { createUrl } from "./shared";
 
 expand(dotenvConfig());
 
@@ -32,20 +31,20 @@ app.use(cors(config.cors));
 
 app.use(scopePerRequest(diContainer));
 
-createExpressEndpoints(authContract, authRouter, app, {
-  requestValidationErrorHandler: validationMiddleware(authContract),
+createExpressEndpoints(contract.auth, authRouter, app, {
+  requestValidationErrorHandler: validationMiddleware(contract.auth),
 });
-createExpressEndpoints(testContract, testRouter, app, {
+createExpressEndpoints(contract.test, testRouter, app, {
   globalMiddleware: [
     (req, res, next) => {
-      if (req.path === testContract.getBriefTests.path) {
+      if (req.path === contract.test.getBriefTests.path) {
         next();
       } else {
         authMiddleware(req as Parameters<typeof authMiddleware>[0], res, next);
       }
     },
   ],
-  requestValidationErrorHandler: validationMiddleware(testContract),
+  requestValidationErrorHandler: validationMiddleware(contract.test),
 });
 
 app.get("/", (_req, res) => {
@@ -58,7 +57,13 @@ try {
   const { protocol, address, port } = config.server;
   const server = app.listen(port, address, () => {
     void awilixManager.executeInit().then(() => {
-      console.log(`Server started on ${createUrl(protocol, address, port)}.`);
+      console.log(
+        `Server started on ${createUrl({
+          protocol,
+          address,
+          port,
+        })}.`,
+      );
     });
   });
   server.on("close", () => {

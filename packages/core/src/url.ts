@@ -1,8 +1,10 @@
+import { COLON, EMPTY, SLASH } from "./str";
+
 type Params = {
-  address: string;
-  baseUrl?: string | undefined;
-  port?: number | undefined;
   protocol: string;
+  address: string;
+  port?: number | undefined;
+  baseUrl?: string | undefined;
 };
 
 function createUrl({ protocol, address, port, baseUrl }: Params) {
@@ -12,9 +14,5 @@ function createUrl({ protocol, address, port, baseUrl }: Params) {
     baseUrl ? [SLASH, baseUrl].join(EMPTY) : EMPTY,
   ].join(EMPTY);
 }
-
-const COLON = ":";
-const EMPTY = "";
-const SLASH = "/";
 
 export { createUrl };

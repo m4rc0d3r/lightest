@@ -1,5 +1,6 @@
 import path from "path";
 
+import { createUrl } from "@lightest/core";
 import type { TestAccount, Transporter } from "nodemailer";
 import nodeMailer from "nodemailer";
 import type SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -11,7 +12,6 @@ import type { Config } from "~/infra/config";
 import type { ClientAppConfig } from "~/infra/config/client-app";
 import type { MailConfig } from "~/infra/config/mail";
 import type { AsyncInit } from "~/infra/dependencies";
-import { createUrl } from "~/shared";
 
 const PATH_TO_FOLDER_WITH_LETTER_TEMPLATES = "src/mail-templates";
 
@@ -79,7 +79,11 @@ class MailService implements AsyncInit {
     const info = await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: `Account activation on the ${createUrl(protocol, address, port)}`,
+      subject: `Account activation on the ${createUrl({
+        protocol,
+        address,
+        port,
+      })}`,
       html: letterContent,
     });
 

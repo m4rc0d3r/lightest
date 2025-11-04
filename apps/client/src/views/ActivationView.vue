@@ -2,30 +2,40 @@
   <div></div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from "vue";
+<script setup lang="ts">
+import { onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { toast } from "vue-sonner";
+import { z } from "zod";
 
-import { APIError } from "@/http/dtos/api-error";
-import { Report } from "@/http/dtos/report";
-import { useAuthStore } from "@/stores/auth";
+import { injectDiContainer } from "@/features/di";
 
-export default defineComponent({
-  async beforeCreate() {
-    if (typeof this.$route.params["link"] === "string") {
-      const link = this.$route.params["link"];
-      const result = await useAuthStore().activate(link);
-      if (result instanceof Report) {
-        toast.success(result.message);
-      } else if (result instanceof APIError) {
-        toast.error("Invalid activation link.");
-      }
+const router = useRouter();
+const route = useRoute();
+const { tsRestClient } = injectDiContainer();
+
+onMounted(async () => {
+  try {
+    const link = z.string().uuid().parse(route.params["link"]);
+    const { status } = await tsRestClient.auth.activate.query({
+      params: {
+        link,
+      },
+    });
+    if (status === 200) {
+      toast.success("The account has been successfully activated");
     } else {
-      toast.error("Invalid activation link.");
+      toast.error("Failed to activate your account", {
+        description: "This link does not correspond to any account.",
+      });
     }
-    void this.$router.push("/");
-  },
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      toast.error("Invalid activation link");
+    } else {
+      toast.error("Failed to activate your account");
+    }
+  }
+  void router.push("/");
 });
 </script>
-
-style>
