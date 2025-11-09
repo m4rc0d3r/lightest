@@ -3,7 +3,7 @@ import { createUrl } from "@lightest/core";
 import { useStorage } from "@vueuse/core";
 import { Info } from "lucide-vue-next";
 import { onMounted, ref } from "vue";
-import { RouterView, useRouter } from "vue-router";
+import { RouterView, useRoute, useRouter } from "vue-router";
 
 import "vue-sonner/style.css"; // vue-sonner v2 requires this import
 import { Button } from "./components/ui/button";
@@ -13,10 +13,12 @@ import { cn } from "./lib/utils";
 import { zConfig } from "./shared/config/config";
 import { useConfigStore } from "./shared/config/store";
 import { useAuthStore } from "./stores/auth";
+import { ROUTES_REQUIRING_AUTHORIZATION } from "./router";
 
 import { Toaster } from "@/components/ui/sonner";
 
 const router = useRouter();
+const route = useRoute();
 
 const configStore = useConfigStore();
 const authStore = useAuthStore();
@@ -36,10 +38,20 @@ onMounted(async () => {
       authStore.login(body.payload);
     } else {
       authStore.logout();
-      void router.push("/");
+      if (
+        typeof route.name === "string" &&
+        Object.values(ROUTES_REQUIRING_AUTHORIZATION).includes(route.name)
+      ) {
+        void router.push("/");
+      }
     }
   } catch {
-    void router.push("/");
+    if (
+      typeof route.name === "string" &&
+      Object.values(ROUTES_REQUIRING_AUTHORIZATION).includes(route.name)
+    ) {
+      void router.push("/");
+    }
   }
 });
 

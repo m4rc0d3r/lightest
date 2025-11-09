@@ -12,8 +12,17 @@ import TestsView from "../views/TestsView.vue";
 
 import MainLayout from "@/layouts/MainLayout.vue";
 import { useAuthStore } from "@/stores/auth";
+import NotFoundView from "@/views/NotFoundView.vue";
 import PassedTestView from "@/views/PassedTestView.vue";
 import TestPassView from "@/views/TestPassView.vue";
+
+const ROUTES_REQUIRING_AUTHORIZATION = {
+  myTests: "my-tests",
+  testCreator: "test-creator",
+  testEditor: "test-editor",
+  testPassing: "test-passing",
+  passedTest: "passed-test",
+};
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,7 +39,7 @@ const router = createRouter({
         },
         {
           path: "/my-tests",
-          name: "my-tests",
+          name: ROUTES_REQUIRING_AUTHORIZATION.myTests,
           component: MyTestsView,
           beforeEnter(_to, _from) {
             if (useAuthStore().isLoggedIn) return true;
@@ -47,7 +56,7 @@ const router = createRouter({
 
         {
           path: "/create-test",
-          name: "test-creator",
+          name: ROUTES_REQUIRING_AUTHORIZATION.testCreator,
           component: TestCreationView,
           beforeEnter(_to, _from) {
             if (useAuthStore().isLoggedIn) return true;
@@ -58,7 +67,7 @@ const router = createRouter({
         },
         {
           path: "/edit-test/:id",
-          name: "test-editor",
+          name: ROUTES_REQUIRING_AUTHORIZATION.testEditor,
           component: TestEditingView,
           beforeEnter(_to, _from) {
             if (useAuthStore().isLoggedIn) return true;
@@ -69,7 +78,7 @@ const router = createRouter({
         },
         {
           path: "/pass-test/:id",
-          name: "test-passing",
+          name: ROUTES_REQUIRING_AUTHORIZATION.testPassing,
           component: TestPassView,
           beforeEnter(_to, _from) {
             if (useAuthStore().isLoggedIn) return true;
@@ -80,7 +89,7 @@ const router = createRouter({
         },
         {
           path: "/passed-test/:id",
-          name: "passed-test",
+          name: ROUTES_REQUIRING_AUTHORIZATION.passedTest,
           component: PassedTestView,
           beforeEnter(_to, _from) {
             if (useAuthStore().isLoggedIn) return true;
@@ -112,7 +121,12 @@ const router = createRouter({
       name: "activation",
       component: ActivationView,
     },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "NotFound",
+      component: NotFoundView,
+    },
   ],
 });
 
-export default router;
+export { router as default, ROUTES_REQUIRING_AUTHORIZATION };
