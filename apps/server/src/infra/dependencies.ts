@@ -57,8 +57,7 @@ function configureDependencies(config: Config) {
   });
 
   const {
-    cookie: { domain, secure },
-    server: { protocol },
+    cookie: { domain, sameSite, secure },
   } = config;
 
   const diContainer = createContainer<Dependencies>({
@@ -71,8 +70,8 @@ function configureDependencies(config: Config) {
       domain,
       httpOnly: true,
       path: "/",
-      sameSite: "strict",
-      secure: secure === "auto" ? protocol === "http" : secure,
+      sameSite,
+      secure,
       signed: true,
     }),
     db: asValue(db),
